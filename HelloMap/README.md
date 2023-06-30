@@ -14,7 +14,7 @@ Step 3. Go to the repository root folder which contains the ```pubspec.yaml``` a
 Step 4. You can build the app either in your IDE of choice and execute the Flutter project for your target platform or via command line:
 
 - Build for Android:
-  - Build an Android APK by executing ```flutter build apk``` or use the command ```flutter run``` to build and run on an attached device.
+  - Build an Android APK by executing ```flutter build apk [--debug|--release]``` and use the command ```flutter run --use-application-binary build/app/outputs/flutter-apk/app-[debug|release].apk``` to run on an attached device.
 - Build for iOS:
   - Run ```pod install``` in the [ios folder](./ios/).
   - Then go back to the repository root folder and type ```flutter build ios``` to build a Runner.app. Type ```flutter run``` to build and run on an attached device.
