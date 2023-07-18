@@ -26,6 +26,8 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
+    namespace "com.magiclane.gem_kit.examples.hello_map"
+
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -43,7 +45,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.magiclane.gem_kit.examples.hellomap"
+        applicationId "com.magiclane.gem_kit.examples.hello_map"
 
         minSdkVersion 19
         targetSdkVersion flutter.targetSdkVersion

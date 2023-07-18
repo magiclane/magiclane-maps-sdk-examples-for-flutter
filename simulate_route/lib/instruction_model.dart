@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:calculate_route_example/utility.dart';
+import 'package:simulate_route/utility.dart';
 import 'package:gem_kit/api/gem_navigationinstruction.dart';
 
 class InstructionModel {

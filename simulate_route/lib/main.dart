@@ -1,7 +1,7 @@
-import 'package:calculate_route_example/bottom_navigation_panel.dart';
-import 'package:calculate_route_example/instruction_model.dart';
-import 'package:calculate_route_example/top_navigation_panel.dart';
-import 'package:calculate_route_example/utility.dart';
+import 'package:simulate_route/bottom_navigation_panel.dart';
+import 'package:simulate_route/instruction_model.dart';
+import 'package:simulate_route/top_navigation_panel.dart';
+import 'package:simulate_route/utility.dart';
 
 import 'package:gem_kit/gem_kit_basic.dart';
 import 'package:gem_kit/gem_kit_map_controller.dart';
@@ -163,8 +163,8 @@ class _MyHomePageState extends State<MyHomePage> {
         });
 
     _mapController.startFollowingPosition(
-        animation:
-            gem.Animation(duration: 200, type: gem.EAnimation.AnimationLinear));
+        animation: gem.GemAnimation(
+            duration: 200, type: gem.EAnimation.AnimationLinear));
   }
 
 // Method for removing the routes from display
@@ -209,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
           GestureDetector(
             onTap: () => _stopSimulation(shownRoutes),
             child: Icon(Icons.stop,
-                size: 40, color: haveRoutes ? Colors.white : Colors.grey),
+                size: 40, color: haveRoutes ? Colors.red : Colors.grey),
           ),
           GestureDetector(
             onTap: () => haveRoutes ? null : _onPressed(waypoints, context),

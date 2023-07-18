@@ -1,4 +1,4 @@
-import 'package:calculate_route_example/instruction_model.dart';
+import 'package:simulate_route/instruction_model.dart';
 import 'package:flutter/material.dart';
 
 class NavigationInstructionPanel extends StatelessWidget {
