@@ -1,5 +1,5 @@
 name: simulate_route
-description: A new Flutter project.
+description: A Flutter example using Maps SDK for Flutter.
 
 publish_to: 'none' 
 
@@ -17,6 +17,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   intl: ^0.18.1
+  flutter_tts: ^3.7.0
 
 dev_dependencies:
   flutter_test:
@@ -25,6 +26,4 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 
 flutter:
-
   uses-material-design: true
-

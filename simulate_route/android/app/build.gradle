@@ -47,7 +47,8 @@ android {
     defaultConfig {
         applicationId "com.magiclane.gem_kit.examples.simulate_route"
 
-        minSdkVersion 19
+		// The plugin flutter_tts requires min SDK version 21
+        minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
 
         versionCode flutterVersionCode.toInteger()

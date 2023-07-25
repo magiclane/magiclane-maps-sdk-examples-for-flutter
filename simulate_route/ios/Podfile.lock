@@ -1,22 +1,28 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_tts (0.0.1):
+    - Flutter
   - gem_kit (0.1.0):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
   - gem_kit (from `.symlinks/plugins/gem_kit/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_tts:
+    :path: ".symlinks/plugins/flutter_tts/ios"
   gem_kit:
     :path: ".symlinks/plugins/gem_kit/ios"
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
   gem_kit: 9aaa8ccecf0752f1267cab34986b0ada799910a7
 
-PODFILE CHECKSUM: 1959d098c91d8a792531a723c4a9d7e9f6a01e38
+PODFILE CHECKSUM: 8c625b7f45145c755c29aa98f6ac8a5cfa4ab7b2
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.12.1

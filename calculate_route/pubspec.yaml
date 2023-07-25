@@ -1,5 +1,5 @@
 name: calculate_route
-description: A new Flutter project.
+description: A Flutter example using Maps SDK for Flutter.
 
 publish_to: 'none' 
 
@@ -23,9 +23,5 @@ dev_dependencies:
 
   flutter_lints: ^2.0.0
 
-
 flutter:
-
   uses-material-design: true
-
- 
