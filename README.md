@@ -18,6 +18,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Navigate Route](navigate_route) - Calculate & display route. Navigate route.
 * [Save Favorites](save_favorites) - Show to save landmarks to your favorites list, as well as remove them from favorites list.
 * [Text Search](text_search) - Text search. Shows search results and the distance towards them. Highlights the selected result on the map.
+* [Human Voices](human_voices) - Calculate & display route. Simulate route. Listen to voice instructions.
 
 **Note:** As the very first step, we highly recommend that you get a token from [Magic Lane Portal](https://developer.magiclane.com/api). If no token is set, you can still test your apps, but a watermark will be displayed, and all the online services including mapping, searching, routing, etc. will slow down after a few minutes.
 

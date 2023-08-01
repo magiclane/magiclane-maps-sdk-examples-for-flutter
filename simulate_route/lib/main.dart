@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Build route example',
+      title: 'Simulate route ',
       home: MyHomePage(),
     );
   }

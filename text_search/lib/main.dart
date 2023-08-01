@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gem_kit/api/gem_landmark.dart';
+import 'package:gem_kit/api/gem_landmarkstoreservice.dart';
 import 'package:gem_kit/api/gem_mapviewrendersettings.dart';
 import 'package:gem_kit/api/gem_routingservice.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
@@ -35,6 +36,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
   late SdkSettings _sdkSettings;
+  late LandmarkStoreService _landmarkStoreService;
 
   @override
   void initState() {
@@ -48,6 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
       _sdkSettings.setAppAuthorization(
           "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI0ZTZjNmQxMy0yMTFiLTRhOWQtOGViYS1hMDkxNzg5ZWE2NWEiLCJleHAiOjE4ODE1MjIwMDAsImlzcyI6IkdlbmVyYWwgTWFnaWMiLCJqdGkiOiI4MWZkYTI0Zi1iNTVkLTRiNzEtODViZC02N2QzMGFkNGI4MGQiLCJuYmYiOjE2NjU1NzU0NTZ9.czCmTl26q6uw8XnmMv2KffxVwhNFEN82KJNzeYsRfZJVIa9yXvTPtNl-1BjoxaxWgATANCuqUDQrbdqZlsqj7w");
     });
+
+    _landmarkStoreService = await LandmarkStoreService.create(controller.mapId);
   }
 
 // Custom method for navigating to search screen
@@ -65,6 +69,21 @@ class _MyHomePageState extends State<MyHomePage> {
         coordinates: mapCoords!,
       ),
     ));
+
+    var historyStore =
+        await _landmarkStoreService.getLandmarkStoreByName("History");
+
+    if (historyStore == null) {
+      historyStore = await _landmarkStoreService.createLandmarkStore("History");
+
+      await historyStore.addLandmark(result);
+    }
+
+    final historyList = await historyStore.getLandmarks();
+    final first = await historyList.at(0);
+    final name = await first.getName();
+
+    print("\n History: $name\n");
 
 // Creating a list of landmarks to highlight.
     LandmarkList landmarkList = await LandmarkList.create(_mapController.mapId);

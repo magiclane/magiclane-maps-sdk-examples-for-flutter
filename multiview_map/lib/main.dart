@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
 import 'package:gem_kit/widget/gem_kit_map.dart';
