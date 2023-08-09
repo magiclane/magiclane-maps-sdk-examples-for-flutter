@@ -83,12 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
     _focusedLandmark = null;
     _isLandmarkFavorite = false;
 
-    final token =
-        'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI0ZTZjNmQxMy0yMTFiLTRhOWQtOGViYS1hMDkxNzg5ZWE2NWEiLCJleHAiOjE4ODE1MjIwMDAsImlzcyI6IkdlbmVyYWwgTWFnaWMiLCJqdGkiOiI4MWZkYTI0Zi1iNTVkLTRiNzEtODViZC02N2QzMGFkNGI4MGQiLCJuYmYiOjE2NjU1NzU0NTZ9.czCmTl26q6uw8XnmMv2KffxVwhNFEN82KJNzeYsRfZJVIa9yXvTPtNl-1BjoxaxWgATANCuqUDQrbdqZlsqj7w';
-
     SdkSettings.create(_mapController.mapId).then((value) {
       _sdkSettings = value;
-      _sdkSettings.setAppAuthorization(token);
+      _sdkSettings.setAppAuthorization('YOUR_API_KEY_TOKEN');
     });
 
     // Instantiate the LandmarkStoreService.
