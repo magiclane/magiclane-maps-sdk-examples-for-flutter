@@ -69,11 +69,11 @@ class TTSEngine {
   }
 
   Future _getDefaultEngine() async {
-    var engine = await flutterTts.getDefaultEngine;
+    await flutterTts.getDefaultEngine;
   }
 
   Future _getDefaultVoice() async {
-    var voice = await flutterTts.getDefaultVoice;
+    await flutterTts.getDefaultVoice;
   }
 
   Future setVolume(double volume) async {

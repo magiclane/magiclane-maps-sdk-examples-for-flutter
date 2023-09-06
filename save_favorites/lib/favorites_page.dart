@@ -78,15 +78,13 @@ class FavoritesItem extends StatefulWidget {
 
 class _FavoritesItemState extends State<FavoritesItem> {
   late Future<Uint8List?> _landmarkIconFuture;
-  late Future<String> _nameFuture;
-  late Future<List<LandmarkCategory>> _categoriesFuture;
+
   late Future<Coordinates> _coordsFuture;
 
   @override
   void initState() {
     _landmarkIconFuture = _decodeLandmarkIcon();
-    _nameFuture = widget.landmark.getName();
-    _categoriesFuture = widget.landmark.getCategories();
+
     _coordsFuture = _getCoordinates();
 
     super.initState();
@@ -122,18 +120,12 @@ class _FavoritesItemState extends State<FavoritesItem> {
                     children: [
                       Container(
                         margin: const EdgeInsets.only(bottom: 5),
-                        child: FutureBuilder<String>(
-                          future: _nameFuture,
-                          builder: (context, snapshot) {
-                            final name = snapshot.data ?? '';
-                            return Text(
-                              name,
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            );
-                          },
+                        child: Text(
+                          widget.landmark.getName(),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600),
                         ),
                       ),
                       Row(
@@ -142,26 +134,18 @@ class _FavoritesItemState extends State<FavoritesItem> {
                         children: [
                           Container(
                             margin: const EdgeInsets.only(right: 3),
-                            child: FutureBuilder<List<LandmarkCategory>>(
-                              future: _categoriesFuture,
-                              builder: (context, snapshot) {
-                                String categoryName = '';
-
-                                if (snapshot.hasData) {
-                                  final category = snapshot.data;
-                                  if (category!.isNotEmpty) {
-                                    categoryName = category[0].name!;
-                                  }
-                                }
-
-                                return Text(
-                                  categoryName,
-                                  style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800),
-                                );
-                              },
+                            child: Text(
+                              widget.landmark.getCategories().isNotEmpty
+                                  ? widget.landmark
+                                          .getCategories()
+                                          .elementAt(0)
+                                          .name ??
+                                      ' '
+                                  : ' ',
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800),
                             ),
                           ),
                           FutureBuilder<Coordinates>(
@@ -218,12 +202,12 @@ class _FavoritesItemState extends State<FavoritesItem> {
   }
 
   Future<Uint8List?> _decodeLandmarkIcon() async {
-    final data = await widget.landmark.getImage(100, 100);
+    final data = widget.landmark.getImage(100, 100);
     return decodeImageData(data);
   }
 
   Future<Coordinates> _getCoordinates() async {
-    final coords = await widget.landmark.getCoordinates();
+    final coords = widget.landmark.getCoordinates();
     return coords;
   }
 }

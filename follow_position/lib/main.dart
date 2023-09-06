@@ -42,7 +42,7 @@ class _FollowPositionPageState extends State<FollowPositionPage> {
   late PositionService _positionService;
   late bool _hasLiveDataSource = false;
 
-  final token = 'YOUR_API_TOKEN';
+  final _token = 'YOUR_API_TOKEN';
 
   @override
   Widget build(BuildContext context) {
@@ -74,9 +74,7 @@ class _FollowPositionPageState extends State<FollowPositionPage> {
     // Create the position service
     _positionService = await PositionService.create(controller.mapId);
 
-    final settings = await SdkSettings.create(controller.mapId);
-
-    settings.setAppAuthorization(token);
+    SdkSettings.setAppAuthorization(_token);
   }
 
   _onFollowPositionButtonPressed() async {

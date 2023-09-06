@@ -30,7 +30,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController mapController;
-  late SdkSettings _sdkSettings;
+
+  final _token = 'YOUR_API_TOKEN';
+
   @override
   void initState() {
     super.initState();
@@ -38,11 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> onMapCreated(GemMapController controller) async {
     mapController = controller;
-    SdkSettings.create(mapController.mapId).then((value)
-    {
-        _sdkSettings = value;
-        _sdkSettings.setAppAuthorization("YourAPPToken");
-    });
+
+    SdkSettings.setAppAuthorization(_token);
   }
 
   @override

@@ -46,7 +46,7 @@ class _PerspectiveMapPageState extends State<PerspectiveMapPage> {
   // Tilt angle for orthogonal/vertical view
   final double _2dViewAngle = 90;
 
-  final token = 'YOUR_API_KEY';
+  final _token = 'YOUR_API_KEY';
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +79,7 @@ class _PerspectiveMapPageState extends State<PerspectiveMapPage> {
 
     _mapPreferences = await controller.preferences();
 
-    final settings = await SdkSettings.create(controller.mapId);
-
-    settings.setAppAuthorization(token);
+    SdkSettings.setAppAuthorization(_token);
   }
 
   _onChangePersectiveButtonPressed() async {

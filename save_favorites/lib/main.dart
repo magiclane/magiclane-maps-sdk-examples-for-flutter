@@ -73,6 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final favoritesStoreName = 'Favorites';
 
+  final _token = 'YOUR_API_KEY';
+
   @override
   void initState() {
     super.initState();
@@ -83,10 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _focusedLandmark = null;
     _isLandmarkFavorite = false;
 
-    SdkSettings.create(_mapController.mapId).then((value) {
-      _sdkSettings = value;
-      _sdkSettings.setAppAuthorization('YOUR_API_KEY_TOKEN');
-    });
+    SdkSettings.setAppAuthorization(_token);
 
     // Instantiate the LandmarkStoreService.
     _landmarkStoreService = await LandmarkStoreService.create(controller.mapId);

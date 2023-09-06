@@ -35,8 +35,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
-  late SdkSettings _sdkSettings;
   late LandmarkStoreService _landmarkStoreService;
+
+  final _token = 'YOUR_API_KEY';
 
   @override
   void initState() {
@@ -45,10 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> onMapCreated(GemMapController controller) async {
     _mapController = controller;
-    SdkSettings.create(_mapController.mapId).then((value) {
-      _sdkSettings = value;
-      _sdkSettings.setAppAuthorization('YOUR_API_KEY_TOKEN');
-    });
+    SdkSettings.setAppAuthorization(_token);
 
     _landmarkStoreService = await LandmarkStoreService.create(controller.mapId);
   }
@@ -58,8 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Taking the coordinates at the center of the screen as reference coordinates for search.
     final x = MediaQuery.of(context).size.width / 2;
     final y = MediaQuery.of(context).size.height / 2;
-    final mapCoords = await _mapController
-        .transformScreenToWgs(XyType(x: x.toInt(), y: y.toInt()));
+    final mapCoords =
+        _mapController.transformScreenToWgs(XyType(x: x.toInt(), y: y.toInt()));
 
 // Navigating to search screen. The result will be the selected search result(Landmark)
     final result = await Navigator.of(context).push(MaterialPageRoute(
@@ -78,12 +76,6 @@ class _MyHomePageState extends State<MyHomePage> {
       await historyStore.addLandmark(result);
     }
 
-    final historyList = await historyStore.getLandmarks();
-    final first = await historyList.at(0);
-    final name = await first.getName();
-
-    print("\n History: $name\n");
-
 // Creating a list of landmarks to highlight.
     LandmarkList landmarkList = await LandmarkList.create(_mapController.mapId);
 
@@ -93,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // Adding the result to the landmark list.
     await landmarkList.push_back(result);
-    final coords = await result.getCoordinates();
+    final coords = result.getCoordinates();
 
 // Activating the highlight
     await _mapController.activateHighlight(landmarkList,

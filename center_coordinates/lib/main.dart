@@ -31,7 +31,7 @@ class CenterCoordinatesPage extends StatelessWidget {
 
   late GemMapController _mapController;
 
-  final token = 'YOUR_API_TOKEN';
+  final _token = 'YOUR_API_TOKEN';
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +60,7 @@ class CenterCoordinatesPage extends StatelessWidget {
     // Save controller for further usage
     _mapController = controller;
 
-    final settings = await SdkSettings.create(controller.mapId);
-
-    settings.setAppAuthorization(token);
+    SdkSettings.setAppAuthorization(_token);
   }
 
   _onCenterCoordinatesButtonPressed() {

@@ -41,6 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool haveRoutes = false;
 
+  final _token = "YOUR_API_KEY";
+
   @override
   void initState() {
     super.initState();
@@ -52,10 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> onMapCreated(GemMapController controller) async {
     _mapController = controller;
-    SdkSettings.create(_mapController.mapId).then((value) {
-      _sdkSettings = value;
-      _sdkSettings.setAppAuthorization('YOUR_API_KEY_TOKEN');
-    });
+    SdkSettings.setAppAuthorization(_token);
 
     _routingService = await gem.RoutingService.create(_mapController.mapId);
   }
@@ -68,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Create landmarks from coordinates and add them to the list
     for (final wp in waypoints) {
-      var landmark = await Landmark.create(_mapController.mapId);
+      var landmark = Landmark.create();
       await landmark.setCoordinates(
           Coordinates(latitude: wp.latitude, longitude: wp.longitude));
       landmarkWaypoints.push_back(landmark);

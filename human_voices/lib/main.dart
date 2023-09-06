@@ -56,6 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isNavigating = false;
   bool hasVolume = true;
 
+  final _token = 'YOUR_API_KEY';
+
   @override
   void initState() {
     super.initState();
@@ -69,10 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> onMapCreated(GemMapController controller) async {
     _mapController = controller;
-    SdkSettings.create(_mapController.mapId).then((value) {
-      _sdkSettings = value;
-      _sdkSettings.setAppAuthorization('YOUR_API_KEY_TOKEN');
-    });
+
+    SdkSettings.setAppAuthorization(_token);
 
     _routingService = await gem.RoutingService.create(_mapController.mapId);
     _navigationService = await NavigationService.create(controller.mapId);
@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Create landmarks from coordinates and add them to the list
     for (final wp in waypoints) {
-      var landmark = await Landmark.create(_mapController.mapId);
+      var landmark = Landmark.create();
       await landmark.setCoordinates(
           Coordinates(latitude: wp.latitude, longitude: wp.longitude));
       landmarkWaypoints.push_back(landmark);
@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       } else {
         // Get the controller's preferences
-        final mapViewPreferences = await _mapController.preferences();
+        final mapViewPreferences = _mapController.preferences();
         // Get the routes from the preferences
         final routesMap = await mapViewPreferences.routes();
         //Get the number of routes

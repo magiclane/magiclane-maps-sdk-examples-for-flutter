@@ -137,15 +137,12 @@ class SearchResultItem extends StatefulWidget {
 
 class _SearchResultItemState extends State<SearchResultItem> {
   late Future<Uint8List?> _landmarkIconFuture;
-  late Future<String> _nameFuture;
   late Future<ExtraInfo> _extraInfoFuture;
   late Future<String> _addressFuture;
 
   @override
   void initState() {
     _landmarkIconFuture = _decodeLandmarkIcon();
-    _nameFuture = widget.landmark.getName();
-    _extraInfoFuture = widget.landmark.getExtraInfo();
     _addressFuture = _getAddress();
 
     super.initState();
@@ -181,18 +178,12 @@ class _SearchResultItemState extends State<SearchResultItem> {
                     children: [
                       Container(
                         margin: const EdgeInsets.only(bottom: 5),
-                        child: FutureBuilder<String>(
-                          future: _nameFuture,
-                          builder: (context, snapshot) {
-                            final name = snapshot.data ?? '';
-                            return Text(
-                              name,
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            );
-                          },
+                        child: Text(
+                          widget.landmark.getName(),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600),
                         ),
                       ),
                       Row(
@@ -201,28 +192,20 @@ class _SearchResultItemState extends State<SearchResultItem> {
                         children: [
                           Container(
                             margin: const EdgeInsets.only(right: 3),
-                            child: FutureBuilder<ExtraInfo>(
-                              future: _extraInfoFuture,
-                              builder: (context, snapshot) {
+                            child: Builder(
+                              builder: (context) {
                                 String formattedDistance = '';
 
-                                if (snapshot.hasData) {
-                                  final extraInfo = snapshot.data;
-                                  double distance = (extraInfo!.getByKey(
-                                          PredefinedExtraInfoKey
-                                              .gmSearchResultDistance) /
-                                      1000) as double;
-                                  formattedDistance =
-                                      "${distance.toStringAsFixed(0)}km";
-                                }
+                                final extraInfo =
+                                    widget.landmark.getExtraInfo();
+                                double distance = (extraInfo.getByKey(
+                                        PredefinedExtraInfoKey
+                                            .gmSearchResultDistance) /
+                                    1000) as double;
+                                formattedDistance =
+                                    "${distance.toStringAsFixed(0)}km";
 
-                                return Text(
-                                  formattedDistance,
-                                  style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800),
-                                );
+                                return Text(formattedDistance);
                               },
                             ),
                           ),

@@ -31,7 +31,7 @@ class MultiviewMapPage extends StatefulWidget {
 
 class _MultiviewMapPageState extends State<MultiviewMapPage> {
   int _mapViewsCount = 0;
-  final token = 'YOUR_API_KEY_TOKEN';
+  final _token = 'YOUR_API_KEY';
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +77,7 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
                   margin: const EdgeInsets.all(5),
                   child: GemMap(
                     onMapCreated: (controller) async {
-                      final settings =
-                          await SdkSettings.create(controller.mapId);
-                      await settings.setAppAuthorization(token);
+                      SdkSettings.setAppAuthorization(_token);
                     },
                   ));
             }));
