@@ -1,11 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:gem_kit/api/gem_coordinates.dart';
 import 'package:gem_kit/api/gem_mapviewpreferences.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
 import 'package:gem_kit/gem_kit_map_controller.dart';
+import 'package:gem_kit/gem_kit_platform_interface.dart';
 import 'package:gem_kit/widget/gem_kit_map.dart';
 
+import 'package:flutter/material.dart';
+
 void main() {
+  const token = "YOUR_API_TOKEN";
+  GemKitPlatform.instance.loadNative().then((value) {
+    SdkSettings.setAppAuthorization(token);
+  });
   runApp(const CenterCoordinatesApp());
 }
 
@@ -26,12 +32,15 @@ class CenterCoordinatesApp extends StatelessWidget {
   }
 }
 
-class CenterCoordinatesPage extends StatelessWidget {
-  CenterCoordinatesPage({super.key});
+class CenterCoordinatesPage extends StatefulWidget {
+  const CenterCoordinatesPage({super.key});
 
+  @override
+  State<CenterCoordinatesPage> createState() => _CenterCoordinatesPageState();
+}
+
+class _CenterCoordinatesPageState extends State<CenterCoordinatesPage> {
   late GemMapController _mapController;
-
-  final _token = 'YOUR_API_TOKEN';
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +68,6 @@ class CenterCoordinatesPage extends StatelessWidget {
   _onMapCreatedCallback(GemMapController controller) async {
     // Save controller for further usage
     _mapController = controller;
-
-    SdkSettings.setAppAuthorization(_token);
   }
 
   _onCenterCoordinatesButtonPressed() {

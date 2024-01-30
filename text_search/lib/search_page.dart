@@ -23,7 +23,6 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  late SearchService gemSearchService;
   SearchPreferences preferences =
       SearchPreferences(maxmatches: 40, allowfuzzyresults: true);
 
@@ -31,10 +30,6 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void initState() {
-    SearchService.create(widget.controller.mapId).then((value) {
-      gemSearchService = value;
-    });
-
     super.initState();
   }
 
@@ -45,6 +40,7 @@ class _SearchPageState extends State<SearchPage> {
         automaticallyImplyLeading: true,
         title: const Text("Search Text"),
         backgroundColor: Colors.deepPurple[900],
+        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [
@@ -96,18 +92,15 @@ class _SearchPageState extends State<SearchPage> {
 // Calling the search method from the sdk.
 // (err, results) - is a callback function that calls when the computing is done.
 // err is an error code, results is a list of landmarks
-    gemSearchService.search(text, coordinates, (err, results) async {
+    SearchService.search(text, coordinates, (err, results) async {
       // If there is an error or there aren't any results, the method will return an empty list.
       if (err != GemError.success || results == null) {
         completer.complete([]);
         return;
       }
-      final size = await results.size();
       List<Landmark> searchResults = [];
 
-      for (int i = 0; i < size; i++) {
-        final gemLmk = await results.at(i);
-
+      for (final gemLmk in results) {
         searchResults.add(gemLmk);
       }
 
@@ -137,7 +130,6 @@ class SearchResultItem extends StatefulWidget {
 
 class _SearchResultItemState extends State<SearchResultItem> {
   late Future<Uint8List?> _landmarkIconFuture;
-  late Future<ExtraInfo> _extraInfoFuture;
   late Future<String> _addressFuture;
 
   @override
@@ -260,16 +252,16 @@ class _SearchResultItemState extends State<SearchResultItem> {
   }
 
   Future<Uint8List?> _decodeLandmarkIcon() async {
-    final data = await widget.landmark.getImage(100, 100);
+    final data = widget.landmark.getImage(100, 100);
 
     return decodeImageData(data);
   }
 
   Future<String> _getAddress() async {
-    final addressInfo = await widget.landmark.getAddress();
-    final street = await addressInfo.getField(EAddressField.StreetName);
-    final city = await addressInfo.getField(EAddressField.City);
-    final country = await addressInfo.getField(EAddressField.Country);
+    final addressInfo = widget.landmark.getAddress();
+    final street = addressInfo.getField(EAddressField.StreetName);
+    final city = addressInfo.getField(EAddressField.City);
+    final country = addressInfo.getField(EAddressField.Country);
 
     return '$street $city $country';
   }

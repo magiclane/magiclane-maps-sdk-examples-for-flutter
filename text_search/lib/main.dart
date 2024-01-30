@@ -1,15 +1,24 @@
-import 'package:flutter/material.dart';
+import 'search_page.dart';
+
 import 'package:gem_kit/api/gem_landmark.dart';
 import 'package:gem_kit/api/gem_landmarkstoreservice.dart';
 import 'package:gem_kit/api/gem_mapviewrendersettings.dart';
-import 'package:gem_kit/api/gem_routingservice.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
 import 'package:gem_kit/api/gem_types.dart';
 import 'package:gem_kit/gem_kit_map_controller.dart';
+import 'package:gem_kit/gem_kit_platform_interface.dart';
 import 'package:gem_kit/widget/gem_kit_map.dart';
-import '../search_page.dart';
 
-void main() {
+import 'package:flutter/material.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  const token = "YOUR_API_TOKEN";
+  GemKitPlatform.instance.loadNative().then((value) {
+    SdkSettings.setAppAuthorization(token);
+  });
+
   runApp(const MyApp());
 }
 
@@ -35,9 +44,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
-  late LandmarkStoreService _landmarkStoreService;
-
-  final _token = 'YOUR_API_KEY';
 
   @override
   void initState() {
@@ -46,9 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> onMapCreated(GemMapController controller) async {
     _mapController = controller;
-    SdkSettings.setAppAuthorization(_token);
-
-    _landmarkStoreService = await LandmarkStoreService.create(controller.mapId);
   }
 
 // Custom method for navigating to search screen
@@ -67,32 +70,31 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     ));
 
-    var historyStore =
-        await _landmarkStoreService.getLandmarkStoreByName("History");
+    var historyStore = LandmarkStoreService.getLandmarkStoreByName("History");
 
     if (historyStore == null) {
-      historyStore = await _landmarkStoreService.createLandmarkStore("History");
+      historyStore = LandmarkStoreService.createLandmarkStore("History");
 
-      await historyStore.addLandmark(result);
+      historyStore.addLandmark(result);
     }
 
 // Creating a list of landmarks to highlight.
-    LandmarkList landmarkList = await LandmarkList.create(_mapController.mapId);
+    LandmarkList landmarkList = LandmarkList.create();
 
     if (result is! Landmark) {
       return;
     }
 
 // Adding the result to the landmark list.
-    await landmarkList.push_back(result);
+    landmarkList.push_back(result);
     final coords = result.getCoordinates();
 
 // Activating the highlight
-    await _mapController.activateHighlight(landmarkList,
+    _mapController.activateHighlight(landmarkList,
         renderSettings: RenderSettings());
 
 // Centering the map on the desired coordinates
-    await _mapController.centerOnCoordinates(coords);
+    _mapController.centerOnCoordinates(coords);
   }
 
   @override
@@ -106,6 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple[900],
+        foregroundColor: Colors.white,
         onPressed: () => _onPressed(context),
         child: const Icon(Icons.search),
       ),

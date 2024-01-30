@@ -23,20 +23,20 @@ class InstructionModel {
 
   static Future<InstructionModel> fromGemInstruction(
       NavigationInstruction ins) async {
-    final timeDistance = await ins.getTimeDistanceToNextTurn();
+    final timeDistance = ins.getTimeDistanceToNextTurn();
     final rawDistance =
         timeDistance.restrictedDistanceM + timeDistance.unrestrictedDistanceM;
 
     final formattedDistance = convertDistance(rawDistance);
 
-    final currentStreetName = await ins.getCurrentStreetName();
-    final nextStreetname = await ins.getNextStreetName();
+    final currentStreetName = ins.getCurrentStreetName();
+    final nextStreetname = ins.getNextStreetName();
 
-    final nextTurnDetails = await ins.getNextTurnDetails();
-    final imageData = await nextTurnDetails.getAbstractGeometryImage(100, 100);
+    final nextTurnDetails = ins.getNextTurnDetails();
+    final imageData = nextTurnDetails.getAbstractGeometryImage(100, 100);
     final decodedImage = await decodeImageData(imageData);
 
-    final remainingTimeDistance = await ins.getRemainingTravelTimeDistance();
+    final remainingTimeDistance = ins.getRemainingTravelTimeDistance();
     final rawRemainingTime = remainingTimeDistance.restrictedTimeS +
         remainingTimeDistance.unrestrictedTimeS;
     final rawRemainingDist = remainingTimeDistance.restrictedDistanceM +

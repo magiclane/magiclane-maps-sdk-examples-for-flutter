@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - gem_kit (0.1.0):
+  - gem_kit (1.8.0):
     - Flutter
   - permission_handler_apple (9.1.1):
     - Flutter
@@ -20,9 +20,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  gem_kit: 9aaa8ccecf0752f1267cab34986b0ada799910a7
+  gem_kit: 2ca78aa2bcf5481620c5be5656ed5becdcd86ea5
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
 
-PODFILE CHECKSUM: 8c625b7f45145c755c29aa98f6ac8a5cfa4ab7b2
+PODFILE CHECKSUM: 176b5471b99dc31171d2eb9018ce88be808dc5fd
 
 COCOAPODS: 1.12.1

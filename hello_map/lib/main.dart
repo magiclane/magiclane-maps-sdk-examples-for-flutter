@@ -1,9 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
+import 'package:gem_kit/gem_kit_map_controller.dart';
+import 'package:gem_kit/gem_kit_platform_interface.dart';
+import 'package:gem_kit/widget/gem_kit_map.dart';
+
+import 'package:flutter/material.dart';
 
 void main() {
+  const token = "YOUR_API_TOKEN";
+  GemKitPlatform.instance.loadNative().then((value) {
+    SdkSettings.setAppAuthorization(token);
+  });
   runApp(const MyApp());
 }
 
@@ -31,8 +37,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController mapController;
 
-  final _token = 'YOUR_API_TOKEN';
-
   @override
   void initState() {
     super.initState();
@@ -40,8 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> onMapCreated(GemMapController controller) async {
     mapController = controller;
-
-    SdkSettings.setAppAuthorization(_token);
   }
 
   @override

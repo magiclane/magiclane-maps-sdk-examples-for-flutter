@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
-import 'package:gem_kit/api/gem_routingservice.dart';
 import 'package:gem_kit/api/gem_coordinates.dart';
 import 'package:gem_kit/api/gem_landmark.dart';
 
@@ -24,11 +23,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   // Utility method to convert a LandmarkList object to a Dart list of landmarks
   Future<List<Landmark>> _fromLandmarkListToListOfLandmarks() async {
-    var length = await widget.landmarkList.size();
     List<Landmark> landmarks = [];
 
-    for (int i = 0; i < length; i++) {
-      Landmark landmark = await widget.landmarkList.at(i);
+    for (final landmark in widget.landmarkList) {
       landmarks.add(landmark);
     }
     return landmarks.reversed.toList();
@@ -38,6 +35,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         automaticallyImplyLeading: true,
         title: const Text("Favorites list"),
         backgroundColor: Colors.deepPurple[900],
@@ -137,10 +135,9 @@ class _FavoritesItemState extends State<FavoritesItem> {
                             child: Text(
                               widget.landmark.getCategories().isNotEmpty
                                   ? widget.landmark
-                                          .getCategories()
-                                          .elementAt(0)
-                                          .name ??
-                                      ' '
+                                      .getCategories()
+                                      .elementAt(0)
+                                      .getName()
                                   : ' ',
                               style: const TextStyle(
                                   color: Colors.black,

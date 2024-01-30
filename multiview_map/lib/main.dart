@@ -1,8 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
+import 'package:gem_kit/gem_kit_map_controller.dart';
+import 'package:gem_kit/gem_kit_platform_interface.dart';
 import 'package:gem_kit/widget/gem_kit_map.dart';
 
+import 'package:flutter/material.dart';
+
 void main() {
+  const token = "YOUR_API_TOKEN";
+  GemKitPlatform.instance.loadNative().then((value) {
+    SdkSettings.setAppAuthorization(token);
+  });
   runApp(const MultiviewMapApp());
 }
 
@@ -30,8 +37,12 @@ class MultiviewMapPage extends StatefulWidget {
 }
 
 class _MultiviewMapPageState extends State<MultiviewMapPage> {
+  late GemMapController mapController;
   int _mapViewsCount = 0;
-  final _token = 'YOUR_API_KEY';
+
+  Future<void> onMapCreated(GemMapController controller) async {
+    mapController = controller;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +54,15 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
           actions: [
             IconButton(
                 onPressed: _onAddViewButtonPressed,
-                icon: const Icon(
+                icon: Icon(
                   Icons.add,
-                  color: Colors.white,
+                  color: (_mapViewsCount < 4) ? Colors.white : Colors.grey,
                 )),
             IconButton(
                 onPressed: _onRemoveViewButtonPressed,
-                icon: const Icon(
+                icon: Icon(
                   Icons.remove,
-                  color: Colors.white,
+                  color: (_mapViewsCount != 0) ? Colors.white : Colors.grey,
                 ))
           ],
         ),
@@ -76,9 +87,7 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
                       ]),
                   margin: const EdgeInsets.all(5),
                   child: GemMap(
-                    onMapCreated: (controller) async {
-                      SdkSettings.setAppAuthorization(_token);
-                    },
+                    onMapCreated: (controller) => onMapCreated(controller),
                   ));
             }));
   }

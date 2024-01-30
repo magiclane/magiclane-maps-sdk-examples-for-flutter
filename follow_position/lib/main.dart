@@ -1,14 +1,21 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:gem_kit/api/gem_mapviewpreferences.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
 import 'package:gem_kit/gem_kit_map_controller.dart';
+import 'package:gem_kit/gem_kit_platform_interface.dart';
 import 'package:gem_kit/gem_kit_position.dart';
 import 'package:gem_kit/widget/gem_kit_map.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
 void main() {
+  const token = "YOUR_API_TOKEN";
+  GemKitPlatform.instance.loadNative().then((value) {
+    SdkSettings.setAppAuthorization(token);
+  });
   runApp(const FollowPositionApp());
 }
 
@@ -42,8 +49,6 @@ class _FollowPositionPageState extends State<FollowPositionPage> {
   late PositionService _positionService;
   late bool _hasLiveDataSource = false;
 
-  final _token = 'YOUR_API_TOKEN';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,8 +78,6 @@ class _FollowPositionPageState extends State<FollowPositionPage> {
 
     // Create the position service
     _positionService = await PositionService.create(controller.mapId);
-
-    SdkSettings.setAppAuthorization(_token);
   }
 
   _onFollowPositionButtonPressed() async {

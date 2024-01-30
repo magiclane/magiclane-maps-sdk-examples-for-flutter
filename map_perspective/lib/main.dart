@@ -1,11 +1,17 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:gem_kit/api/gem_mapviewpreferences.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
 import 'package:gem_kit/gem_kit_map_controller.dart';
+import 'package:gem_kit/gem_kit_platform_interface.dart';
 import 'package:gem_kit/widget/gem_kit_map.dart';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
 void main() {
+  const token = "YOUR_API_TOKEN";
+  GemKitPlatform.instance.loadNative().then((value) {
+    SdkSettings.setAppAuthorization(token);
+  });
   runApp(const PerspectiveMapApp());
 }
 
@@ -33,8 +39,6 @@ class PerspectiveMapPage extends StatefulWidget {
 }
 
 class _PerspectiveMapPageState extends State<PerspectiveMapPage> {
-  late GemMapController _mapController;
-
   // Map preferences are used to change map perspective
   late MapViewPreferences _mapPreferences;
 
@@ -45,8 +49,6 @@ class _PerspectiveMapPageState extends State<PerspectiveMapPage> {
 
   // Tilt angle for orthogonal/vertical view
   final double _2dViewAngle = 90;
-
-  final _token = 'YOUR_API_KEY';
 
   @override
   Widget build(BuildContext context) {
@@ -74,12 +76,7 @@ class _PerspectiveMapPageState extends State<PerspectiveMapPage> {
 
   // The callback for when map is ready to use
   _onMapCreatedCallback(GemMapController controller) async {
-    // Save controller for further usage
-    _mapController = controller;
-
-    _mapPreferences = await controller.preferences();
-
-    SdkSettings.setAppAuthorization(_token);
+    _mapPreferences = controller.preferences();
   }
 
   _onChangePersectiveButtonPressed() async {

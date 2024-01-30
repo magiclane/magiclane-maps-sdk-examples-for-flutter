@@ -1,22 +1,28 @@
-import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
+import 'favorites_page.dart';
+import 'landmark_panel.dart';
+import 'utility.dart';
 
 import 'package:gem_kit/api/gem_coordinates.dart';
 import 'package:gem_kit/api/gem_landmark.dart';
 import 'package:gem_kit/api/gem_landmarkstore.dart';
 import 'package:gem_kit/api/gem_landmarkstoreservice.dart';
 import 'package:gem_kit/api/gem_mapviewrendersettings.dart';
-import 'package:gem_kit/api/gem_routingservice.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
 import 'package:gem_kit/gem_kit_map_controller.dart';
+import 'package:gem_kit/gem_kit_platform_interface.dart';
 import 'package:gem_kit/widget/gem_kit_map.dart';
 
-import 'favorites_page.dart';
-import 'landmark_panel.dart';
-import 'utility.dart';
+import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  const token = "YOUR_API_TOKEN";
+  GemKitPlatform.instance.loadNative().then((value) {
+    SdkSettings.setAppAuthorization(token);
+  });
+
   runApp(const MyApp());
 }
 
@@ -60,20 +66,12 @@ class _MyHomePageState extends State<MyHomePage> {
   // GemMapController object used to interact with the map
   late GemMapController _mapController;
 
-  // SdkSettings object to initialize the SDK
-  late SdkSettings _sdkSettings;
-
-  // LandmarkStoreServiceObject to get or create the LandmarkStore
-  late LandmarkStoreService _landmarkStoreService;
-
   // LandmarkStore object to save Landmarks
   late LandmarkStore? _favoritesStore;
 
   late bool _isLandmarkFavorite;
 
   final favoritesStoreName = 'Favorites';
-
-  final _token = 'YOUR_API_KEY';
 
   @override
   void initState() {
@@ -85,18 +83,15 @@ class _MyHomePageState extends State<MyHomePage> {
     _focusedLandmark = null;
     _isLandmarkFavorite = false;
 
-    SdkSettings.setAppAuthorization(_token);
-
     // Instantiate the LandmarkStoreService.
-    _landmarkStoreService = await LandmarkStoreService.create(controller.mapId);
 
     // Retrieves the LandmarkStore with the given name.
     _favoritesStore =
-        await _landmarkStoreService.getLandmarkStoreByName(favoritesStoreName);
+        LandmarkStoreService.getLandmarkStoreByName(favoritesStoreName);
 
     // If there is no LandmarkStore with this name, then create it.
     _favoritesStore ??=
-        await _landmarkStoreService.createLandmarkStore(favoritesStoreName);
+        LandmarkStoreService.createLandmarkStore(favoritesStoreName);
 
     // Listen for map landmark selection events.
     _registerLandmarkTapCallback();
@@ -106,6 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         backgroundColor: Colors.deepPurple[900],
         title: const Text('Favourites'),
         actions: [
@@ -155,22 +151,22 @@ class _MyHomePageState extends State<MyHomePage> {
     late List<LandmarkCategory> categoriesFuture;
 
     iconFuture = await _decodeLandmarkIcon(_focusedLandmark!);
-    nameFuture = await _focusedLandmark!.getName();
-    coordsFuture = await _focusedLandmark!.getCoordinates();
+    nameFuture = _focusedLandmark!.getName();
+    coordsFuture = _focusedLandmark!.getCoordinates();
     coordsFutureText =
         "${coordsFuture.latitude.toString()}, ${coordsFuture.longitude.toString()}";
-    categoriesFuture = await _focusedLandmark!.getCategories();
+    categoriesFuture = _focusedLandmark!.getCategories().toList();
 
     return PanelInfo(
         image: iconFuture,
         name: nameFuture,
         categoryName:
-            categoriesFuture.isNotEmpty ? categoriesFuture.first.name! : '',
+            categoriesFuture.isNotEmpty ? categoriesFuture.first.getName() : '',
         formattedCoords: coordsFutureText);
   }
 
   Future<Uint8List?> _decodeLandmarkIcon(Landmark landmark) async {
-    final data = await landmark.getImage(100, 100);
+    final data = landmark.getImage(100, 100);
 
     return decodeImageData(data);
   }
@@ -183,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // Get the selected landmarks.
       final landmarks = await _mapController.cursorSelectionLandmarks();
 
-      final landmarksSize = await landmarks.size();
+      final landmarksSize = landmarks.size();
 
       // Check if there is a selected Landmark.
       if (landmarksSize == 0) return;
@@ -191,19 +187,19 @@ class _MyHomePageState extends State<MyHomePage> {
       // Highlight the landmark on the map.
       _mapController.activateHighlight(landmarks);
 
-      final lmk = await landmarks.at(0);
+      final lmk = landmarks.at(0);
       setState(() {
         _focusedLandmark = lmk;
       });
 
-      await _checkIfFavourite();
+      _checkIfFavourite();
     });
   }
 
   // Method to navigate to the Favourites Page.
   _onFavouritesButtonPressed(BuildContext context) async {
     // Fetch landmarks from the store
-    final favoritesList = await _favoritesStore!.getLandmarks();
+    final favoritesList = _favoritesStore!.getLandmarks();
 
     // Navigating to favorites screen then the result will be the selected item in the list.
     final result = await Navigator.of(context).push(MaterialPageRoute(
@@ -211,27 +207,27 @@ class _MyHomePageState extends State<MyHomePage> {
     ));
 
     // Create a list of landmarks to highlight.
-    LandmarkList landmarkList = await LandmarkList.create(_mapController.mapId);
+    LandmarkList landmarkList = LandmarkList.create();
 
     if (result is! Landmark) {
       return;
     }
 
     // Add the result to the landmark list.
-    await landmarkList.push_back(result);
-    final coords = await result.getCoordinates();
+    landmarkList.push_back(result);
+    final coords = result.getCoordinates();
 
     // Highlight the landmark on the map.
-    await _mapController.activateHighlight(landmarkList,
+    _mapController.activateHighlight(landmarkList,
         renderSettings: RenderSettings());
 
     // Centering the camera on landmark's coordinates
-    await _mapController.centerOnCoordinates(coords);
+    _mapController.centerOnCoordinates(coords);
 
     setState(() {
       _focusedLandmark = result;
     });
-    await _checkIfFavourite();
+    _checkIfFavourite();
   }
 
   void onCancelTap() {
@@ -244,15 +240,15 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void onFavoritesTap() async {
-    await _checkIfFavourite();
+  void onFavoritesTap() {
+    _checkIfFavourite();
 
     if (_isLandmarkFavorite) {
       // Remove the landmark to the store.
-      await _favoritesStore!.removeLandmark(_focusedLandmark!);
+      _favoritesStore!.removeLandmark(_focusedLandmark!);
     } else {
       // Add the landmark to the store.
-      await _favoritesStore!.addLandmark(_focusedLandmark!);
+      _favoritesStore!.addLandmark(_focusedLandmark!);
     }
 
     setState(() {
@@ -261,14 +257,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Utility method to check if the highlighted landmark is favourite
-  _checkIfFavourite() async {
-    final focusedLandmarkCoords = await _focusedLandmark!.getCoordinates();
-    final favourites = await _favoritesStore!.getLandmarks();
-    final favoritesSize = await favourites.size();
+  _checkIfFavourite() {
+    final focusedLandmarkCoords = _focusedLandmark!.getCoordinates();
+    final favourites = _favoritesStore!.getLandmarks();
+    final favoritesSize = favourites.size();
 
     for (int i = 0; i < favoritesSize; i++) {
-      final lmk = await favourites.at(i);
-      final coords = await lmk.getCoordinates();
+      final lmk = favourites.at(i);
+      late Coordinates coords;
+      coords = lmk.getCoordinates();
 
       if (focusedLandmarkCoords.latitude == coords.latitude &&
           focusedLandmarkCoords.longitude == coords.longitude) {
