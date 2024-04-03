@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:gem_kit/api/gem_navigationservice.dart';
+import 'package:gem_kit/api/gem_progresslistener.dart';
 import 'package:gem_kit/api/gem_searchservice.dart';
 import 'package:gem_kit/api/gem_coordinates.dart';
 import 'package:gem_kit/api/gem_landmark.dart';
@@ -48,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isSimulationActive = false;
   bool _haveRoutes = false;
+  ProgressListener? routeListener;
 
   Future<void> onMapCreated(GemMapController controller) async {
     _mapController = controller;
@@ -66,15 +68,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     for (final wp in waypoints) {
       var landmark = Landmark.create();
-      landmark.setCoordinates(
-          Coordinates(latitude: wp.latitude, longitude: wp.longitude));
+      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
       landmarkWaypoints.push_back(landmark);
     }
 
     final routePreferences = RoutePreferences();
 
-    gem.RoutingService.calculateRouteffi(landmarkWaypoints, routePreferences,
-        (err, routes) async {
+    routeListener = gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) async {
       if (err != GemError.success || routes == null) {
         return;
       } else {
@@ -87,15 +87,11 @@ class _MyHomePageState extends State<MyHomePage> {
         for (final route in routes) {
           final timeDistance = route.getTimeDistance();
 
-          final totalDistance = convertDistance(
-              timeDistance.unrestrictedDistanceM +
-                  timeDistance.restrictedDistanceM);
+          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
 
-          final totalTime = convertDuration(
-              timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
+          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
           // Add labels to the routes
-          await routesMap.add(route, firstRoute,
-              label: '$totalDistance \n $totalTime');
+          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
           firstRoute = false;
         }
         // Select the first route as the main one
@@ -116,8 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final routes = _mapController.preferences().routes();
     final mainRoute = routes.getMainRoute();
-    NavigationService.startSimulation(
-        mainRoute, speedMultiplier: 5, (eventType, instruction) {});
+    NavigationService.startSimulation(mainRoute, speedMultiplier: 2, (eventType, instruction) {});
 
     _mapController.startFollowingPosition();
 
@@ -128,6 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Stop simulated navigation
   void _stopPlayback() {
+    if (routeListener != null) {
+      RoutingService.cancelRoute(routeListener!);
+    }
     if (_isSimulationActive) {
       NavigationService.cancelNavigation();
     }
@@ -170,8 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.deepPurple[900],
         leading: IconButton(
           onPressed: _searchAlongRoute,
-          icon: Icon(Icons.search,
-              color: !_haveRoutes ? Colors.grey : Colors.white),
+          icon: Icon(Icons.search, color: !_haveRoutes ? Colors.grey : Colors.white),
         ),
         actions: [
           IconButton(
@@ -186,8 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           IconButton(
             onPressed: _stopPlayback,
-            icon: Icon(Icons.stop,
-                size: 40, color: _haveRoutes ? Colors.red : Colors.grey),
+            icon: Icon(Icons.stop, size: 40, color: _haveRoutes ? Colors.red : Colors.grey),
           ),
           IconButton(
             onPressed: _computeRoute,

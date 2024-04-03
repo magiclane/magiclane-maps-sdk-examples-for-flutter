@@ -47,8 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> onMapCreated(GemMapController controller) async {
-    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(
-        EServiceGroupType.ContentService, true);
+    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(EServiceGroupType.ContentService, true);
   }
 
   @override

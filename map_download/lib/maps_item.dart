@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:typed_data';
+import "dart:ui" as ui;
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/api/gem_contentstoreitem.dart';
 import 'package:gem_kit/api/gem_mapdetails.dart';
 import 'package:gem_kit/api/gem_types.dart';
 import 'package:gem_kit/gem_kit_basic.dart';
-import 'package:map_download/utility.dart';
 
 class MapsItem extends StatefulWidget {
   final bool isLast;
@@ -19,15 +18,39 @@ class MapsItem extends StatefulWidget {
 }
 
 class _MapsItemState extends State<MapsItem> {
-  late Future<Uint8List?> _mapIconFuture;
+  late Future<ui.Image?> _mapIconFuture;
   double downloadProgress = 0;
   late bool isDownloaded;
 
   @override
   void initState() {
+    super.initState();
     isDownloaded = widget.map.isCompleted();
     _mapIconFuture = _getMapImage(widget.map);
-    super.initState();
+    downloadProgress = widget.map.getDownloadProgress().toDouble();
+
+    //If the map is downloading pause and start downloading again
+    //so the progress indicator updates value from callback
+    if (_isDownloadingOrWaiting()) {
+      final errCode = widget.map.pauseDownload();
+      if (errCode != GemError.success) {
+        print("Download pause for item ${widget.map.getId()} failed with code ${errCode}");
+        return;
+      }
+
+      Future.delayed(const Duration(milliseconds: 500)).then((value) => _downloadMap());
+    }
+  }
+
+  bool _isDownloadingOrWaiting() {
+    final status = widget.map.getStatus();
+    return [
+      EContentStoreItemStatus.CIS_DownloadQueued,
+      EContentStoreItemStatus.CIS_DownloadRunning,
+      EContentStoreItemStatus.CIS_DownloadWaiting,
+      EContentStoreItemStatus.CIS_DownloadWaitingFreeNetwork,
+      EContentStoreItemStatus.CIS_DownloadWaitingNetwork,
+    ].contains(status);
   }
 
   @override
@@ -39,17 +62,16 @@ class _MapsItemState extends State<MapsItem> {
           children: [
             Row(
               children: [
-                FutureBuilder<Uint8List?>(
+                FutureBuilder<ui.Image?>(
                   future: _mapIconFuture,
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState != ConnectionState.done ||
-                        snapshot.data == null) {
+                    if (snapshot.connectionState != ConnectionState.done || snapshot.data == null) {
                       return Container();
                     }
                     return Container(
                       padding: const EdgeInsets.all(8),
                       width: 50,
-                      child: Image.memory(snapshot.data!),
+                      child: RawImage(image: snapshot.data!),
                     );
                   },
                 ),
@@ -63,10 +85,7 @@ class _MapsItemState extends State<MapsItem> {
                         margin: const EdgeInsets.only(bottom: 5),
                         child: Text(
                           widget.map.getName(),
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600),
+                          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                       ),
                       Container(
@@ -108,30 +127,41 @@ class _MapsItemState extends State<MapsItem> {
   }
 
   // Method that returns the image of a map
-  Future<Uint8List> _getMapImage(ContentStoreItem map) async {
+  Future<ui.Image?> _getMapImage(ContentStoreItem map) async {
     final countryCodes = map.getCountryCodes();
-    final rawCountryImage =
-        MapDetails.getCountryFlag(countryCodes[0], XyType<int>(x: 100, y: 100));
-    return await decodeImageData(rawCountryImage) ?? Uint8List(0);
+    final rawCountryImage = await MapDetails.getCountryFlag(countryCodes[0], XyType<int>(x: 100, y: 100));
+    return rawCountryImage;
   }
 
-  // Method that downloads the current map
+// Method that downloads the current map
   Future<void> _downloadMap() async {
     if (isDownloaded == true) return;
     await widget.map.asyncDownload((err) {
       if (err != GemError.success) {
-        // An error was encountered during download
+        print("Error ${err}} while downloading map ${widget.map.mapId}");
         return;
       }
-      setState(() {
-        isDownloaded = true;
-      });
+
+      _onCompleted();
+
       // Download was succesful
     }, onProgressCallback: (progress) {
       // Gets called everytime download progresses with a value between [0, 100]
+      print("onProgressCallback ${progress}");
+      //TODO: Remove when onCompleteCallback fixed in SDK
+      if (progress == 100) _onCompleted();
+      if (!mounted) return;
       setState(() {
         downloadProgress = progress.toDouble();
       });
     }, allowChargedNetworks: true);
+  }
+
+  void _onCompleted() {
+    //Should not setState when widget is destroyed
+    if (!mounted) return;
+    setState(() {
+      isDownloaded = true;
+    });
   }
 }

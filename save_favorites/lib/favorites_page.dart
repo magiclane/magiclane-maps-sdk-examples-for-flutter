@@ -3,9 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import 'package:gem_kit/api/gem_coordinates.dart';
+import 'package:gem_kit/api/gem_images.dart';
 import 'package:gem_kit/api/gem_landmark.dart';
-
-import 'utility.dart';
 
 class FavoritesPage extends StatefulWidget {
   final LandmarkList landmarkList;
@@ -67,22 +66,17 @@ class FavoritesItem extends StatefulWidget {
   final Landmark landmark;
   final VoidCallback? onTap;
 
-  const FavoritesItem(
-      {super.key, this.isLast = false, required this.landmark, this.onTap});
+  const FavoritesItem({super.key, this.isLast = false, required this.landmark, this.onTap});
 
   @override
   State<FavoritesItem> createState() => _FavoritesItemState();
 }
 
 class _FavoritesItemState extends State<FavoritesItem> {
-  late Future<Uint8List?> _landmarkIconFuture;
-
   late Future<Coordinates> _coordsFuture;
 
   @override
   void initState() {
-    _landmarkIconFuture = _decodeLandmarkIcon();
-
     _coordsFuture = _getCoordinates();
 
     super.initState();
@@ -97,19 +91,11 @@ class _FavoritesItemState extends State<FavoritesItem> {
           children: [
             Row(
               children: [
-                FutureBuilder<Uint8List?>(
-                    future: _landmarkIconFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState != ConnectionState.done ||
-                          snapshot.data == null) {
-                        return Container();
-                      }
-                      return Container(
-                        padding: const EdgeInsets.all(8),
-                        width: 50,
-                        child: Image.memory(snapshot.data!),
-                      );
-                    }),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  width: 50,
+                  child: Image.memory(_landmarkIcon()),
+                ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width - 140,
                   child: Column(
@@ -120,10 +106,7 @@ class _FavoritesItemState extends State<FavoritesItem> {
                         margin: const EdgeInsets.only(bottom: 5),
                         child: Text(
                           widget.landmark.getName(),
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600),
+                          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                       ),
                       Row(
@@ -134,15 +117,9 @@ class _FavoritesItemState extends State<FavoritesItem> {
                             margin: const EdgeInsets.only(right: 3),
                             child: Text(
                               widget.landmark.getCategories().isNotEmpty
-                                  ? widget.landmark
-                                      .getCategories()
-                                      .elementAt(0)
-                                      .getName()
+                                  ? widget.landmark.getCategories().elementAt(0).getName()
                                   : ' ',
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800),
+                              style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w800),
                             ),
                           ),
                           FutureBuilder<Coordinates>(
@@ -153,8 +130,7 @@ class _FavoritesItemState extends State<FavoritesItem> {
 
                               if (snapshot.hasData) {
                                 coords = snapshot.data!;
-                                textCoords =
-                                    "${coords.latitude}, ${coords.longitude}";
+                                textCoords = "${coords.latitude}, ${coords.longitude}";
                               }
 
                               return SizedBox(
@@ -162,10 +138,8 @@ class _FavoritesItemState extends State<FavoritesItem> {
                                 child: Text(
                                   textCoords,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400),
+                                  style:
+                                      const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
                                 ),
                               );
                             },
@@ -198,9 +172,8 @@ class _FavoritesItemState extends State<FavoritesItem> {
     );
   }
 
-  Future<Uint8List?> _decodeLandmarkIcon() async {
-    final data = widget.landmark.getImage(100, 100);
-    return decodeImageData(data);
+  Uint8List _landmarkIcon() {
+    return widget.landmark.getImage(100, 100, EImageFileFormat.IFF_Png);
   }
 
   Future<Coordinates> _getCoordinates() async {

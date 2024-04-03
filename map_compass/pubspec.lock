@@ -94,7 +94,7 @@ packages:
       path: "plugins/gem_kit"
       relative: true
     source: path
-    version: "1.8.0"
+    version: "1.9.0"
   lints:
     dependency: transitive
     description:

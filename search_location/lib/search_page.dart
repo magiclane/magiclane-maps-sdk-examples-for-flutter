@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:gem_kit/api/gem_geographicarea.dart';
+import 'package:gem_kit/api/gem_images.dart';
 import 'package:gem_kit/api/gem_searchpreferences.dart';
 import 'package:gem_kit/gem_kit_basic.dart';
 import 'package:gem_kit/gem_kit_map_controller.dart';
@@ -17,16 +18,14 @@ import 'package:flutter/material.dart';
 class SearchPage extends StatefulWidget {
   final GemMapController controller;
   final Coordinates coordinates;
-  const SearchPage(
-      {super.key, required this.controller, required this.coordinates});
+  const SearchPage({super.key, required this.controller, required this.coordinates});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  SearchPreferences preferences =
-      SearchPreferences(maxmatches: 40, allowfuzzyresults: true);
+  SearchPreferences preferences = SearchPreferences(maxmatches: 40, allowfuzzyresults: true);
 
   List<Landmark> landmarks = [];
 
@@ -119,8 +118,7 @@ class _SearchPageState extends State<SearchPage> {
 
   // Search method. Coordinates parameters are mandatory, preferences and geographicArea are optional.
   Future<void> search(Coordinates coordinates,
-      {SearchPreferences? preferences,
-      RectangleGeographicArea? geographicArea}) async {
+      {SearchPreferences? preferences, RectangleGeographicArea? geographicArea}) async {
     completer = Completer<List<Landmark>>();
 
     // Calling the search method from the sdk.
@@ -155,20 +153,17 @@ class SearchResultItem extends StatefulWidget {
   final Landmark landmark;
   final VoidCallback? onTap;
 
-  const SearchResultItem(
-      {super.key, this.isLast = false, required this.landmark, this.onTap});
+  const SearchResultItem({super.key, this.isLast = false, required this.landmark, this.onTap});
 
   @override
   State<SearchResultItem> createState() => _SearchResultItemState();
 }
 
 class _SearchResultItemState extends State<SearchResultItem> {
-  late Future<Uint8List?> _landmarkIconFuture;
   late Future<String> _addressFuture;
 
   @override
   void initState() {
-    _landmarkIconFuture = _decodeLandmarkIcon();
     _addressFuture = _getAddress();
 
     super.initState();
@@ -183,19 +178,11 @@ class _SearchResultItemState extends State<SearchResultItem> {
           children: [
             Row(
               children: [
-                FutureBuilder<Uint8List?>(
-                    future: _landmarkIconFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState != ConnectionState.done ||
-                          snapshot.data == null) {
-                        return Container();
-                      }
-                      return Container(
-                        padding: const EdgeInsets.all(8),
-                        width: 50,
-                        child: Image.memory(snapshot.data!),
-                      );
-                    }),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  width: 50,
+                  child: Image.memory(landmarkIcon()),
+                ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width - 140,
                   child: Column(
@@ -206,10 +193,7 @@ class _SearchResultItemState extends State<SearchResultItem> {
                         margin: const EdgeInsets.only(bottom: 5),
                         child: Text(
                           widget.landmark.getName(),
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600),
+                          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                       ),
                       Row(
@@ -222,14 +206,10 @@ class _SearchResultItemState extends State<SearchResultItem> {
                               builder: (context) {
                                 String formattedDistance = '';
 
-                                final extraInfo =
-                                    widget.landmark.getExtraInfo();
-                                double distance = (extraInfo.getByKey(
-                                        PredefinedExtraInfoKey
-                                            .gmSearchResultDistance) /
+                                final extraInfo = widget.landmark.getExtraInfo();
+                                double distance = (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) /
                                     1000) as double;
-                                formattedDistance =
-                                    "${distance.toStringAsFixed(0)}km";
+                                formattedDistance = "${distance.toStringAsFixed(0)}km";
 
                                 return Text(formattedDistance);
                               },
@@ -249,10 +229,8 @@ class _SearchResultItemState extends State<SearchResultItem> {
                                 child: Text(
                                   address,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400),
+                                  style:
+                                      const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
                                 ),
                               );
                             },
@@ -285,10 +263,8 @@ class _SearchResultItemState extends State<SearchResultItem> {
     );
   }
 
-  Future<Uint8List?> _decodeLandmarkIcon() async {
-    final data = widget.landmark.getImage(100, 100);
-
-    return decodeImageData(data);
+  Uint8List landmarkIcon() {
+    return widget.landmark.getImage(100, 100, EImageFileFormat.IFF_Png);
   }
 
   Future<String> _getAddress() async {
@@ -306,8 +282,7 @@ class _SearchResultItemState extends State<SearchResultItem> {
     int width = 100;
     int height = 100;
 
-    ui.decodeImageFromPixels(data, width, height, ui.PixelFormat.rgba8888,
-        (ui.Image img) async {
+    ui.decodeImageFromPixels(data, width, height, ui.PixelFormat.rgba8888, (ui.Image img) async {
       final data = await img.toByteData(format: ui.ImageByteFormat.png);
       if (data == null) {
         c.complete(null);

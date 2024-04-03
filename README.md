@@ -1,6 +1,6 @@
 # Magic Lane - Maps SDK for Flutter demo applications
 
-Copyright (C) 2019-2023, Magic Lane B.V.  
+Copyright (C) 2019-2024, Magic Lane B.V.  
 All rights reserved.  
 Contact: info@magiclane.com
 
@@ -8,6 +8,7 @@ This repository holds a series of example projects using the **Magic Lane - Maps
 
 This set of individual, use-case based projects is designed to be cloned by developers for their own use.
 
+* [Address Search](address_search) - Showcase address search functionality.
 * [Calculate Route](calculate_route) - Calculate & display route.
 * [Center Coordinates](center_coordinates) - Show how to center the map on coordinates.
 * [Follow Position](follow_position) - Show how to set live datasource & `startFollowingPosition`.
@@ -18,6 +19,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Map Download](map_download) - Show list of maps. Show how to download maps.
 * [Map Perspective](map_perspective) - Show how to change map perspective, tilt angle.
 * [Map Styles](map_styles) - Show list of styles. Show how to download and apply styles.
+* [Map Update](map_update) - Show list of maps. Show how to download maps.
 * [Multi-map routing](multi_map_routing) - Display a map. Show how to create multiple views.
 * [Multimap View](multiview_map) - Show how to create multiple views.
 * [Navigate Route](navigate_route) - Calculate & display route. Navigate route.

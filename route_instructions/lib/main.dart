@@ -50,7 +50,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
-  late ProgressListener result;
+  ProgressListener? routeListener;
   bool haveRoutes = false;
 
   Future<List<RouteInstructionModel>>? instructions;
@@ -84,8 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 haveRoutes = false;
               });
             },
-            icon: Icon(Icons.cancel,
-                color: (haveRoutes == true) ? Colors.white : Colors.grey),
+            icon: Icon(Icons.cancel, color: (haveRoutes == true) ? Colors.white : Colors.grey),
           ),
           IconButton(
             onPressed: () {
@@ -96,8 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               }
             },
-            icon: Icon(Icons.route,
-                color: (haveRoutes == false) ? Colors.white : Colors.grey),
+            icon: Icon(Icons.route, color: (haveRoutes == false) ? Colors.white : Colors.grey),
           ),
         ],
         leading: Row(
@@ -135,6 +133,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _onRouteCancelButtonPressed() async {
+    if (routeListener != null) {
+      gem.RoutingService.cancelRoute(routeListener!);
+    }
     _removeRoutes(shownRoutes);
     instructions = clearInstructionsFuture();
   }
@@ -144,9 +145,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _onRouteInstructionsButtonPressed() {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) =>
-            RouteInstructionsPage(instructionList: instructions!)));
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => RouteInstructionsPage(instructionList: instructions!)));
   }
 
   _computeRoute(List<Coordinates> waypoints, BuildContext context) {
@@ -156,15 +156,13 @@ class _MyHomePageState extends State<MyHomePage> {
     //Create landmarks from coordinates and add them to the list
     for (final wp in waypoints) {
       var landmark = Landmark.create();
-      landmark.setCoordinates(
-          Coordinates(latitude: wp.latitude, longitude: wp.longitude));
+      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
       landmarkWaypoints.push_back(landmark);
     }
 
     final routePreferences = RoutePreferences();
 
-    result = gem.RoutingService.calculateRouteffi(
-        landmarkWaypoints, routePreferences, (err, routes) async {
+    routeListener = gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) async {
       if (err != GemError.success || routes == null) {
         return;
       } else {
@@ -179,15 +177,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
           final timeDistance = route.getTimeDistance();
 
-          final totalDistance = convertDistance(
-              timeDistance.unrestrictedDistanceM +
-                  timeDistance.restrictedDistanceM);
+          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
 
-          final totalTime = convertDuration(
-              timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
+          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
           //Add labels to the routes
-          await routesMap.add(route, firstRoute,
-              label: '$totalDistance \n $totalTime');
+          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
           firstRoute = false;
         }
         // Select the first route as the main one
@@ -202,8 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<List<RouteInstructionModel>> _getInstructionsFromSegments(
-      RouteSegmentList segments) async {
+  Future<List<RouteInstructionModel>> _getInstructionsFromSegments(RouteSegmentList segments) async {
     List<Future<RouteInstructionModel>> instructionFutures = [];
 
     //Parse all segments and gather all instructions
@@ -212,13 +205,11 @@ class _MyHomePageState extends State<MyHomePage> {
       final instructionsList = segment.getInstructions();
 
       for (final instruction in instructionsList) {
-        final instr =
-            RouteInstructionModel.fromGemRouteInstruction(instruction);
+        final instr = RouteInstructionModel.fromGemRouteInstruction(instruction);
         instructionFutures.add(instr);
       }
     }
-    List<RouteInstructionModel> instructions =
-        await Future.wait(instructionFutures);
+    List<RouteInstructionModel> instructions = await Future.wait(instructionFutures);
     return instructions;
   }
 

@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - gem_kit (1.8.0):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - gem_kit (from `.symlinks/plugins/gem_kit/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  gem_kit:
+    :path: ".symlinks/plugins/gem_kit/ios"
+
+SPEC CHECKSUMS:
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  gem_kit: 2ca78aa2bcf5481620c5be5656ed5becdcd86ea5
+
+PODFILE CHECKSUM: 9c46fd01abff66081b39f5fa5767b3f1d0b11d76
+
+COCOAPODS: 1.12.1

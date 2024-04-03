@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:gem_kit/api/gem_routingservice.dart';
 import 'package:route_instructions/utility.dart';
@@ -11,7 +11,7 @@ class RouteInstructionModel {
 
   final String instruction;
 
-  Uint8List? imageData;
+  Image? imageData;
 
   RouteInstructionModel(
       {required this.distanceUntilInstruction,
@@ -19,19 +19,15 @@ class RouteInstructionModel {
       required this.instruction,
       required this.imageData});
 
-  static Future<RouteInstructionModel> fromGemRouteInstruction(
-      RouteInstruction ins) async {
-    final nextTurnDetails = await ins.getTurnDetails();
-    final imageData = nextTurnDetails.getAbstractGeometryImage(100, 100);
-    final decodedImage =
-        await decodeImageData(data: imageData, width: 100, height: 100);
+  static Future<RouteInstructionModel> fromGemRouteInstruction(RouteInstruction ins) async {
+    final nextTurnDetails = ins.getTurnDetails();
+    final imageData = await nextTurnDetails.getAbstractGeometryImage(100, 100);
 
-    final timeDistance = await ins.getTraveledTimeDistance();
-    final rawDistance =
-        timeDistance.restrictedDistanceM + timeDistance.unrestrictedDistanceM;
+    final timeDistance = ins.getTraveledTimeDistance();
+    final rawDistance = timeDistance.restrictedDistanceM + timeDistance.unrestrictedDistanceM;
     final formattedDistance = convertDistance(rawDistance);
 
-    final followingRoadInstruction = await ins.getFollowRoadInstruction();
+    final followingRoadInstruction = ins.getFollowRoadInstruction();
 
     final instruction = ins.getTurnInstruction();
 
@@ -39,6 +35,6 @@ class RouteInstructionModel {
         distanceUntilInstruction: formattedDistance,
         followingRoadinstruction: followingRoadInstruction,
         instruction: instruction,
-        imageData: decodedImage);
+        imageData: imageData);
   }
 }

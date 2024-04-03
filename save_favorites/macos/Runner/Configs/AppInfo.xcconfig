@@ -11,4 +11,4 @@ PRODUCT_NAME = save_favorites
 PRODUCT_BUNDLE_IDENTIFIER = com.magiclane.gem_kit.examples.save_favorites
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2017-2023 General Magic B.V. <info@magiclane.com>
+PRODUCT_COPYRIGHT = Copyright © 2019-2024 Magic Lane B.V. <info@magiclane.com>

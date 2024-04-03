@@ -55,8 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> onMapCreated(GemMapController controller) async {
     _mapController = controller;
-    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(
-        EServiceGroupType.ContentService, true);
+    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(EServiceGroupType.ContentService, true);
     await getStyles();
   }
 
@@ -81,8 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           IconButton(
-              onPressed: () => _onMapButtonTap(context),
-              icon: const Icon(Icons.map_outlined, color: Colors.white))
+              onPressed: () => _onMapButtonTap(context), icon: const Icon(Icons.map_outlined, color: Colors.white))
         ],
       ),
       body: Center(
@@ -96,8 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Method to load the styles
   Future<void> getStyles() async {
-    await ContentStore.asyncGetStoreContentList(EContentType.CT_ViewStyleLowRes,
-        (err, items, isCached) {
+    await ContentStore.asyncGetStoreContentList(EContentType.CT_ViewStyleLowRes, (err, items, isCached) {
       if (err != GemError.success || items == null) {
         return;
       }
@@ -154,9 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    final indexOfNextStyle = (indexOfCurrentStyle >= stylesList.length - 1)
-        ? 0
-        : indexOfCurrentStyle + 1;
+    final indexOfNextStyle = (indexOfCurrentStyle >= stylesList.length - 1) ? 0 : indexOfCurrentStyle + 1;
     ContentStoreItem currentStyle = stylesList[indexOfNextStyle];
 
     if (currentStyle.isCompleted() == false) {
@@ -167,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
     indexOfCurrentStyle = indexOfNextStyle;
 
     final String filename = currentStyle.getFileName();
-    await _mapController.preferences().setMapStyleByPath(filename);
+    _mapController.preferences().setMapStyleByPath(filename);
     setState(() {});
   }
 }

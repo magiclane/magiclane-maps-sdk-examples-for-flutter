@@ -63,12 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    waypoints.add(Coordinates(
-        latitude: 48.87586140402999, longitude: 2.3031139990581493));
-    waypoints.add(Coordinates(
-        latitude: 48.87422484785287, longitude: 2.2995244508179242));
-    waypoints.add(Coordinates(
-        latitude: 48.873618858675435, longitude: 2.2951312439853533));
+    waypoints.add(Coordinates(latitude: 48.87586140402999, longitude: 2.3031139990581493));
+    waypoints.add(Coordinates(latitude: 48.87422484785287, longitude: 2.2995244508179242));
+    waypoints.add(Coordinates(latitude: 48.873618858675435, longitude: 2.2951312439853533));
   }
 
   Future<void> onMapCreated(GemMapController controller) async {
@@ -86,15 +83,15 @@ class _MyHomePageState extends State<MyHomePage> {
     // Create landmarks from coordinates and add them to the list
     for (final wp in waypoints) {
       var landmark = Landmark.create();
-      landmark.setCoordinates(
-          Coordinates(latitude: wp.latitude, longitude: wp.longitude));
+      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
       landmarkWaypoints.push_back(landmark);
     }
 
     final routePreferences = RoutePreferences();
+    _showSnackBar(context);
 
-    var result = gem.RoutingService.calculateRouteffi(
-        landmarkWaypoints, routePreferences, (err, routes) async {
+    var result = gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) {
+      ScaffoldMessenger.of(context).clearSnackBars();
       if (err != GemError.success || routes == null) {
         return;
       } else {
@@ -109,15 +106,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
           final timeDistance = route.getTimeDistance();
 
-          final totalDistance = convertDistance(
-              timeDistance.unrestrictedDistanceM +
-                  timeDistance.restrictedDistanceM);
+          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
 
-          final totalTime = convertDuration(
-              timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
+          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
           // Add labels to the routes
-          await routesMap.add(route, firstRoute,
-              label: '$totalDistance \n $totalTime');
+          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
           firstRoute = false;
         }
         // Select the first route as the main one
@@ -134,28 +127,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 // Method for creating the simulation
-  _navigateOnRoute(
-      {required gem.Route route,
-      required Function(InstructionModel) onInstructionUpdated}) {
+  _navigateOnRoute({required gem.Route route, required Function(InstructionModel) onInstructionUpdated}) {
     NavigationService.startSimulation(route, (type, instruction) async {
-      if (type == NavigationEventType.destinationReached &&
-          instruction == null) {
+      if (type == NavigationEventType.destinationReached || type == NavigationEventType.error) {
         setState(() {
           isNavigating = false;
           _removeRoutes(shownRoutes);
         });
         return;
       }
+      if (instruction == null) {
+        return;
+      }
 
       isNavigating = true;
 
-      final ins = await InstructionModel.fromGemInstruction(instruction!);
+      final ins = await InstructionModel.fromGemInstruction(instruction);
       onInstructionUpdated(ins);
 
       instruction.dispose();
     }, onTextToSpeechInstruction: (textToSpeech) {
       _ttsEngine.speakText(textToSpeech);
-    });
+    }, speedMultiplier: 20);
   }
 
 // Method for starting the simulation and following the position
@@ -168,8 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
 
     _mapController.startFollowingPosition(
-        animation: gem.GemAnimation(
-            duration: 200, type: gem.EAnimation.AnimationLinear));
+        animation: gem.GemAnimation(duration: 200, type: gem.EAnimation.AnimationLinear));
   }
 
 // Method for removing the routes from display
@@ -193,18 +185,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 // Method to mute / unmute the voice instructions
+  // ignore: unused_element
   _setVolume() {
     double volume = hasVolume ? 0.0 : 1.0;
     _ttsEngine.setVolume(volume);
     hasVolume = !hasVolume;
   }
 
+  // Method to show message in case calculate route is not finished
+  void _showSnackBar(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text("The route is calculating."),
+      duration: Duration(hours: 1),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text("Human voices", style: TextStyle(color: Colors.white)),
+        title: const Text("Human voices", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           GestureDetector(
@@ -224,8 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 isNavigating = false;
               });
             },
-            child: Icon(Icons.stop,
-                size: 40, color: haveRoutes ? Colors.red : Colors.grey),
+            child: Icon(Icons.stop, size: 40, color: haveRoutes ? Colors.red : Colors.grey),
           ),
           GestureDetector(
             onTap: () => haveRoutes ? null : _onPressed(waypoints, context),
@@ -243,29 +244,50 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         if (isNavigating)
           Positioned(
-            top: 20,
+            top: 40,
             left: 10,
-            child: NavigationInstructionPanel(
-              instruction: currentInstruction,
-            ),
-          ),
-        if (isNavigating)
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.3,
-            right: 10,
-            child: FloatingActionButton.small(
-              onPressed: () => _setVolume(),
-              backgroundColor: Colors.white,
-              child: hasVolume
-                  ? const Icon(
-                      CupertinoIcons.volume_up,
-                      color: Colors.black,
-                    )
-                  : const Icon(
-                      CupertinoIcons.volume_mute,
-                      color: Colors.black,
+            child: Column(children: [
+              NavigationInstructionPanel(
+                instruction: currentInstruction,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () => _mapController.startFollowingPosition(),
+                child: InkWell(
+                  child: Container(
+                    height: 50,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                     ),
-            ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(
+                          Icons.navigation,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const Text(
+                          'Recenter',
+                          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ]),
           ),
         if (isNavigating)
           Positioned(
@@ -275,48 +297,6 @@ class _MyHomePageState extends State<MyHomePage> {
               remainingDistance: currentInstruction.remainingDistance,
               eta: currentInstruction.eta,
               remainingDuration: currentInstruction.remainingDuration,
-            ),
-          ),
-        if (isNavigating)
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.30,
-            left: MediaQuery.of(context).size.width / 2 - 65,
-            child: GestureDetector(
-              onTap: () => _mapController.startFollowingPosition(),
-              child: InkWell(
-                child: Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        Icons.navigation,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const Text(
-                        'Recenter',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600),
-                      )
-                    ],
-                  ),
-                ),
-              ),
             ),
           ),
       ]),

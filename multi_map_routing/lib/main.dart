@@ -63,8 +63,7 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Multi Map Routing',
-            style: TextStyle(color: Colors.white)),
+        title: const Text('Multi Map Routing', style: TextStyle(color: Colors.white)),
         leading: IconButton(
             onPressed: removeRoutes,
             icon: const Icon(
@@ -125,15 +124,13 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
     // Create landmarks from coordinates and add them to the list
     for (final wp in _waypoints1) {
       var landmark = Landmark.create();
-      landmark.setCoordinates(
-          Coordinates(latitude: wp.latitude, longitude: wp.longitude));
+      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
       landmarkWaypoints.push_back(landmark);
     }
 
     final routePreferences = RoutePreferences();
 
-    gem.RoutingService.calculateRouteffi(landmarkWaypoints, routePreferences,
-        (err, routes) async {
+    gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) async {
       if (err != GemError.success || routes == null) {
         return;
       } else {
@@ -149,15 +146,11 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
 
           final timeDistance = route.getTimeDistance();
 
-          final totalDistance = convertDistance(
-              timeDistance.unrestrictedDistanceM +
-                  timeDistance.restrictedDistanceM);
+          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
 
-          final totalTime = convertDuration(
-              timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
+          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
           // Add labels to the routes
-          await routesMap.add(route, firstRoute,
-              label: '$totalDistance \n $totalTime');
+          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
           firstRoute = false;
         }
         // Select the first route as the main one
@@ -174,15 +167,13 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
     // Create landmarks from coordinates and add them to the list
     for (final wp in _waypoints2) {
       var landmark = Landmark.create();
-      landmark.setCoordinates(
-          Coordinates(latitude: wp.latitude, longitude: wp.longitude));
+      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
       landmarkWaypoints.push_back(landmark);
     }
 
     final routePreferences = RoutePreferences();
 
-    gem.RoutingService.calculateRouteffi(landmarkWaypoints, routePreferences,
-        (err, routes) async {
+    gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) async {
       if (err != GemError.success || routes == null) {
         return;
       } else {
@@ -198,15 +189,11 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
 
           final timeDistance = route.getTimeDistance();
 
-          final totalDistance = convertDistance(
-              timeDistance.unrestrictedDistanceM +
-                  timeDistance.restrictedDistanceM);
+          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
 
-          final totalTime = convertDuration(
-              timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
+          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
           // Add labels to the routes
-          await routesMap.add(route, firstRoute,
-              label: '$totalDistance \n $totalTime');
+          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
           firstRoute = false;
         }
         // Select the first route as the main one

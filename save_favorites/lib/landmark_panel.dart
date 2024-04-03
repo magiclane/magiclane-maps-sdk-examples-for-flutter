@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 class LandmarkPanel extends StatelessWidget {
@@ -26,8 +27,7 @@ class LandmarkPanel extends StatelessWidget {
       width: MediaQuery.of(context).size.width - 20,
       height: MediaQuery.of(context).size.height * 0.2,
       padding: const EdgeInsets.symmetric(horizontal: 5),
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
       child: Row(
         children: [
           Container(
@@ -36,7 +36,6 @@ class LandmarkPanel extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Image.memory(
               img,
-              gaplessPlayback: true,
             ),
           ),
           Row(
@@ -53,20 +52,14 @@ class LandmarkPanel extends StatelessWidget {
                       children: [
                         Text(
                           name,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600),
+                          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(
                           height: 5,
                         ),
                         Text(
                           category,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800),
+                          style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(
                           height: 5,
@@ -74,10 +67,7 @@ class LandmarkPanel extends StatelessWidget {
                         Text(
                           coords,
                           overflow: TextOverflow.visible,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400),
+                          style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
                         ),
                       ],
                     ),
@@ -105,9 +95,7 @@ class LandmarkPanel extends StatelessWidget {
                       padding: EdgeInsets.zero,
                       onPressed: onFavoritesTap,
                       icon: Icon(
-                        isFavoriteLandmark
-                            ? Icons.favorite
-                            : Icons.favorite_outline,
+                        isFavoriteLandmark ? Icons.favorite : Icons.favorite_outline,
                         color: Colors.red,
                         size: 50,
                       ),

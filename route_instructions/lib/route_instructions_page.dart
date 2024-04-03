@@ -22,8 +22,7 @@ class _RouteInstructionsState extends State<RouteInstructionsPage> {
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: true,
-          title: const Text("Route Instructions",
-              style: TextStyle(color: Colors.white)),
+          title: const Text("Route Instructions", style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.deepPurple[900],
           foregroundColor: Colors.white,
         ),
@@ -48,8 +47,7 @@ class _RouteInstructionsState extends State<RouteInstructionsPage> {
 class InstructionsItem extends StatefulWidget {
   final bool isLast;
   final RouteInstructionModel instruction;
-  const InstructionsItem(
-      {super.key, this.isLast = false, required this.instruction});
+  const InstructionsItem({super.key, this.isLast = false, required this.instruction});
 
   @override
   State<InstructionsItem> createState() => _InstructionsItemState();
@@ -73,7 +71,7 @@ class _InstructionsItemState extends State<InstructionsItem> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   width: 50,
-                  child: Image.memory(widget.instruction.imageData!),
+                  child: RawImage(image: widget.instruction.imageData!),
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width - 140,
@@ -86,10 +84,7 @@ class _InstructionsItemState extends State<InstructionsItem> {
                         child: Text(
                           widget.instruction.instruction,
                           overflow: TextOverflow.fade,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400),
+                          style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
                           maxLines: 2,
                         ),
                       ),
@@ -98,10 +93,7 @@ class _InstructionsItemState extends State<InstructionsItem> {
                         child: Text(
                           widget.instruction.followingRoadinstruction,
                           overflow: TextOverflow.fade,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400),
+                          style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
                           maxLines: 2,
                         ),
                       ),
@@ -111,10 +103,7 @@ class _InstructionsItemState extends State<InstructionsItem> {
                 Text(
                   widget.instruction.distanceUntilInstruction,
                   overflow: TextOverflow.fade,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400),
+                  style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
                 )
               ],
             ),

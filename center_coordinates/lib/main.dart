@@ -27,7 +27,7 @@ class CenterCoordinatesApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: CenterCoordinatesPage(),
+      home: const CenterCoordinatesPage(),
     );
   }
 }
@@ -47,8 +47,7 @@ class _CenterCoordinatesPageState extends State<CenterCoordinatesPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Center Coordinates',
-            style: TextStyle(color: Colors.white)),
+        title: const Text('Center Coordinates', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
               onPressed: _onCenterCoordinatesButtonPressed,
@@ -72,8 +71,7 @@ class _CenterCoordinatesPageState extends State<CenterCoordinatesPage> {
 
   _onCenterCoordinatesButtonPressed() {
     // Predefined coordinates for Rome, Italy
-    final targetCoordinates =
-        Coordinates(latitude: 41.902782, longitude: 12.496366);
+    final targetCoordinates = Coordinates(latitude: 41.902782, longitude: 12.496366);
 
     // Create an animation (optional)
     final animation = GemAnimation(type: EAnimation.AnimationLinear);

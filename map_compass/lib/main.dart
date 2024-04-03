@@ -1,13 +1,11 @@
-import 'utility.dart';
-
+import 'package:flutter/material.dart';
 import 'package:gem_kit/api/cui_imageids.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
 import 'package:gem_kit/gem_kit_map_controller.dart';
 import 'package:gem_kit/gem_kit_platform_interface.dart';
 import 'package:gem_kit/widget/gem_kit_map.dart';
 
-import 'package:flutter/material.dart';
-import 'dart:typed_data';
+import "dart:ui" as ui;
 
 void main() {
   const token = 'YOUR_API_TOKEN';
@@ -41,8 +39,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController mapController;
 
-  Image? compassImage;
-  late Uint8List? compassBytes;
+  ui.Image? compassImage;
   double compassAngle = 0;
 
   @override
@@ -63,12 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   compassImageIcon() async {
-    compassBytes = await decodeImageData(
-        SdkSettings.getImageById(
-            Engine_Misc.CompassEnable_SensorOFF.id, 100, 100),
-        width: 100,
-        height: 100);
-    compassImage = Image.memory(compassBytes!);
+    compassImage = await SdkSettings.getImageById(Engine_Misc.CompassEnable_SensorOFF.id, 100, 100);
   }
 
   @override
@@ -103,7 +95,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.white,
                         ),
                         child: SizedBox(
-                            width: 40, height: 40, child: compassImage)),
+                            width: 40,
+                            height: 40,
+                            child: RawImage(
+                              image: compassImage,
+                            ))),
                   ),
                 ),
               ),

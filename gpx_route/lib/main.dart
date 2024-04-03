@@ -79,8 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           IconButton(
             onPressed: _stopPlayback,
-            icon: Icon(Icons.stop,
-                size: 40, color: haveRoutes ? Colors.red : Colors.grey),
+            icon: Icon(Icons.stop, size: 40, color: haveRoutes ? Colors.red : Colors.grey),
           ),
           IconButton(
             onPressed: _importGPX,
@@ -137,10 +136,10 @@ class _MyHomePageState extends State<MyHomePage> {
     print("GPX Landmarklist size: ${lmkList.size()}");
 
     //Compute routes containing all GPX points
-    gem.RoutingService.calculateRouteffi(
+    gem.RoutingService.calculateRoute(
       lmkList,
       RoutePreferences(transportmode: ERouteTransportMode.RTM_Bicycle),
-      (err, result) async {
+      (err, result) {
         if (err != GemError.success || result == null) {
           return;
         }
@@ -150,8 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
         bool firstRoute = true;
 
         for (final route in result) {
-          await _addRouteToMap(
-              route: route, mapRoutes: mapRoutes, isMainRoute: firstRoute);
+          _addRouteToMap(route: route, mapRoutes: mapRoutes, isMainRoute: firstRoute);
           firstRoute = false;
         }
 
@@ -173,8 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final routes = _mapController.preferences().routes();
     final mainRoute = routes.getMainRoute();
-    NavigationService.startSimulation(mainRoute, (eventType, instruction) {},
-        speedMultiplier: 10);
+    NavigationService.startSimulation(mainRoute, (eventType, instruction) {}, speedMultiplier: 2);
 
     _mapController.startFollowingPosition();
 
@@ -203,22 +200,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Show route on map with label containing estimated time & distance
-  Future<void> _addRouteToMap(
-      {required gem.Route route,
-      required gem.MapViewRoutesCollection mapRoutes,
-      required bool isMainRoute}) async {
+  void _addRouteToMap(
+      {required gem.Route route, required gem.MapViewRoutesCollection mapRoutes, required bool isMainRoute}) {
     final timeDistance = route.getTimeDistance();
 
-    final totalDistance =
-        timeDistance.restrictedDistanceM + timeDistance.unrestrictedDistanceM;
-    final totalTime =
-        timeDistance.restrictedTimeS + timeDistance.unrestrictedTimeS;
+    final totalDistance = timeDistance.restrictedDistanceM + timeDistance.unrestrictedDistanceM;
+    final totalTime = timeDistance.restrictedTimeS + timeDistance.unrestrictedTimeS;
 
     final formattedDistance = convertDistance(totalDistance);
     final formattedTime = convertDuration(totalTime);
 
-    await mapRoutes.add(route, isMainRoute,
-        label: '$formattedTime \n $formattedDistance');
+    mapRoutes.add(route, isMainRoute, label: '$formattedTime \n $formattedDistance');
   }
 }
 

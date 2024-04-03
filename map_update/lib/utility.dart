@@ -6,6 +6,7 @@ import 'dart:ui';
 Future<Uint8List?> decodeImageData(Uint8List data) async {
   Completer<Uint8List?> c = Completer<Uint8List?>();
 
+// Image size
   int width = 100;
   int height = 100;
 

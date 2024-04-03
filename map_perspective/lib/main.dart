@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:gem_kit/api/gem_mapviewpreferences.dart';
 import 'package:gem_kit/api/gem_sdksettings.dart';
 import 'package:gem_kit/gem_kit_map_controller.dart';
@@ -55,15 +57,12 @@ class _PerspectiveMapPageState extends State<PerspectiveMapPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Perspective Map',
-            style: TextStyle(color: Colors.white)),
+        title: const Text('Perspective Map', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
               onPressed: _onChangePersectiveButtonPressed,
               icon: Icon(
-                _isInPerspectiveView
-                    ? CupertinoIcons.view_2d
-                    : CupertinoIcons.view_3d,
+                _isInPerspectiveView ? CupertinoIcons.view_2d : CupertinoIcons.view_3d,
                 color: Colors.white,
               ))
         ],

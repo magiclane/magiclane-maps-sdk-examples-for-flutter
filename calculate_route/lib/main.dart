@@ -48,10 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    waypoints.add(
-        Coordinates(latitude: 48.85682120481962, longitude: 2.343751354197309));
-    waypoints.add(Coordinates(
-        latitude: 50.846442672966944, longitude: 4.345870353765759));
+    waypoints.add(Coordinates(latitude: 48.85682120481962, longitude: 2.343751354197309));
+    waypoints.add(Coordinates(latitude: 50.846442672966944, longitude: 4.345870353765759));
   }
 
   void onMapCreated(GemMapController controller) {
@@ -59,22 +57,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 // Custom method for calling calculate route and creating
-  _onPressed(List<Coordinates> waypoints, BuildContext context) async {
+  _onPressed(List<Coordinates> waypoints, BuildContext context) {
     // Create a landmark list
     final landmarkWaypoints = LandmarkList.create();
 
     // Create landmarks from coordinates and add them to the list
     for (final wp in waypoints) {
       var landmark = Landmark.create();
-      landmark.setCoordinates(
-          Coordinates(latitude: wp.latitude, longitude: wp.longitude));
+      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
       landmarkWaypoints.push_back(landmark);
     }
 
     final routePreferences = RoutePreferences();
 
-    var result = gem.RoutingService.calculateRouteffi(
-        landmarkWaypoints, routePreferences, (err, routes) async {
+    var result = gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) {
       if (err != GemError.success || routes == null) {
         return;
       } else {
@@ -93,15 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
           final timeDistance = route.getTimeDistance();
 
-          final totalDistance = convertDistance(
-              timeDistance.unrestrictedDistanceM +
-                  timeDistance.restrictedDistanceM);
+          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
 
-          final totalTime = convertDuration(
-              timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
+          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
           // Add labels to the routes
-          await routesMap.add(route, firstRoute,
-              label: '$totalDistance \n $totalTime');
+          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
           firstRoute = false;
         }
         // Select the first route as the main one
@@ -116,10 +108,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return result;
   }
 
-  _removeRoutes(List<gem.Route> routes) async {
+  _removeRoutes(List<gem.Route> routes) {
     final prefs = _mapController.preferences();
-    await prefs.routes().clear();
+    prefs.routes().clear();
 
+    haveRoutes = false;
     setState(() {});
   }
 
