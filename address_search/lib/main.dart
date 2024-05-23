@@ -1,29 +1,32 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
 // ignore_for_file: avoid_print
+
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+import 'package:gem_kit/search.dart';
+
+import 'package:flutter/material.dart' hide Animation;
 
 import 'dart:async';
 
-import 'package:gem_kit/api/gem_coordinates.dart';
-import 'package:gem_kit/api/gem_guidedaddresssearch.dart';
-import 'package:gem_kit/api/gem_landmark.dart';
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/d3Scene.dart';
-import 'package:gem_kit/gem_kit_basic.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-
-import 'package:flutter/material.dart';
-
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -45,98 +48,112 @@ class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  // The callback for when map is ready to use
-  _onMapCreatedCallback(GemMapController controller) async {
-    // Save controller for further usage
-    _mapController = controller;
-  }
-
-  _onPressed(BuildContext context) async {
-    // Predefined landmark for Spain
-    Landmark countryLandmark = GuidedAddressSearchService.getCountryLevelItem('ESP');
-    print('country: ${countryLandmark.getName()}');
-
-    // Use the address search to get a landmark for a city in Spain (e.g., Barcelona)
-    Landmark? cityLandmark = await _searchAddress(countryLandmark, EAddressDetailLevel.AD_City, 'Barcelona');
-    if (cityLandmark == null) return;
-    print('city: ${cityLandmark.getName()}');
-
-    // Use the address search to get a predefined street's landmark in the city (e.g., Carrer de Mallorca)
-    Landmark? streetLandmark = await _searchAddress(cityLandmark, EAddressDetailLevel.AD_Street, 'Carrer de Mallorca');
-    if (streetLandmark == null) return;
-    print('street: ${streetLandmark.getName()}');
-
-    // Use the address search to get a predefined house number's landmark on the street (e.g., House Number 401)
-    Landmark? houseNumberLandmark = await _searchAddress(streetLandmark, EAddressDetailLevel.AD_HouseNumber, '401');
-    if (houseNumberLandmark == null) return;
-
-    print('house: ${houseNumberLandmark.getName()}');
-
-    // Centering the map on the final result
-    _centerOnCoordinates(houseNumberLandmark.getCoordinates());
+  void dispose() {
+    GemKit.release();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      floatingActionButton: FloatingActionButton(
+      appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        foregroundColor: Colors.white,
-        onPressed: () => _onPressed(context),
-        child: const Icon(Icons.search),
+        title: const Text('Address Search', style: TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+              onPressed: () =>
+                  _onSearchButtonPressed(context).then((value) => ScaffoldMessenger.of(context).clearSnackBars()),
+              icon: const Icon(
+                Icons.search,
+                color: Colors.white,
+              ))
+        ],
       ),
-      resizeToAvoidBottomInset: false,
-      body: Center(
-        child: Stack(
-          children: [
-            GemMap(
-              onMapCreated: _onMapCreatedCallback,
-            ),
-          ],
-        ),
+      body: GemMap(
+        onMapCreated: _onMapCreated,
       ),
     );
   }
 
-  _centerOnCoordinates(Coordinates coordinates) {
-    // Create an animation (optional)
-    final animation = GemAnimation(type: EAnimation.AnimationLinear);
-
-    // Use the map controller to center on coordinates
-    _mapController.centerOnCoordinates(coordinates, animation: animation);
+  // The callback for when map is ready to use
+  void _onMapCreated(GemMapController controller) {
+    // Save controller for further usage
+    _mapController = controller;
   }
 
-  // Address search method
-  Future<Landmark?> _searchAddress(Landmark landmark, EAddressDetailLevel detailLevel, String text) async {
-    Completer<List<Landmark>> completer = Completer<List<Landmark>>();
+  Future<void> _onSearchButtonPressed(BuildContext context) async {
+    _showSnackBar(context);
 
-    // Calling the address search method from the sdk.
-    // (err, results) - is a callback function that calls when the computing is done.
-    // err is an error code, results is a list of landmarks
-    GuidedAddressSearchService.search(text, landmark, detailLevel, (err, results) async {
-      // If there is an error or there aren't any results, the method will return an empty list.
-      if ((err != GemError.success && err != GemError.reducedResult) || results == null) {
-        completer.complete([]);
+    // Predefined landmark for Spain.
+    final countryLandmark = GuidedAddressSearchService.getCountryLevelItem('ESP');
+    print('Country: ${countryLandmark.name}');
+
+    // Use the address search to get a landmark for a city in Spain (e.g., Barcelona).
+    final cityLandmark =
+        await _searchAddress(landmark: countryLandmark, detailLevel: AddressDetailLevel.city, text: 'Barcelona');
+    if (cityLandmark == null) return;
+    print('City: ${cityLandmark.name}');
+
+    // Use the address search to get a predefined street's landmark in the city (e.g., Carrer de Mallorca).
+    final streetLandmark = await _searchAddress(
+        landmark: cityLandmark, detailLevel: AddressDetailLevel.street, text: 'Carrer de Mallorca');
+    if (streetLandmark == null) return;
+    print('Street: ${streetLandmark.name}');
+
+    // Use the address search to get a predefined house number's landmark on the street (e.g., House Number 401).
+    final houseNumberLandmark =
+        await _searchAddress(landmark: streetLandmark, detailLevel: AddressDetailLevel.houseNumber, text: '401');
+    if (houseNumberLandmark == null) return;
+    print('House number: ${houseNumberLandmark.name}');
+
+    // Center the map on the final result.
+    _presentLandmark(houseNumberLandmark);
+  }
+
+  void _presentLandmark(Landmark landmark) {
+    // Highlight the landmark on the map.
+    _mapController.activateHighlight([landmark]);
+
+    // Create an animation (optional).
+    final animation = GemAnimation(type: Animation.linear);
+
+    // Use the map controller to center on coordinates.
+    _mapController.centerOnCoordinates(landmark.coordinates, animation: animation);
+  }
+
+  // Address search method.
+  Future<Landmark?> _searchAddress(
+      {required Landmark landmark, required AddressDetailLevel detailLevel, required String text}) async {
+    final completer = Completer<Landmark?>();
+
+    // Calling the address search SDK method.
+    // (err, results) - is a callback function that gets called when the search is finished.
+    // err is an error enum, results is a list of landmarks.
+    GuidedAddressSearchService.search(text, landmark, detailLevel, (err, results) {
+      // If there is an error, the method will return a null list.
+      if (err != GemError.success && err != GemError.reducedResult) {
+        completer.complete(null);
         return;
       }
-      List<Landmark> searchResults = [];
 
-      for (final gemLmk in results) {
-        searchResults.add(gemLmk);
+      if (results!.isEmpty) {
+        completer.complete(null);
+        return;
       }
 
-      if (!completer.isCompleted) completer.complete(searchResults);
+      completer.complete(results.first);
     });
 
-    final result = await completer.future;
-    if (result.isEmpty) {
-      print('$text not found');
-    }
-    return result.firstOrNull;
+    return completer.future;
+  }
+
+  // Show a snackbar indicating that the search is in progress.
+  void _showSnackBar(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text("Search is in progress."),
+      duration: Duration(hours: 1),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

@@ -1,9 +1,19 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+import 'package:gem_kit/routing.dart';
+
+import 'utility.dart';
+
 import 'package:flutter/material.dart';
 
-import 'package:route_instructions/instruction_model.dart';
-
 class RouteInstructionsPage extends StatefulWidget {
-  final Future<List<RouteInstructionModel>> instructionList;
+  final List<RouteInstruction> instructionList;
 
   const RouteInstructionsPage({super.key, required this.instructionList});
 
@@ -13,41 +23,33 @@ class RouteInstructionsPage extends StatefulWidget {
 
 class _RouteInstructionsState extends State<RouteInstructionsPage> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          title: const Text("Route Instructions", style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.deepPurple[900],
-          foregroundColor: Colors.white,
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: const Text("Route Instructions", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.deepPurple[900],
+        foregroundColor: Colors.white,
+      ),
+      body: ListView.separated(
+        padding: EdgeInsets.zero,
+        itemCount: widget.instructionList.length,
+        separatorBuilder: (context, index) => const Divider(
+          indent: 50,
+          height: 0,
         ),
-        body: FutureBuilder<List<RouteInstructionModel>>(
-            future: widget.instructionList,
-            builder: ((context, snapshot) {
-              if (!snapshot.hasData) {
-                return Container();
-              }
-              return ListView.builder(
-                  padding: EdgeInsets.zero,
-                  itemCount: snapshot.data!.length,
-                  controller: ScrollController(),
-                  itemBuilder: (contex, index) {
-                    final instruction = snapshot.data!.elementAt(index);
-                    return InstructionsItem(instruction: instruction);
-                  });
-            })));
+        itemBuilder: (contex, index) {
+          final instruction = widget.instructionList.elementAt(index);
+          return InstructionsItem(instruction: instruction);
+        },
+      ),
+    );
   }
 }
 
 class InstructionsItem extends StatefulWidget {
-  final bool isLast;
-  final RouteInstructionModel instruction;
-  const InstructionsItem({super.key, this.isLast = false, required this.instruction});
+  final RouteInstruction instruction;
+  const InstructionsItem({super.key, required this.instruction});
 
   @override
   State<InstructionsItem> createState() => _InstructionsItemState();
@@ -55,65 +57,29 @@ class InstructionsItem extends StatefulWidget {
 
 class _InstructionsItemState extends State<InstructionsItem> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: InkWell(
-        onTap: () {},
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  width: 50,
-                  child: RawImage(image: widget.instruction.imageData!),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width - 140,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 5),
-                        child: Text(
-                          widget.instruction.instruction,
-                          overflow: TextOverflow.fade,
-                          style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
-                          maxLines: 2,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 3),
-                        child: Text(
-                          widget.instruction.followingRoadinstruction,
-                          overflow: TextOverflow.fade,
-                          style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
-                          maxLines: 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  widget.instruction.distanceUntilInstruction,
-                  overflow: TextOverflow.fade,
-                  style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
-                )
-              ],
-            ),
-            const Divider(
-              color: Colors.grey,
-              indent: 10,
-              endIndent: 20,
-            )
-          ],
-        ),
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        width: 50,
+        child: Image.memory(widget.instruction.turnDetails.getAbstractGeometryImage(size: const Size(50, 50))),
+      ),
+      title: Text(
+        widget.instruction.turnInstruction,
+        overflow: TextOverflow.fade,
+        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        maxLines: 2,
+      ),
+      subtitle: Text(
+        widget.instruction.followRoadInstruction,
+        overflow: TextOverflow.fade,
+        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        maxLines: 2,
+      ),
+      trailing: Text(
+        widget.instruction.getFormattedDistanceUntilInstruction(),
+        overflow: TextOverflow.fade,
+        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
       ),
     );
   }

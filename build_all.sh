@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# vim:ts=4:sts=4:sw=4:et
 
 # Copyright (C) 2019-2024, Magic Lane B.V.
 # All rights reserved.
@@ -8,150 +9,210 @@
 # Information and shall use it only in accordance with the terms of the
 # license agreement you entered into with Magic Lane.
 
+declare -r PROGNAME=${0##*/}
+
 function msg() {
-    echo -e "[*] $@"
+    echo -e "\033[33;1m[*] $*\033[0m\n"
 }
 
 function error_msg() {
-    echo -e "[!] $@" >&2
+    echo -e "\033[31;1m[!] $*\033[0m\n" >&2
 }
 
 function is_mac() {
-	local OS_NAME=$(uname | tr "[:upper:]" "[:lower:]")
-	if [[ ${OS_NAME} =~ "darwin" ]]; then
-		return 0
-	fi
+    local OS_NAME
+    OS_NAME=$(uname | tr "[:upper:]" "[:lower:]")
+    if [[ ${OS_NAME} =~ "darwin" ]]; then
+        return 0
+    fi
 
-	return 1
+    return 1
 }
+
+SDK_TEMP_DIR=""
 
 function ctrl_c()
 {
     exit 1
 }
-trap 'ctrl_c' INT
-
-function on_err()
-{
-	error_msg "Error on line ${1}"
-	
-	exit 1
-}
-trap 'on_err ${LINENO}' ERR
+trap ctrl_c INT
 
 function on_exit()
 {
-	if [[ ! -z ${EXAMPLE_PROJECTS+x} ]]; then
-		for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
-			pushd "${EXAMPLE_PATH}" &>/dev/null || error_msg "pushd failed"
-			flutter clean || error_msg "flutter clean failed"
-			if [ -d "plugins/gem_kit" ]; then
-				rm -rf "plugins/gem_kit"
-			fi
-			find . -type d -name ".gradle" -exec rm -rf {} +
-			popd &>/dev/null || error_msg "popd failed"
-		done
-	fi
+    if [[ -n ${EXAMPLE_PROJECTS+x} ]]; then
+        for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
+            pushd "${EXAMPLE_PATH}" &>/dev/null || error_msg "pushd failed"
+            flutter clean || error_msg "flutter clean failed"
+            if [ -d "plugins/gem_kit" ]; then
+                rm -rf "plugins/gem_kit"
+            fi
+            find . -type d -name ".gradle" -exec rm -rf {} +
+            popd &>/dev/null || error_msg "popd failed"
+        done
+    fi
+
+    if [[ -n ${SDK_TEMP_DIR} ]]; then
+        rm -fr "${SDK_TEMP_DIR:?}"
+    fi
+
+    msg "Bye-Bye"
 }
 trap 'on_exit' EXIT
 
+if is_mac; then
+    if [ ! -f "$(brew --prefix)/opt/gnu-getopt/bin/getopt" ]; then
+        error_msg "This script requires 'brew install gnu-getopt && brew link --force gnu-getopt'"
+        exit 1
+    fi
 
-set -euox pipefail
+    PATH="$(brew --prefix)/opt/gnu-getopt/bin:${PATH}"
+fi
 
+set -eEuo pipefail
+
+SDK_ARCHIVE_PATH=""
 BUILD_ANDROID=1
 BUILD_IOS=1
 BUILD_WEB=1
-GEM_KIT_PATH=""
+FLUTTER_ANALYZE=1
 
 MY_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-if is_mac; then
-	if [ ! -f "$(brew --prefix)/opt/gnu-getopt/bin/getopt" ]; then
-    	error_msg "This script requires 'brew install gnu-getopt && brew link --force gnu-getopt'"
+function usage()
+{
+    echo -e "\033[32;1m
+Usage: ${PROGNAME} [options] 
 
-    	exit 1
-    fi
+Options:
+    [REQUIRED] --sdk-archive=<path>
+                    Set path to the Maps SDK for Flutter archive
 
-    PATH="$(brew --prefix)/opt/gnu-getopt/bin:$PATH"
-fi
+    [OPTIONAL] --android
+                    Build examples for Android
+    [OPTIONAL] --ios
+                    Build examples for iOS/OSX
+    [OPTIONAL] --web
+                    Build examples for Web
 
-OPTIONS="android,ios,web,gem_kit:"
-LONGOPTS="android,ios,web,gem_kit:"
+    [OPTIONAL] --analyze
+                    Analyze dart code for all examples
+\033[0m\n"
+}
 
-PARSED_OPTIONS=$(getopt -n "$0" -o "" -l "${OPTIONS},${LONGOPTS}" -- "$@")
-if [ $? -ne 0 ]; then
-	error_msg "Parsing options failed"
-    echo
+LONGOPTS_LIST=(
+    "sdk-archive:"
+    "android"
+    "ios"
+    "web"
+    "analyze"
+)
+
+if ! PARSED_OPTIONS=$(getopt \
+    -s bash \
+    --options "" \
+    --longoptions "$(printf "%s," "${LONGOPTS_LIST[@]}")" \
+    --name "${PROGNAME}" \
+    -- "$@"); then
+    usage
     exit 1
 fi
 
 eval set -- "${PARSED_OPTIONS}"
+unset PARSED_OPTIONS
 
 while true; do
-	case "${1}" in
-		--android)
-			BUILD_ANDROID=0
-			shift
-			;;
-		--ios)
-			BUILD_IOS=0
-			shift
-			;;
-		--web)
-			BUILD_WEB=0
-			shift
-			;;
-		--gem_kit)
-			GEM_KIT_PATH="${2}"
-			shift 2
-			;;
-		--)
-			shift
-			break
-			;;
-		*)
-			error_msg "Invalid option: ${1}"
-			echo
-			exit 1
-			;;
-	esac
+    case "${1}" in
+        --sdk-archive)
+            shift
+            SDK_ARCHIVE_PATH="${1}"
+            ;;
+        --android)
+            BUILD_ANDROID=0
+            ;;
+        --ios)
+            BUILD_IOS=0
+            ;;
+        --web)
+            BUILD_WEB=0
+            ;;
+        --analyze)
+            FLUTTER_ANALYZE=0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            error_msg "Internal error"
+            exit 1
+            ;;
+    esac
+    shift
 done
 
-if [ ! -d "${GEM_KIT_PATH}" ]; then
-	error_msg "You must provide local path to gem_kit package"
-    echo
+msg "Checking prerequisites..."
+
+if [ ${BUILD_IOS} -eq 0 ]; then
+    if ! is_mac; then
+        error_msg "Examples can be built for iOS/OSX only under OSX"
+        exit 1
+    fi
+fi
+
+if [[ ! -f "${SDK_ARCHIVE_PATH}" ]]; then
+    error_msg "You must provide local path to SDK archive"
+    usage
     exit 1
+fi
+
+if ! command -v flutter >/dev/null; then
+    error_msg "flutter command not found. Please get it from: https://docs.flutter.dev/get-started/install"
+    echo
+    exit 2
 fi
 
 flutter doctor || ( error_msg "flutter doctor failed"; exit 1 )
 
+msg "Extract SDK..."
+
+SDK_TEMP_DIR="$(mktemp -d)"
+tar -xvf "${SDK_ARCHIVE_PATH}" --strip-components=1 -C "${SDK_TEMP_DIR}"
+
 # Find paths that contain an app module
-EXAMPLE_PROJECTS=$(find ${MY_DIR} -maxdepth 1 -type d -exec [ -d {}/plugins ] \; -print -prune)
+EXAMPLE_PROJECTS=$(find "${MY_DIR}" -maxdepth 1 -type d -exec [ -d {}/plugins ] \; -print -prune)
 
 for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
-    cp -R "${GEM_KIT_PATH}" "${EXAMPLE_PATH}/plugins"
+    cp -R "${SDK_TEMP_DIR}"/gem_kit "${EXAMPLE_PATH}"/plugins/
 
     pushd "${EXAMPLE_PATH}" &>/dev/null
 
-	flutter pub get
+    flutter pub get
 
-	if [ ${BUILD_IOS} -eq 0 ]; then
-		if is_mac; then
-			(cd ios; pod install --repo-update; cd ..)
-			flutter build ios --release --no-codesign
+    flutter pub outdated
 
-			(cd macos; pod install --repo-update; cd ..)
-			flutter build macos --release
-		fi
-	fi
+    flutter pub upgrade --major-versions
 
-	if [ ${BUILD_ANDROID} -eq 0 ]; then
-		flutter build apk --release
-	fi
+    if [ ${BUILD_IOS} -eq 0 ]; then
+        if is_mac; then
+            (cd ios; pod install --repo-update; cd ..)
+            flutter build ios --release --no-codesign
 
-	if [ ${BUILD_WEB} -eq 0 ]; then
-		flutter build web --release
-	fi
+            (cd macos; pod install --repo-update; cd ..)
+            flutter build macos --release
+        fi
+    fi
+
+    if [ ${BUILD_ANDROID} -eq 0 ]; then
+        flutter build apk --release
+    fi
+
+    if [ ${BUILD_WEB} -eq 0 ]; then
+        flutter build web --release
+    fi
+
+    if [ ${FLUTTER_ANALYZE} -eq 0 ]; then
+        flutter analyze --preamble --no-pub --no-fatal-infos --no-fatal-warnings
+    fi
 
     popd &>/dev/null
 done
@@ -159,29 +220,28 @@ done
 pushd "${MY_DIR}" &>/dev/null
 
 if [ -d "APK" ]; then
-	rm -rf "APK"
+    rm -rf "APK"
 fi
 if [ ${BUILD_ANDROID} -eq 0 ]; then
-	mkdir APK
+    mkdir APK
 fi
 
 if [ -d "WEB" ]; then
-	rm -rf "WEB"
+    rm -rf "WEB"
 fi
 if [ ${BUILD_WEB} -eq 0 ]; then
-	mkdir WEB
+    mkdir WEB
 fi
 
 for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
-	EXAMPLE_NAME="$(basename ${EXAMPLE_PATH})"
-	if [ ${BUILD_ANDROID} -eq 0 ]; then
-		mkdir -p "APK/${EXAMPLE_NAME}"
-		mv "${EXAMPLE_PATH}/build/app/outputs/flutter-apk"/app-release.apk "APK/${EXAMPLE_NAME}/${EXAMPLE_NAME}_app-release.apk"
-	fi  
-	if [ ${BUILD_WEB} -eq 0 ]; then
-		mkdir -p "WEB/${EXAMPLE_NAME}"
-		mv "${EXAMPLE_PATH}/build/web"/* "WEB/${EXAMPLE_NAME}"/
-	fi
+    EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
+    if [ ${BUILD_ANDROID} -eq 0 ]; then
+        mv "${EXAMPLE_PATH}/build/app/outputs/flutter-apk"/app-release.apk "APK/${EXAMPLE_NAME}_app-release.apk"
+    fi
+    if [ ${BUILD_WEB} -eq 0 ]; then
+        mkdir -p "WEB/${EXAMPLE_NAME}"
+        mv "${EXAMPLE_PATH}/build/web"/* "WEB/${EXAMPLE_NAME}"/
+    fi
 done
 
 popd &>/dev/null

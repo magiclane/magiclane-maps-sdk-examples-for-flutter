@@ -1,46 +1,52 @@
-import 'package:gem_kit/api/gem_coordinates.dart';
-import 'package:gem_kit/api/gem_mapviewpreferences.dart';
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
 
-import 'package:flutter/material.dart';
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+
+import 'package:flutter/material.dart' hide Animation;
 
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
-  runApp(const CenterCoordinatesApp());
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
+  runApp(const MyApp());
 }
 
-class CenterCoordinatesApp extends StatelessWidget {
-  const CenterCoordinatesApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Center Coordinates',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const CenterCoordinatesPage(),
+      home: MyHomePage(),
     );
   }
 }
 
-class CenterCoordinatesPage extends StatefulWidget {
-  const CenterCoordinatesPage({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<CenterCoordinatesPage> createState() => _CenterCoordinatesPageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _CenterCoordinatesPageState extends State<CenterCoordinatesPage> {
+class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
+
+  @override
+  void dispose() {
+    GemKit.release();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,25 +64,25 @@ class _CenterCoordinatesPageState extends State<CenterCoordinatesPage> {
         ],
       ),
       body: GemMap(
-        onMapCreated: _onMapCreatedCallback,
+        onMapCreated: _onMapCreated,
       ),
     );
   }
 
-  // The callback for when map is ready to use
-  _onMapCreatedCallback(GemMapController controller) async {
-    // Save controller for further usage
+  // The callback for when map is ready to use.
+  void _onMapCreated(GemMapController controller) async {
+    // Save controller for further usage.
     _mapController = controller;
   }
 
-  _onCenterCoordinatesButtonPressed() {
-    // Predefined coordinates for Rome, Italy
+  void _onCenterCoordinatesButtonPressed() {
+    // Predefined coordinates for Rome, Italy.
     final targetCoordinates = Coordinates(latitude: 41.902782, longitude: 12.496366);
 
-    // Create an animation (optional)
-    final animation = GemAnimation(type: EAnimation.AnimationLinear);
+    // Create an animation (optional).
+    final animation = GemAnimation(type: Animation.linear);
 
-    // Use the map controller to center on coordinates
+    // Use the map controller to center on coordinates.
     _mapController.centerOnCoordinates(targetCoordinates, animation: animation);
   }
 }

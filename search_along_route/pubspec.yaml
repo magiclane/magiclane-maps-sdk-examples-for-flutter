@@ -1,4 +1,4 @@
-name: calculate_route
+name: search_along_route
 description: A Flutter example using Maps SDK for Flutter.
 
 publish_to: 'none' 
@@ -21,7 +21,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.2
 
 flutter:
   uses-material-design: true

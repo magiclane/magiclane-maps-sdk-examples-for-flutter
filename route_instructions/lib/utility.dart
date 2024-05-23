@@ -1,3 +1,13 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+import 'package:gem_kit/routing.dart';
+
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
@@ -21,19 +31,27 @@ String convertDuration(int seconds) {
   return hoursText + minutesText;
 }
 
-Future<Uint8List?> decodeImageData(
-    {required Uint8List data, int width = 100, int height = 100}) async {
-  Completer<Uint8List?> c = Completer<Uint8List?>();
+// Utility function to convert a raw image in byte data
+Future<Uint8List?> imageToUint8List(Image? image) async {
+  if (image == null) return null;
+  final byteData = await image.toByteData(format: ImageByteFormat.png);
+  return byteData!.buffer.asUint8List();
+}
 
-  decodeImageFromPixels(data, width, height, PixelFormat.rgba8888,
-      (Image img) async {
-    final data = await img.toByteData(format: ImageByteFormat.png);
-    if (data == null) {
-      c.complete(null);
-    }
-    final list = data!.buffer.asUint8List();
-    c.complete(list);
-  });
+// Define an extension for route for calculating the route label which will be displayed on map
+extension RouteExtension on Route {
+  String getMapLabel() {
+    final totalDistance = timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM;
+    final totalDuration = timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS;
 
-  return c.future;
+    return '${convertDistance(totalDistance)} \n${convertDuration(totalDuration)}';
+  }
+}
+
+// Define an extension for route instruction to calculate distance and duration
+extension RouteInstructionExtension on RouteInstruction {
+  String getFormattedDistanceUntilInstruction() {
+    final rawDistance = traveledTimeDistance.restrictedDistanceM + traveledTimeDistance.unrestrictedDistanceM;
+    return convertDistance(rawDistance);
+  }
 }

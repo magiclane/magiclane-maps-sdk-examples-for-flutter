@@ -1,62 +1,54 @@
-import 'package:gem_kit/api/gem_coordinates.dart';
-import 'package:gem_kit/api/gem_landmark.dart';
-import 'package:gem_kit/api/gem_routingpreferences.dart';
-import 'package:gem_kit/api/gem_routingservice.dart' as gem;
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/gem_kit_basic.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
 
-import 'package:flutter/material.dart';
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+import 'package:gem_kit/routing.dart';
+
+import 'package:flutter/material.dart' hide Route;
 
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
-  runApp(const MultiviewMapApp());
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
+  runApp(const MyApp());
 }
 
-class MultiviewMapApp extends StatelessWidget {
-  const MultiviewMapApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Multi Map Routing',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const MultiviewMapPage());
+    return const MaterialApp(title: 'Multi Map Routing', debugShowCheckedModeBanner: false, home: MyHomePage());
   }
 }
 
-class MultiviewMapPage extends StatefulWidget {
-  const MultiviewMapPage({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<MultiviewMapPage> createState() => _MultiviewMapPageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MultiviewMapPageState extends State<MultiviewMapPage> {
+class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController1;
   late GemMapController _mapController2;
 
-  final List<Coordinates> _waypoints1 = [
-    Coordinates(latitude: 37.77903, longitude: -122.41991),
-    Coordinates(latitude: 37.33619, longitude: -121.89058)
-  ];
+  // We use the handlers to cancel the route calculation.
+  TaskHandler? _routingHandler1;
+  TaskHandler? _routingHandler2;
 
-  final List<Coordinates> _waypoints2 = [
-    Coordinates(latitude: 51.50732, longitude: -0.12765),
-    Coordinates(latitude: 51.27483, longitude: 0.52316)
-  ];
-
-  List<gem.Route> _shownRoutes1 = [];
-  List<gem.Route> _shownRoutes2 = [];
+  @override
+  void dispose() {
+    GemKit.release();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,20 +57,20 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
         backgroundColor: Colors.deepPurple[900],
         title: const Text('Multi Map Routing', style: TextStyle(color: Colors.white)),
         leading: IconButton(
-            onPressed: removeRoutes,
+            onPressed: _removeRoutes,
             icon: const Icon(
               Icons.close,
               color: Colors.white,
             )),
         actions: [
           IconButton(
-              onPressed: route1ButtonAction,
+              onPressed: () => _onBuildRouteButtonPressed(true),
               icon: const Icon(
                 Icons.route,
                 color: Colors.white,
               )),
           IconButton(
-              onPressed: route2ButtonAction,
+              onPressed: () => _onBuildRouteButtonPressed(false),
               icon: const Icon(
                 Icons.route,
                 color: Colors.white,
@@ -92,7 +84,7 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: GemMap(
-                onMapCreated: onMap1Created,
+                onMapCreated: _onMap1Created,
               ),
             ),
           ),
@@ -101,7 +93,7 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: GemMap(
-                onMapCreated: onMap2Created,
+                onMapCreated: _onMap2Created,
               ),
             ),
           ),
@@ -110,132 +102,152 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
     );
   }
 
-  Future<void> onMap1Created(GemMapController controller) async {
+  // Method to show message in case calculate route is not finished.
+  void _showSnackBar(BuildContext context, int map) {
+    String whichMap = map == 1 ? 'first' : 'second';
+    final snackBar = SnackBar(
+      content: Text("The $whichMap route is calculating."),
+      duration: const Duration(hours: 1),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  // The callback for when map 1 is ready to use.
+  void _onMap1Created(GemMapController controller) {
+    // Save controller for further usage.
     _mapController1 = controller;
   }
 
-  Future<void> onMap2Created(GemMapController controller) async {
+// The callback for when map 2  is ready to use.
+  void _onMap2Created(GemMapController controller) {
+    // Save controller for further usage.
     _mapController2 = controller;
   }
 
-  Future<void> route1ButtonAction() async {
-    final landmarkWaypoints = LandmarkList.create();
+  void _onBuildRouteButtonPressed(bool isFirstMap) {
+    final waypoints = <Landmark>[];
+    if (isFirstMap) {
+      // Define the departure.
+      final departure = Landmark();
+      departure.coordinates = Coordinates(latitude: 37.77903, longitude: -122.41991);
 
-    // Create landmarks from coordinates and add them to the list
-    for (final wp in _waypoints1) {
-      var landmark = Landmark.create();
-      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
-      landmarkWaypoints.push_back(landmark);
+      // Define the destination.
+      final destination = Landmark();
+      destination.coordinates = Coordinates(latitude: 37.33619, longitude: -121.89058);
+
+      waypoints.add(departure);
+      waypoints.add(destination);
+    } else {
+      // Define the departure.
+      final departure = Landmark();
+      departure.coordinates = Coordinates(latitude: 51.50732, longitude: -0.12765);
+
+      // Define the destination.
+      final destination = Landmark();
+      destination.coordinates = Coordinates(latitude: 51.27483, longitude: 0.52316);
+
+      waypoints.add(departure);
+      waypoints.add(destination);
     }
 
+    // Define the route preferences.
     final routePreferences = RoutePreferences();
 
-    gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) async {
-      if (err != GemError.success || routes == null) {
-        return;
-      } else {
-        // Get the controller's preferences
-        final mapViewPreferences = _mapController1.preferences();
-        // Get the routes from the preferences
-        final routesMap = mapViewPreferences.routes();
+    _showSnackBar(context, isFirstMap ? 1 : 2);
 
-        bool firstRoute = true;
-
-        for (final route in routes) {
-          _shownRoutes1.add(route);
-
-          final timeDistance = route.getTimeDistance();
-
-          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
-
-          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
-          // Add labels to the routes
-          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
-          firstRoute = false;
-        }
-        // Select the first route as the main one
-        final mainRoute = routes.at(0);
-
-        _mapController1.centerOnRoute(mainRoute);
-      }
-    });
+    // Calling the calculateRoute SDK method.
+    // (err, results) - is a callback function that gets called when the route computing is finished.
+    // err is an error enum, results is a list of routes.
+    if (isFirstMap) {
+      _routingHandler1 = RoutingService.calculateRoute(
+          waypoints, routePreferences, (err, routes) => _onRouteBuiltFinished(err, routes, true));
+    } else {
+      _routingHandler2 = RoutingService.calculateRoute(
+          waypoints, routePreferences, (err, routes) => _onRouteBuiltFinished(err, routes, false));
+    }
   }
 
-  Future<void> route2ButtonAction() async {
-    final landmarkWaypoints = LandmarkList.create();
-
-    // Create landmarks from coordinates and add them to the list
-    for (final wp in _waypoints2) {
-      var landmark = Landmark.create();
-      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
-      landmarkWaypoints.push_back(landmark);
+  void _onRouteBuiltFinished(GemError err, List<Route>? routes, bool isFirstMap) {
+    // If the route calculation is finished, we don't have a progress listener anymore.
+    if (isFirstMap) {
+      _routingHandler1 = null;
+    } else {
+      _routingHandler2 = null;
     }
 
-    final routePreferences = RoutePreferences();
+    ScaffoldMessenger.of(context).clearSnackBars();
 
-    gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) async {
-      if (err != GemError.success || routes == null) {
-        return;
-      } else {
-        // Get the controller's preferences
-        final mapViewPreferences = _mapController2.preferences();
-        // Get the routes from the preferences
-        final routesMap = mapViewPreferences.routes();
+    // If there is an error, we return from this callback.
+    if (err != GemError.success) {
+      return;
+    }
 
-        bool firstRoute = false;
+    // Get the routes collection from map preferences.
+    final routesMap = (isFirstMap ? _mapController1.preferences : _mapController2.preferences).routes;
 
-        for (final route in routes) {
-          _shownRoutes2.add(route);
+    // Select the first route as the main one.
+    final mainRoute = routes!.first;
 
-          final timeDistance = route.getTimeDistance();
+    // Display the routes on map.
+    for (final route in routes) {
+      routesMap.add(route, route == mainRoute, label: route.getMapLabel());
+    }
 
-          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
-
-          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
-          // Add labels to the routes
-          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
-          firstRoute = false;
-        }
-        // Select the first route as the main one
-        final mainRoute = routes.at(0);
-
-        _mapController2.centerOnRoute(mainRoute);
-      }
-    });
+    // Center the camera on routes.
+    if (isFirstMap) {
+      _mapController1.centerOnRoutes(routes);
+    } else {
+      _mapController2.centerOnRoutes(routes);
+    }
   }
 
-  Future<void> removeRoutes() async {
-    final prefs1 = _mapController1.preferences();
-    final routesMap1 = prefs1.routes();
-    for (final route in _shownRoutes1) {
-      routesMap1.remove(route);
-    }
-    _shownRoutes1 = [];
+  void _removeRoutes() {
+    // If we have a progress listener we cancel the route calculation.
 
-    final prefs2 = _mapController2.preferences();
-    final routesMap2 = prefs2.routes();
-    for (final route in _shownRoutes2) {
-      routesMap2.remove(route);
+    if (_routingHandler1 != null) {
+      RoutingService.cancelRoute(_routingHandler1!);
+      _routingHandler1 = null;
     }
-    _shownRoutes2 = [];
+
+    if (_routingHandler2 != null) {
+      RoutingService.cancelRoute(_routingHandler2!);
+      _routingHandler2 = null;
+    }
+
+    // Remove the routes from map.
+    _mapController1.preferences.routes.clear();
+    _mapController2.preferences.routes.clear();
   }
 }
 
-String convertDistance(int meters) {
-  if (meters >= 1000) {
-    double kilometers = meters / 1000;
-    return '${kilometers.toStringAsFixed(1)} km';
-  } else {
-    return '${meters.toString()} m';
+// Define an extension for route for calculating the route label which will be displayed on map.
+extension RouteExtension on Route {
+  String getMapLabel() {
+    final totalDistance = timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM;
+    final totalDuration = timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS;
+
+    return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
   }
-}
 
-String convertDuration(int seconds) {
-  int hours = seconds ~/ 3600; // Number of whole hours
-  int minutes = (seconds % 3600) ~/ 60; // Number of whole minutes
+  // Utility function to convert the meters distance into a suitable format.
+  String _convertDistance(int meters) {
+    if (meters >= 1000) {
+      double kilometers = meters / 1000;
+      return '${kilometers.toStringAsFixed(1)} km';
+    } else {
+      return '${meters.toString()} m';
+    }
+  }
 
-  String hoursText = (hours > 0) ? '$hours h ' : ''; // Hours text
-  String minutesText = '$minutes min'; // Minutes text
+  // Utility function to convert the seconds duration into a suitable format.
+  String _convertDuration(int seconds) {
+    int hours = seconds ~/ 3600; // Number of whole hours
+    int minutes = (seconds % 3600) ~/ 60; // Number of whole minutes
 
-  return hoursText + minutesText;
+    String hoursText = (hours > 0) ? '$hours h ' : ''; // Hours text
+    String minutesText = '$minutes min'; // Minutes text
+
+    return hoursText + minutesText;
+  }
 }

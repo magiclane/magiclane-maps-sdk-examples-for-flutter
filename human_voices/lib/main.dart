@@ -1,29 +1,27 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+import 'package:gem_kit/navigation.dart';
+import 'package:gem_kit/routing.dart';
+
 import 'bottom_navigation_panel.dart';
-import 'instruction_model.dart';
 import 'top_navigation_panel.dart';
 import 'tts_engine.dart';
 import 'utility.dart';
 
-import 'package:gem_kit/api/gem_coordinates.dart';
-import 'package:gem_kit/api/gem_mapviewpreferences.dart' as gem;
-import 'package:gem_kit/api/gem_navigationservice.dart';
-import 'package:gem_kit/api/gem_landmark.dart';
-import 'package:gem_kit/api/gem_routingpreferences.dart';
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/api/gem_routingservice.dart' as gem;
-import 'package:gem_kit/gem_kit_basic.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Route, Animation;
 
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
   runApp(const MyApp());
 }
 
@@ -34,7 +32,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Human voices example',
+      title: 'Human Voices',
       home: MyHomePage(),
     );
   }
@@ -50,146 +48,211 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
 
-  late InstructionModel currentInstruction;
+  late NavigationInstruction currentInstruction;
   late TTSEngine _ttsEngine;
 
-  List<Coordinates> waypoints = [];
-  List<gem.Route> shownRoutes = [];
+  bool _areRoutesBuilt = false;
+  bool _isSimulationActive = false;
 
-  bool haveRoutes = false;
-  bool isNavigating = false;
-  bool hasVolume = true;
+  // We use the handler to cancel the route calculation.
+  TaskHandler? _routingHandler;
+
+  // We use the handler to cancel the navigation.
+  TaskHandler? _navigationHandler;
 
   @override
   void initState() {
-    super.initState();
-    waypoints.add(Coordinates(latitude: 48.87586140402999, longitude: 2.3031139990581493));
-    waypoints.add(Coordinates(latitude: 48.87422484785287, longitude: 2.2995244508179242));
-    waypoints.add(Coordinates(latitude: 48.873618858675435, longitude: 2.2951312439853533));
-  }
-
-  Future<void> onMapCreated(GemMapController controller) async {
-    _mapController = controller;
-
     _ttsEngine = TTSEngine();
     _ttsEngine.initTts();
+
+    super.initState();
   }
 
-// Custom method for calling calculate route and displaying the results
-  _onPressed(List<Coordinates> waypoints, BuildContext context) {
-    // Create a landmark list
-    final landmarkWaypoints = LandmarkList.create();
+  @override
+  void dispose() {
+    GemKit.release();
+    super.dispose();
+  }
 
-    // Create landmarks from coordinates and add them to the list
-    for (final wp in waypoints) {
-      var landmark = Landmark.create();
-      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
-      landmarkWaypoints.push_back(landmark);
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Human voices", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.deepPurple[900],
+        actions: [
+          if (!_isSimulationActive && _areRoutesBuilt)
+            IconButton(
+              onPressed: _startSimulation,
+              icon: const Icon(Icons.play_arrow, color: Colors.white),
+            ),
+          if (_isSimulationActive)
+            IconButton(
+              onPressed: _stopSimulation,
+              icon: const Icon(
+                Icons.stop,
+                color: Colors.white,
+              ),
+            ),
+          if (!_areRoutesBuilt)
+            IconButton(
+              onPressed: () => _onBuildRouteButtonPressed(context),
+              icon: const Icon(
+                Icons.route,
+                color: Colors.white,
+              ),
+            ),
+        ],
+      ),
+      body: Stack(children: [
+        GemMap(
+          onMapCreated: _onMapCreated,
+        ),
+        if (_isSimulationActive)
+          Positioned(
+            top: 10,
+            left: 10,
+            child: Column(children: [
+              NavigationInstructionPanel(
+                instruction: currentInstruction,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              FollowPositionButton(
+                onTap: () => _mapController.startFollowingPosition(),
+              ),
+            ]),
+          ),
+        if (_isSimulationActive)
+          Positioned(
+            bottom: MediaQuery.of(context).padding.bottom + 10,
+            left: 0,
+            child: NavigationBottomPanel(
+              remainingDistance: currentInstruction.getFormattedRemainingDistance(),
+              remainingDuration: currentInstruction.getFormattedRemainingDuration(),
+              eta: currentInstruction.getFormattedETA(),
+            ),
+          ),
+      ]),
+      resizeToAvoidBottomInset: false,
+    );
+  }
 
+  // The callback for when map is ready to use.
+  void _onMapCreated(GemMapController controller) {
+    // Save controller for further usage.
+    _mapController = controller;
+  }
+
+  void _onBuildRouteButtonPressed(BuildContext context) {
+    // Define the departure
+    final departureLandmark = Landmark();
+    departureLandmark.coordinates = Coordinates(latitude: 48.87586140402999, longitude: 2.3031139990581493);
+
+    // Define the intermediary point
+    final intermediaryPointLandmark = Landmark();
+    intermediaryPointLandmark.coordinates = Coordinates(latitude: 48.87422484785287, longitude: 2.2995244508179242);
+
+    // Define the destination.
+    final destinationLandmark = Landmark();
+    destinationLandmark.coordinates = Coordinates(latitude: 48.873618858675435, longitude: 2.2951312439853533);
+
+    // Define the route preferences.
     final routePreferences = RoutePreferences();
     _showSnackBar(context);
 
-    var result = gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) {
+    // Calling the calculateRoute SDK method.
+    // (err, results) - is a callback function that gets called when the route computing is finished.
+    // err is an error enum, results is a list of routes.
+    _routingHandler = RoutingService.calculateRoute(
+        [departureLandmark, intermediaryPointLandmark, destinationLandmark], routePreferences, (err, routes) {
+      // If the route calculation is finished, we don't have a progress listener anymore.
+      _routingHandler = null;
+
       ScaffoldMessenger.of(context).clearSnackBars();
-      if (err != GemError.success || routes == null) {
-        return;
-      } else {
-        // Get the controller's preferences
-        final mapViewPreferences = _mapController.preferences();
-        // Get the routes from the preferences
-        final routesMap = mapViewPreferences.routes();
+      // If there is an error, we return from this callback.
 
-        bool firstRoute = true;
-        for (final route in routes) {
-          shownRoutes.add(route);
-
-          final timeDistance = route.getTimeDistance();
-
-          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
-
-          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
-          // Add labels to the routes
-          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
-          firstRoute = false;
-        }
-        // Select the first route as the main one
-        final mainRoute = routes.at(0);
-
-        _mapController.centerOnRoute(mainRoute);
-      }
-    });
-
-    setState(() {
-      haveRoutes = true;
-    });
-    return result;
-  }
-
-// Method for creating the simulation
-  _navigateOnRoute({required gem.Route route, required Function(InstructionModel) onInstructionUpdated}) {
-    NavigationService.startSimulation(route, (type, instruction) async {
-      if (type == NavigationEventType.destinationReached || type == NavigationEventType.error) {
+      if (err != GemError.success) {
         setState(() {
-          isNavigating = false;
-          _removeRoutes(shownRoutes);
+          _areRoutesBuilt = false;
         });
         return;
       }
+
+      // Get the routes collection from map preferences.
+      final routesMap = _mapController.preferences.routes;
+
+      // Select the first route as the main one.
+      final mainRoute = routes!.first;
+
+      // Display the routes on map.
+      for (final route in routes) {
+        routesMap.add(route, route == mainRoute, label: route.getMapLabel());
+      }
+
+      // Center the camera on routes.
+      _mapController.centerOnRoutes(routes);
+    });
+
+    setState(() {
+      _areRoutesBuilt = true;
+    });
+  }
+
+  void _startSimulation() {
+    // Get the main route from map routes collection;
+    final routes = _mapController.preferences.routes;
+    final mainRoute = routes.mainRoute;
+
+    _navigationHandler = NavigationService.startSimulation(mainRoute, (type, instruction) async {
+      if (type == NavigationEventType.destinationReached || type == NavigationEventType.error) {
+        // If the navigation has ended or if and error occured while navigating, remove routes.
+        setState(() {
+          _isSimulationActive = false;
+          _cancelRoute();
+        });
+        return;
+      }
+      _isSimulationActive = true;
+
       if (instruction == null) {
         return;
       }
 
-      isNavigating = true;
-
-      final ins = await InstructionModel.fromGemInstruction(instruction);
-      onInstructionUpdated(ins);
-
-      instruction.dispose();
-    }, onTextToSpeechInstruction: (textToSpeech) {
-      _ttsEngine.speakText(textToSpeech);
+      setState(() => currentInstruction = instruction);
+    }, onTextToSpeechInstruction: (textInstruction) {
+      // Play the text instruction;
+      _ttsEngine.speakText(textInstruction);
     }, speedMultiplier: 20);
+
+    // Set the camera to follow position.
+    _mapController.startFollowingPosition();
   }
 
-// Method for starting the simulation and following the position
-  _startSimulation(gem.Route route) {
-    _navigateOnRoute(
-        route: route,
-        onInstructionUpdated: (instruction) {
-          currentInstruction = instruction;
-          setState(() {});
-        });
+  void _cancelRoute() {
+    // Remove the routes from map.
+    _mapController.preferences.routes.clear();
 
-    _mapController.startFollowingPosition(
-        animation: gem.GemAnimation(duration: 200, type: gem.EAnimation.AnimationLinear));
-  }
-
-// Method for removing the routes from display
-  _removeRoutes(List<gem.Route> routes) {
-    _mapController.preferences().routes().clear();
-    shownRoutes.clear();
+    if (_routingHandler != null) {
+      // Cancel the navigation.
+      RoutingService.cancelRoute(_routingHandler!);
+      _routingHandler = null;
+    }
 
     setState(() {
-      haveRoutes = false;
+      _areRoutesBuilt = false;
     });
   }
 
-// Method to stop the simulation and remove the displayed routes
-  _stopSimulation(List<gem.Route> routes) {
-    NavigationService.cancelNavigation();
-    _removeRoutes(routes);
-    isNavigating = false;
-    setState(() {});
+  void _stopSimulation() {
+    // Cancel the navigation.
+    NavigationService.cancelNavigation(_navigationHandler!);
+    _navigationHandler = null;
 
-    hasVolume = true;
-  }
+    _cancelRoute();
 
-// Method to mute / unmute the voice instructions
-  // ignore: unused_element
-  _setVolume() {
-    double volume = hasVolume ? 0.0 : 1.0;
-    _ttsEngine.setVolume(volume);
-    hasVolume = !hasVolume;
+    setState(() => _isSimulationActive = false);
   }
 
   // Method to show message in case calculate route is not finished
@@ -201,106 +264,46 @@ class _MyHomePageState extends State<MyHomePage> {
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+}
+
+class FollowPositionButton extends StatelessWidget {
+  const FollowPositionButton({
+    super.key,
+    required this.onTap,
+  });
+
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Human voices", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple[900],
-        actions: [
-          GestureDetector(
-            onTap: () => _startSimulation(shownRoutes[0]),
-            child: Icon(Icons.play_arrow,
-                size: 40,
-                color: haveRoutes
-                    ? isNavigating
-                        ? Colors.grey
-                        : Colors.green
-                    : Colors.grey),
-          ),
-          GestureDetector(
-            onTap: () {
-              _stopSimulation(shownRoutes);
-              setState(() {
-                isNavigating = false;
-              });
-            },
-            child: Icon(Icons.stop, size: 40, color: haveRoutes ? Colors.red : Colors.grey),
-          ),
-          GestureDetector(
-            onTap: () => haveRoutes ? null : _onPressed(waypoints, context),
-            child: Icon(
-              Icons.directions,
-              size: 40,
-              color: haveRoutes ? Colors.grey : Colors.white,
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        height: 50,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
             ),
-          )
-        ],
-      ),
-      body: Stack(children: [
-        GemMap(
-          onMapCreated: onMapCreated,
+          ],
         ),
-        if (isNavigating)
-          Positioned(
-            top: 40,
-            left: 10,
-            child: Column(children: [
-              NavigationInstructionPanel(
-                instruction: currentInstruction,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              GestureDetector(
-                onTap: () => _mapController.startFollowingPosition(),
-                child: InkWell(
-                  child: Container(
-                    height: 50,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(
-                          Icons.navigation,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const Text(
-                          'Recenter',
-                          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ]),
-          ),
-        if (isNavigating)
-          Positioned(
-            bottom: 30,
-            left: 0,
-            child: NavigationBottomPanel(
-              remainingDistance: currentInstruction.remainingDistance,
-              eta: currentInstruction.eta,
-              remainingDuration: currentInstruction.remainingDuration,
-            ),
-          ),
-      ]),
-      resizeToAvoidBottomInset: false,
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(Icons.navigation),
+            Text(
+              'Recenter',
+              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

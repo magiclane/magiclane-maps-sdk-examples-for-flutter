@@ -1,28 +1,31 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
 // ignore_for_file: avoid_print
 
-import 'package:gem_kit/api/gem_navigationservice.dart';
-import 'package:gem_kit/api/gem_routingpreferences.dart';
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/api/gem_routingservice.dart' as gem;
-import 'package:gem_kit/api/gem_path.dart' as gp;
-import 'package:gem_kit/gem_kit_basic.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+import 'package:gem_kit/navigation.dart';
+import 'package:gem_kit/routing.dart';
 
-import 'package:path_provider/path_provider.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Route;
 import 'package:flutter/services.dart';
 
 import 'dart:async';
-import 'dart:io' as io;
+import 'dart:io';
 
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
   runApp(const MyApp());
 }
 
@@ -51,13 +54,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isSimulationActive = false;
   bool _isGpxDataLoaded = false;
+  bool _areRoutesBuilt = false;
 
-  bool haveRoutes = false;
+  // We use the handler to cancel the navigation.
+  TaskHandler? _navigationHandler;
 
   @override
   void initState() {
+    _copyGpxToAppDocsDir();
     super.initState();
-    copyGpxToAppDocsDir();
+  }
+
+  @override
+  void dispose() {
+    GemKit.release();
+    super.dispose();
   }
 
   @override
@@ -67,44 +78,45 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.deepPurple[900],
         title: const Text("GPX Route", style: TextStyle(color: Colors.white)),
         actions: [
-          IconButton(
-            onPressed: _startPlayback,
-            icon: Icon(Icons.play_arrow,
-                size: 40,
-                color: haveRoutes
-                    ? _isSimulationActive
-                        ? Colors.grey
-                        : Colors.green
-                    : Colors.grey),
-          ),
-          IconButton(
-            onPressed: _stopPlayback,
-            icon: Icon(Icons.stop, size: 40, color: haveRoutes ? Colors.red : Colors.grey),
-          ),
-          IconButton(
-            onPressed: _importGPX,
-            icon: Icon(
-              Icons.directions,
-              size: 40,
-              color: haveRoutes ? Colors.grey : Colors.white,
+          if (!_isSimulationActive && _areRoutesBuilt)
+            IconButton(
+              onPressed: _startSimulation,
+              icon: const Icon(Icons.play_arrow, color: Colors.white),
             ),
-          ),
+          if (_isSimulationActive)
+            IconButton(
+              onPressed: _stopSimulation,
+              icon: const Icon(
+                Icons.stop,
+                color: Colors.white,
+              ),
+            ),
+          if (!_areRoutesBuilt)
+            IconButton(
+              onPressed: _importGPX,
+              icon: const Icon(
+                Icons.route,
+                color: Colors.white,
+              ),
+            ),
         ],
       ),
       body: GemMap(
-        onMapCreated: onMapCreated,
+        onMapCreated: _onMapCreated,
       ),
     );
   }
 
-  Future<void> onMapCreated(GemMapController controller) async {
+  // The callback for when map is ready to use.
+  void _onMapCreated(GemMapController controller) {
+    // Save controller for further usage.
     _mapController = controller;
   }
 
   //Copy the recorded_route.gpx file from assets directory to app documents directory
-  Future<void> copyGpxToAppDocsDir() async {
-    final docDirectory = await path.getApplicationDocumentsDirectory();
-    final gpxFile = io.File('${docDirectory.path}/recorded_route.gpx');
+  Future<void> _copyGpxToAppDocsDir() async {
+    final docDirectory = await getApplicationDocumentsDirectory();
+    final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
     final imageBytes = await rootBundle.load('assets/recorded_route.gpx');
     final buffer = imageBytes.buffer;
     await gpxFile.writeAsBytes(
@@ -112,14 +124,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  //Read GPX data from file, then calculate & highlight routes on map
+  //Read GPX data from file, then calculate & show the routes on map
   Future<void> _importGPX() async {
-    //Read file from app documents directory
-    final docDirectory = await path.getApplicationDocumentsDirectory();
-    final gpxFile = io.File('${docDirectory.path}/recorded_route.gpx');
+    _showSnackBar(context);
 
-    //Read binary gpx file if found
-    late Uint8List pathData;
+    //Read file from app documents directory
+    final docDirectory = await getApplicationDocumentsDirectory();
+    final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
+
+    //Read binary GPX file if found
+    Uint8List pathData;
     if (!await gpxFile.exists()) {
       pathData = Uint8List(0);
       print('GPX file does not exist (${gpxFile.path})');
@@ -130,49 +144,65 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     //Get landmarklist containing all GPX points from file.
-    final gemPath = gp.Path.create(data: pathData, format: 0);
-    final lmkList = gemPath.toLandmarkList();
+    final gemPath = Path.create(data: pathData, format: 0);
+    final landmarkList = gemPath.toLandmarkList();
 
-    print("GPX Landmarklist size: ${lmkList.size()}");
+    print("GPX Landmarklist size: ${landmarkList.length}");
 
-    //Compute routes containing all GPX points
-    gem.RoutingService.calculateRoute(
-      lmkList,
-      RoutePreferences(transportmode: ERouteTransportMode.RTM_Bicycle),
-      (err, result) {
-        if (err != GemError.success || result == null) {
+    // Define the route preferences.
+    final routePreferences = RoutePreferences(transportMode: RouteTransportMode.bicycle);
+
+    // Calling the calculateRoute SDK method.
+    // (err, results) - is a callback function that gets called when the route computing is finished.
+    // err is an error enum, results is a list of routes.
+    RoutingService.calculateRoute(
+      landmarkList,
+      routePreferences,
+      (err, routes) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+
+        // If there is an error, we return from this callback.
+        if (err != GemError.success) {
+          setState(() {
+            _areRoutesBuilt = false;
+          });
           return;
         }
 
-        //Highlight routes on map
-        final mapRoutes = _mapController.preferences().routes();
-        bool firstRoute = true;
+        // Get the routes collection from map preferences.
+        final routesMap = _mapController.preferences.routes;
 
-        for (final route in result) {
-          _addRouteToMap(route: route, mapRoutes: mapRoutes, isMainRoute: firstRoute);
-          firstRoute = false;
+        // Display the routes on map.
+        for (final route in routes!) {
+          // The first route is the main route
+          routesMap.add(route, route == routes.first, label: route.getMapLabel());
         }
 
-        //Center on main route
-        _mapController.centerOnRoute(result.at(0));
+        // Center the camera on routes.
+        _mapController.centerOnRoutes(routes);
+
+        setState(() {
+          _areRoutesBuilt = true;
+        });
       },
     );
     _isGpxDataLoaded = true;
-
-    setState(() {
-      haveRoutes = true;
-    });
   }
 
-  // Start simulated navigation
-  void _startPlayback() {
+  void _startSimulation() {
     if (_isSimulationActive) return;
     if (!_isGpxDataLoaded) return;
 
-    final routes = _mapController.preferences().routes();
-    final mainRoute = routes.getMainRoute();
-    NavigationService.startSimulation(mainRoute, (eventType, instruction) {}, speedMultiplier: 2);
+    // Get the main route from map routes collection;
+    final routes = _mapController.preferences.routes;
+    final mainRoute = routes.mainRoute;
 
+    // Start navigation one the main route.
+    _navigationHandler = NavigationService.startSimulation(mainRoute, (eventType, instruction) {
+      // Navigation instruction callback.
+    }, speedMultiplier: 2);
+
+    // Set the camera to follow position.
     _mapController.startFollowingPosition();
 
     setState(() {
@@ -180,55 +210,60 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // Stop simulated navigation
-  void _stopPlayback() {
+  void _stopSimulation() {
+    // Remove the routes from map.
+    _mapController.preferences.routes.clear();
+    setState(() => _areRoutesBuilt = false);
+
     if (!_isSimulationActive) {
-      _mapController.preferences().routes().clear();
-      setState(() {
-        haveRoutes = false;
-      });
       return;
     }
 
-    NavigationService.cancelNavigation();
-    _mapController.preferences().routes().clear();
+    // Cancel the navigation.
+    NavigationService.cancelNavigation(_navigationHandler!);
+    _navigationHandler = null;
 
-    setState(() {
-      _isSimulationActive = false;
-      haveRoutes = false;
-    });
+    setState(() => _isSimulationActive = false);
   }
 
-  // Show route on map with label containing estimated time & distance
-  void _addRouteToMap(
-      {required gem.Route route, required gem.MapViewRoutesCollection mapRoutes, required bool isMainRoute}) {
-    final timeDistance = route.getTimeDistance();
+  // Method to show message in case calculate route is not finished
+  void _showSnackBar(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text("The route is calculating."),
+      duration: Duration(hours: 1),
+    );
 
-    final totalDistance = timeDistance.restrictedDistanceM + timeDistance.unrestrictedDistanceM;
-    final totalTime = timeDistance.restrictedTimeS + timeDistance.unrestrictedTimeS;
-
-    final formattedDistance = convertDistance(totalDistance);
-    final formattedTime = convertDuration(totalTime);
-
-    mapRoutes.add(route, isMainRoute, label: '$formattedTime \n $formattedDistance');
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 
-String convertDistance(int meters) {
-  if (meters >= 1000) {
-    double kilometers = meters / 1000;
-    return '${kilometers.toStringAsFixed(1)} km';
-  } else {
-    return '${meters.toString()} m';
+// Define an extension for route for calculating the route label which will be displayed on map
+extension RouteExtension on Route {
+  String getMapLabel() {
+    final totalDistance = timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM;
+    final totalDuration = timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS;
+
+    return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
   }
-}
 
-String convertDuration(int seconds) {
-  int hours = seconds ~/ 3600; // Number of whole hours
-  int minutes = (seconds % 3600) ~/ 60; // Number of whole minutes
+  // Utility function to convert the meters distance into a suitable format
+  String _convertDistance(int meters) {
+    if (meters >= 1000) {
+      double kilometers = meters / 1000;
+      return '${kilometers.toStringAsFixed(1)} km';
+    } else {
+      return '${meters.toString()} m';
+    }
+  }
 
-  String hoursText = (hours > 0) ? '$hours h ' : ''; // Hours text
-  String minutesText = '$minutes min'; // Minutes text
+  // Utility function to convert the seconds duration into a suitable format
+  String _convertDuration(int seconds) {
+    int hours = seconds ~/ 3600; // Number of whole hours
+    int minutes = (seconds % 3600) ~/ 60; // Number of whole minutes
 
-  return hoursText + minutesText;
+    String hoursText = (hours > 0) ? '$hours h ' : ''; // Hours text
+    String minutesText = '$minutes min'; // Minutes text
+
+    return hoursText + minutesText;
+  }
 }

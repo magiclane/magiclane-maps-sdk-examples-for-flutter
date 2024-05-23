@@ -1,47 +1,47 @@
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
 
 import 'package:flutter/material.dart';
 
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
-  runApp(const MultiviewMapApp());
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
+  runApp(const MyApp());
 }
 
-class MultiviewMapApp extends StatelessWidget {
-  const MultiviewMapApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Multiview Map',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const MultiviewMapPage());
+    return const MaterialApp(title: 'Multiview Map', debugShowCheckedModeBanner: false, home: MyHomePage());
   }
 }
 
-class MultiviewMapPage extends StatefulWidget {
-  const MultiviewMapPage({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<MultiviewMapPage> createState() => _MultiviewMapPageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MultiviewMapPageState extends State<MultiviewMapPage> {
-  late GemMapController mapController;
+class _MyHomePageState extends State<MyHomePage> {
   int _mapViewsCount = 0;
 
-  Future<void> onMapCreated(GemMapController controller) async {
-    mapController = controller;
+  @override
+  void dispose() {
+    GemKit.release();
+    super.dispose();
   }
 
   @override
@@ -49,17 +49,16 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.deepPurple[900],
-          title: const Text('Multiview Map',
-              style: TextStyle(color: Colors.white)),
+          title: const Text('Multiview Map', style: TextStyle(color: Colors.white)),
           actions: [
             IconButton(
-                onPressed: _onAddViewButtonPressed,
+                onPressed: _addViewButtonPressed,
                 icon: Icon(
                   Icons.add,
                   color: (_mapViewsCount < 4) ? Colors.white : Colors.grey,
                 )),
             IconButton(
-                onPressed: _onRemoveViewButtonPressed,
+                onPressed: _removeViewButtonPressed,
                 icon: Icon(
                   Icons.remove,
                   color: (_mapViewsCount != 0) ? Colors.white : Colors.grey,
@@ -69,8 +68,7 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
         // Arrange MapViews in a grid with fixed number on elements on row
         body: GridView.builder(
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
             itemCount: _mapViewsCount,
             itemBuilder: (context, index) {
               return Container(
@@ -79,27 +77,21 @@ class _MultiviewMapPageState extends State<MultiviewMapPage> {
                       border: Border.all(color: Colors.black, width: 1),
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: const [
-                        BoxShadow(
-                            color: Colors.grey,
-                            offset: Offset(0, -2),
-                            spreadRadius: 1,
-                            blurRadius: 2)
+                        BoxShadow(color: Colors.grey, offset: Offset(0, -2), spreadRadius: 1, blurRadius: 2)
                       ]),
                   margin: const EdgeInsets.all(5),
-                  child: GemMap(
-                    onMapCreated: (controller) => onMapCreated(controller),
-                  ));
+                  child: const GemMap());
             }));
   }
 
   // Add one more view on button press
-  _onAddViewButtonPressed() => setState(() {
+  void _addViewButtonPressed() => setState(() {
         if (_mapViewsCount < 4) {
           _mapViewsCount += 1;
         }
       });
 
-  _onRemoveViewButtonPressed() => setState(() {
+  void _removeViewButtonPressed() => setState(() {
         if (_mapViewsCount > 0) {
           _mapViewsCount -= 1;
         }

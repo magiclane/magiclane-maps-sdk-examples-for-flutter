@@ -1,24 +1,30 @@
-import 'package:flutter/material.dart';
-import 'package:gem_kit/api/cui_imageids.dart';
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
 
-import "dart:ui" as ui;
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+
+import 'package:flutter/material.dart';
+
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 void main() {
-  const token = 'YOUR_API_TOKEN';
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -39,73 +45,77 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController mapController;
 
-  ui.Image? compassImage;
   double compassAngle = 0;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  onMapCreated(GemMapController controller) async {
-    await compassImageIcon();
-
-    mapController = controller;
-
-    mapController.registerOnMapAngleUpdate(
-      (p0) {
-        setState(() => compassAngle = p0);
-      },
-    );
-  }
-
-  compassImageIcon() async {
-    compassImage = await SdkSettings.getImageById(Engine_Misc.CompassEnable_SensorOFF.id, 100, 100);
+  void dispose() {
+    GemKit.release();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
         backgroundColor: Colors.deepPurple[900],
         title: const Text(
           "Map Compass",
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Center(
-        child: Stack(
-          children: [
-            GemMap(
-              onMapCreated: onMapCreated,
-            ),
-            if (compassImage != null)
-              Positioned(
-                right: 12,
-                top: 12,
-                child: InkWell(
-                  onTap: () => mapController.alignNorthUp(),
-                  child: Transform.rotate(
-                    angle: -compassAngle * (3.141592653589793 / 180),
-                    child: Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                        child: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: RawImage(
-                              image: compassImage,
-                            ))),
-                  ),
-                ),
+      body: Stack(
+        children: [
+          GemMap(
+            onMapCreated: _onMapCreated,
+          ),
+          Positioned(
+            right: 12,
+            top: 12,
+            child: InkWell(
+              // Align the map north to up.
+              onTap: () => mapController.alignNorthUp(),
+              child: Transform.rotate(
+                angle: -compassAngle * (3.141592653589793 / 180),
+                child: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image.memory(
+                        _compassImage(),
+                        gaplessPlayback: true,
+                      ),
+                    )),
               ),
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
+  }
+
+  // The callback for when map is ready to use.
+  void _onMapCreated(GemMapController controller) {
+    mapController = controller;
+
+    // Register the map angle update callback.
+    mapController.registerOnMapAngleUpdate((angle) => setState(() => compassAngle = angle));
+  }
+
+  Uint8List _compassImage() {
+    // We will use the SDK image for compass but any widget can be used to represent the compass.
+    final image = SdkSettings.getImageById(id: EngineMisc.compassEnableSensorOFF.id, size: const Size(100, 100));
+    return image;
+  }
+
+  // Utility function to convert a raw image in byte data
+  Future<Uint8List?> imageToUint8List(ui.Image? image) async {
+    if (image == null) return null;
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
   }
 }

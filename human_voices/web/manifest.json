@@ -1,6 +1,6 @@
 {
-    "name": "hello_map",
-    "short_name": "hello_map",
+    "name": "human_voices",
+    "short_name": "human_voices",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

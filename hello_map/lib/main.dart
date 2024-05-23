@@ -1,22 +1,27 @@
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
 
 import 'package:flutter/material.dart';
 
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -35,29 +40,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late GemMapController mapController;
-
   @override
-  void initState() {
-    super.initState();
-  }
-
-  Future<void> onMapCreated(GemMapController controller) async {
-    mapController = controller;
+  void dispose() {
+    GemKit.release();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Stack(
-          children: [
-            GemMap(
-              onMapCreated: onMapCreated,
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        backgroundColor: Colors.deepPurple[900],
+        title: const Text('Hello Map', style: TextStyle(color: Colors.white)),
       ),
+      body: const GemMap(),
     );
   }
 }

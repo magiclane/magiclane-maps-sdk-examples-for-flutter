@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "Magic Lane B.V." "\0"
-            VALUE "FileDescription", "calculate_route" "\0"
+            VALUE "FileDescription", "map_styles" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "calculate_route" "\0"
+            VALUE "InternalName", "map_styles" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2017-2024 Magic Lane B.V. <info@magiclane.com>" "\0"
-            VALUE "OriginalFilename", "calculate_route.exe" "\0"
-            VALUE "ProductName", "calculate_route" "\0"
+            VALUE "OriginalFilename", "map_styles.exe" "\0"
+            VALUE "ProductName", "map_styles" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

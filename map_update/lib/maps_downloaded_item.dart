@@ -1,123 +1,90 @@
-import 'dart:async';
-import 'dart:ui' as ui;
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+import 'package:gem_kit/content_store.dart';
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'package:flutter/material.dart';
-import 'package:gem_kit/api/gem_contentstoreitem.dart';
-import 'package:gem_kit/api/gem_mapdetails.dart';
-import 'package:gem_kit/api/gem_types.dart';
+
+import 'dart:typed_data';
 
 class MapsDownloadedItem extends StatefulWidget {
-  final bool isLast;
   final ContentStoreItem map;
+  final void Function(ContentStoreItem) deleteMap;
 
-  const MapsDownloadedItem({super.key, this.isLast = false, required this.map});
+  const MapsDownloadedItem({super.key, required this.map, required this.deleteMap});
 
   @override
   State<MapsDownloadedItem> createState() => _MapsDownloadedItemState();
 }
 
 class _MapsDownloadedItemState extends State<MapsDownloadedItem> {
-  late Future<ui.Image?> _mapIconFuture;
-  double downloadProgress = 0;
-  late bool isDownloaded;
   late Version _clientVersion;
   late Version _updateVersion;
 
   @override
-  void initState() {
-    isDownloaded = widget.map.isCompleted();
-    _mapIconFuture = _getMapImage(widget.map);
-    super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant MapsDownloadedItem oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.map.getName() != widget.map.getName()) {
-      isDownloaded = widget.map.isCompleted();
-      _mapIconFuture = _getMapImage(widget.map);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    bool isOld = widget.map.isUpdatable();
-    _clientVersion = widget.map.getClientVersion();
-    _updateVersion = widget.map.getUpdateVersion();
-    return SizedBox(
-      child: Column(
-        children: [
-          Row(
+    bool isOld = widget.map.isUpdatable;
+    _clientVersion = widget.map.clientVersion;
+    _updateVersion = widget.map.updateVersion;
+    return Slidable(
+      endActionPane: ActionPane(motion: const ScrollMotion(), extentRatio: 0.25, children: [
+        SlidableAction(
+          onPressed: (context) => widget.deleteMap(widget.map),
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.zero,
+          icon: Icons.delete,
+        )
+      ]),
+      child: ListTile(
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            width: 50,
+            child: Image.memory(_getMapImage(widget.map)),
+          ),
+          title: Text(
+            widget.map.name,
+            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FutureBuilder<ui.Image?>(
-                future: _mapIconFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState != ConnectionState.done || snapshot.data == null) {
-                    return Container();
-                  }
-                  return Container(
-                    padding: const EdgeInsets.all(8),
-                    width: 50,
-                    child: RawImage(image: snapshot.data!),
-                  );
-                },
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 5),
-                      child: Text(
-                        widget.map.getName(),
-                        style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 5),
-                      child: Text(
-                        "${(widget.map.getTotalSize() / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    Text("Current Version: ${_clientVersion.major}.${_clientVersion.minor}"),
-                    if (_updateVersion.major != 0 && _updateVersion.minor != 0)
-                      Text("New version available: ${_updateVersion.major}.${_updateVersion.minor}")
-                    else
-                      const Text("Version up to date"),
-                  ],
+              Text(
+                "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
                 ),
               ),
-              if (isOld)
-                const Icon(
-                  Icons.warning,
-                  color: Colors.orange,
-                ),
-              const SizedBox(
-                width: 10,
-              )
+              Text("Current Version: ${_clientVersion.major}.${_clientVersion.minor}"),
+              if (_updateVersion.major != 0 && _updateVersion.minor != 0)
+                Text("New version available: ${_updateVersion.major}.${_updateVersion.minor}")
+              else
+                const Text("Version up to date"),
             ],
           ),
-          if (!widget.isLast)
-            const Divider(
-              color: Colors.grey,
-              indent: 10,
-              endIndent: 20,
-            )
-        ],
-      ),
+          trailing: (isOld)
+              ? const Icon(
+                  Icons.warning,
+                  color: Colors.orange,
+                )
+              : null),
     );
   }
 
   // Method that returns the image of a map
-  Future<ui.Image> _getMapImage(ContentStoreItem map) async {
-    final countryCodes = map.getCountryCodes();
-    final rawCountryImage = await MapDetails.getCountryFlag(countryCodes[0], XyType<int>(x: 100, y: 100));
-    return rawCountryImage!;
+  Uint8List _getMapImage(ContentStoreItem map) {
+    final countryCodes = map.countryCodes;
+    final countryImage = MapDetails.getCountryFlag(countryCode: countryCodes[0], size: const Size(100, 100));
+    return countryImage;
   }
 }

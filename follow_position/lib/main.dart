@@ -1,92 +1,90 @@
-import 'package:gem_kit/api/gem_mapviewpreferences.dart';
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/gem_kit_position.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+import 'package:gem_kit/sense.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Animation;
 
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
-  runApp(const FollowPositionApp());
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
+  runApp(const MyApp());
 }
 
-class FollowPositionApp extends StatelessWidget {
-  const FollowPositionApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Follow Position',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const FollowPositionPage());
+    return const MaterialApp(title: 'Follow Position', debugShowCheckedModeBanner: false, home: MyHomePage());
   }
 }
 
-class FollowPositionPage extends StatefulWidget {
-  const FollowPositionPage({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<FollowPositionPage> createState() => _FollowPositionPageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _FollowPositionPageState extends State<FollowPositionPage> {
+class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
-  late PermissionStatus _locationPermissionStatus = PermissionStatus.denied;
 
-  late PositionService _positionService;
-  late bool _hasLiveDataSource = false;
+  PermissionStatus _locationPermissionStatus = PermissionStatus.denied;
+  bool _hasLiveDataSource = false;
+
+  @override
+  void dispose() {
+    GemKit.release();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Follow Position',
-            style: TextStyle(color: Colors.white)),
+        title: const Text('Follow Position', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
               onPressed: _onFollowPositionButtonPressed,
               icon: const Icon(
-                CupertinoIcons.location,
+                Icons.location_searching_sharp,
                 color: Colors.white,
               ))
         ],
       ),
       body: GemMap(
-        onMapCreated: _onMapCreatedCallback,
+        onMapCreated: _onMapCreated,
       ),
     );
   }
 
-  // The callback for when map is ready to use
-  _onMapCreatedCallback(GemMapController controller) async {
-    // Save controller for further usage
+  // The callback for when map is ready to use.
+  void _onMapCreated(GemMapController controller) async {
+    // Save controller for further usage.
     _mapController = controller;
-
-    // Create the position service
-    _positionService = await PositionService.create(controller.mapId);
   }
 
-  _onFollowPositionButtonPressed() async {
+  void _onFollowPositionButtonPressed() async {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
-      // The SDK handles the request of permission for location
+      // The SDK handles the request of permission for location.
       _locationPermissionStatus = PermissionStatus.granted;
     } else {
-      // For Android & iOS platforms, permission_handler package is used to ask for permissions
+      // For Android & iOS platforms, permission_handler package is used to ask for permissions.
       _locationPermissionStatus = await Permission.locationWhenInUse.request();
     }
 
@@ -94,18 +92,19 @@ class _FollowPositionPageState extends State<FollowPositionPage> {
       return;
     }
 
-    // After the permission was granted, we can set the live data source (in most cases the GPS)
-    // The data source should be set only once, otherwise we'll get -5 error
+    // After the permission was granted, we can set the live data source (in most cases the GPS).
+    // The data source should be set only once, otherwise we'll get -5 error.
     if (!_hasLiveDataSource) {
-      _positionService.setLiveDataSource();
+      PositionService.instance.setLiveDataSource();
       _hasLiveDataSource = true;
     }
 
-    // After data source is set, startFollowingPosition can be safely called
+    // After data source is set, startFollowingPosition can be safely called.
     if (_locationPermissionStatus == PermissionStatus.granted) {
       // Optionally, we can set an animation
-      final animation = GemAnimation(type: EAnimation.AnimationLinear);
+      final animation = GemAnimation(type: Animation.linear);
 
+      // Calling the start following position SDK method.
       _mapController.startFollowingPosition(animation: animation);
     }
     setState(() {});

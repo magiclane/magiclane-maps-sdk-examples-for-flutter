@@ -1,46 +1,48 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:gem_kit/api/gem_mapviewpreferences.dart';
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
-  runApp(const PerspectiveMapApp());
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
+  runApp(const MyApp());
 }
 
-class PerspectiveMapApp extends StatelessWidget {
-  const PerspectiveMapApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Perspective Map',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const PerspectiveMapPage());
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Map Perspective',
+      home: MyHomePage(),
+    );
   }
 }
 
-class PerspectiveMapPage extends StatefulWidget {
-  const PerspectiveMapPage({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<PerspectiveMapPage> createState() => _PerspectiveMapPageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _PerspectiveMapPageState extends State<PerspectiveMapPage> {
+class _MyHomePageState extends State<MyHomePage> {
   // Map preferences are used to change map perspective
   late MapViewPreferences _mapPreferences;
 
@@ -51,6 +53,12 @@ class _PerspectiveMapPageState extends State<PerspectiveMapPage> {
 
   // Tilt angle for orthogonal/vertical view
   final double _2dViewAngle = 90;
+
+  @override
+  void dispose() {
+    GemKit.release();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,24 +76,24 @@ class _PerspectiveMapPageState extends State<PerspectiveMapPage> {
         ],
       ),
       body: GemMap(
-        onMapCreated: _onMapCreatedCallback,
+        onMapCreated: _onMapCreated,
       ),
     );
   }
 
   // The callback for when map is ready to use
-  _onMapCreatedCallback(GemMapController controller) async {
-    _mapPreferences = controller.preferences();
+  void _onMapCreated(GemMapController controller) async {
+    _mapPreferences = controller.preferences;
   }
 
-  _onChangePersectiveButtonPressed() async {
+  void _onChangePersectiveButtonPressed() async {
     setState(() => _isInPerspectiveView = !_isInPerspectiveView);
 
     // Based on view type, set the view angle
     if (_isInPerspectiveView) {
-      _mapPreferences.setTiltAngle(_3dViewAngle);
+      _mapPreferences.tiltAngle = _3dViewAngle;
     } else {
-      _mapPreferences.setTiltAngle(_2dViewAngle);
+      _mapPreferences.tiltAngle = _2dViewAngle;
     }
   }
 }

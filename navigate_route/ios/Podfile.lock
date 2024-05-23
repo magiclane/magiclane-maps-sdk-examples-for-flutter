@@ -2,9 +2,9 @@ PODS:
   - Flutter (1.0.0)
   - flutter_tts (0.0.1):
     - Flutter
-  - gem_kit (1.8.0):
+  - gem_kit (1.9.0):
     - Flutter
-  - permission_handler_apple (9.1.1):
+  - permission_handler_apple (9.3.0):
     - Flutter
 
 DEPENDENCIES:
@@ -24,11 +24,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
 
 SPEC CHECKSUMS:
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
-  gem_kit: 2ca78aa2bcf5481620c5be5656ed5becdcd86ea5
-  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  gem_kit: 0a65652aa2a076310a86cec45d4e9b6efe283f4c
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
 
 PODFILE CHECKSUM: 176b5471b99dc31171d2eb9018ce88be808dc5fd
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.14.3

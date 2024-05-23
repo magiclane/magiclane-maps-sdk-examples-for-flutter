@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "Magic Lane B.V." "\0"
-            VALUE "FileDescription", "navigate_route" "\0"
+            VALUE "FileDescription", "gpx_route" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "navigate_route" "\0"
+            VALUE "InternalName", "gpx_route" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2017-2024 Magic Lane B.V. <info@magiclane.com>" "\0"
-            VALUE "OriginalFilename", "navigate_route.exe" "\0"
-            VALUE "ProductName", "navigate_route" "\0"
+            VALUE "OriginalFilename", "gpx_route.exe" "\0"
+            VALUE "ProductName", "gpx_route" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

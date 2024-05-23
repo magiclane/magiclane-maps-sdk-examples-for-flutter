@@ -1,7 +1,17 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+import 'package:flutter_tts/flutter_tts.dart';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'dart:async';
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter_tts/flutter_tts.dart';
 
 enum TtsState { playing, stopped, paused, continued }
 
@@ -16,13 +26,14 @@ class TTSEngine {
 
   TtsState ttsState = TtsState.stopped;
 
-  get isPlaying => ttsState == TtsState.playing;
-  get isStopped => ttsState == TtsState.stopped;
-  get isPaused => ttsState == TtsState.paused;
-  get isContinued => ttsState == TtsState.continued;
+  bool get isPlaying => ttsState == TtsState.playing;
+  bool get isStopped => ttsState == TtsState.stopped;
+  bool get isPaused => ttsState == TtsState.paused;
+  bool get isContinued => ttsState == TtsState.continued;
 
   bool get isIOS => !kIsWeb && Platform.isIOS;
   bool get isAndroid => !kIsWeb && Platform.isAndroid;
+  bool get isWindows => !kIsWeb && Platform.isWindows;
   bool get isWeb => kIsWeb;
 
   void initTts() {
@@ -42,10 +53,6 @@ class TTSEngine {
     flutterTts.setStartHandler(() {
       ttsState = TtsState.playing;
     });
-
-    if (isAndroid) {
-      flutterTts.setInitHandler(() {});
-    }
 
     flutterTts.setCompletionHandler(() {
       ttsState = TtsState.stopped;
@@ -68,15 +75,15 @@ class TTSEngine {
     });
   }
 
-  Future _getDefaultEngine() async {
+  Future<void> _getDefaultEngine() async {
     await flutterTts.getDefaultEngine;
   }
 
-  Future _getDefaultVoice() async {
+  Future<void> _getDefaultVoice() async {
     await flutterTts.getDefaultVoice;
   }
 
-  Future setVolume(double volume) async {
+  Future<void> setVolume(double volume) async {
     await flutterTts.setVolume(volume);
   }
 
@@ -86,7 +93,7 @@ class TTSEngine {
     await flutterTts.speak(text);
   }
 
-  Future _setAwaitOptions() async {
+  Future<void> _setAwaitOptions() async {
     await flutterTts.awaitSpeakCompletion(true);
   }
 

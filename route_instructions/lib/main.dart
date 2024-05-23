@@ -1,28 +1,24 @@
-import 'instruction_model.dart';
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+import 'package:gem_kit/routing.dart';
+
 import 'route_instructions_page.dart';
 import 'utility.dart';
 
-import 'package:gem_kit/api/gem_coordinates.dart';
-import 'package:gem_kit/api/gem_landmark.dart';
-import 'package:gem_kit/api/gem_progresslistener.dart';
-import 'package:gem_kit/api/gem_routingpreferences.dart';
-import 'package:gem_kit/api/gem_routingservice.dart' as gem;
-import 'package:gem_kit/api/gem_routingservice.dart';
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/gem_kit_basic.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+import 'package:flutter/material.dart' hide Route;
 
-import 'package:flutter/material.dart';
+void main() {
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  const token = 'YOUR_API_TOKEN';
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
+  GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -30,7 +26,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -50,25 +45,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
-  ProgressListener? routeListener;
-  bool haveRoutes = false;
 
-  Future<List<RouteInstructionModel>>? instructions;
-  List<gem.Route> shownRoutes = [];
+  // We use the handler to cancel the route calculation.
+  TaskHandler? _routingHandler;
+  bool _areRoutesBuilt = false;
 
-  List<Coordinates> waypoints = [];
+  List<RouteInstruction>? instructions;
 
   @override
-  void initState() {
-    super.initState();
-
-    waypoints.add(Coordinates(latitude: 50.11428, longitude: 8.68133));
-    waypoints.add(Coordinates(latitude: 49.0069, longitude: 8.4037));
-    waypoints.add(Coordinates(latitude: 48.1351, longitude: 11.5820));
-  }
-
-  Future<void> onMapCreated(GemMapController controller) async {
-    _mapController = controller;
+  void dispose() {
+    GemKit.release();
+    super.dispose();
   }
 
   @override
@@ -76,150 +63,140 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
+        title: const Text("Route Instructions", style: TextStyle(color: Colors.white)),
         actions: [
-          IconButton(
-            onPressed: () {
-              _onRouteCancelButtonPressed();
-              setState(() {
-                haveRoutes = false;
-              });
-            },
-            icon: Icon(Icons.cancel, color: (haveRoutes == true) ? Colors.white : Colors.grey),
-          ),
-          IconButton(
-            onPressed: () {
-              if (!haveRoutes) {
-                _computeRoute(waypoints, context);
-                setState(() {
-                  haveRoutes = true;
-                });
-              }
-            },
-            icon: Icon(Icons.route, color: (haveRoutes == false) ? Colors.white : Colors.grey),
-          ),
+          if (_areRoutesBuilt)
+            IconButton(
+              onPressed: _onRouteCancelButtonPressed,
+              icon: const Icon(Icons.cancel, color: Colors.white),
+            ),
+          if (!_areRoutesBuilt)
+            IconButton(
+              onPressed: () => _onBuildRouteButtonRoute(context),
+              icon: const Icon(Icons.route, color: Colors.white),
+            ),
         ],
         leading: Row(
           children: [
-            IconButton(
-              onPressed: () {
-                if (instructions != null) {
-                  _onRouteInstructionsButtonPressed();
-                }
-              },
-              icon: Icon(
-                Icons.density_medium_sharp,
-                color: (haveRoutes == true) ? Colors.white : Colors.grey,
+            if (_areRoutesBuilt)
+              IconButton(
+                onPressed: _onRouteInstructionsButtonPressed,
+                icon: const Icon(Icons.density_medium_sharp, color: Colors.white),
               ),
-            ),
           ],
-        ),
-        title: const Center(
-          child: Text(
-            "Route Instructions",
-            style: TextStyle(color: Colors.white),
-          ),
         ),
       ),
-      body: Center(
-        child: Stack(
-          children: [
-            GemMap(
-              onMapCreated: onMapCreated,
-            ),
-          ],
-        ),
+      body: GemMap(
+        onMapCreated: _onMapCreated,
       ),
     );
   }
 
-  _onRouteCancelButtonPressed() async {
-    if (routeListener != null) {
-      gem.RoutingService.cancelRoute(routeListener!);
-    }
-    _removeRoutes(shownRoutes);
-    instructions = clearInstructionsFuture();
+  // The callback for when map is ready to use.
+  void _onMapCreated(GemMapController controller) {
+    // Save controller for further usage.
+    _mapController = controller;
   }
 
-  Future<List<RouteInstructionModel>> clearInstructionsFuture() async {
-    return [];
-  }
+  void _onBuildRouteButtonRoute(BuildContext context) {
+    // Define the departure.
+    final departureLandmark = Landmark();
+    departureLandmark.coordinates = Coordinates(latitude: 50.11428, longitude: 8.68133);
 
-  _onRouteInstructionsButtonPressed() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => RouteInstructionsPage(instructionList: instructions!)));
-  }
+    // Define the intermediary point.
+    final intermediaryPointLandmark = Landmark();
+    intermediaryPointLandmark.coordinates = Coordinates(latitude: 49.0069, longitude: 8.4037);
 
-  _computeRoute(List<Coordinates> waypoints, BuildContext context) {
-    //Create a landmark list
-    final landmarkWaypoints = LandmarkList.create();
+    // Define the destination.
+    final destinationLandmark = Landmark();
+    destinationLandmark.coordinates = Coordinates(latitude: 48.1351, longitude: 11.5820);
 
-    //Create landmarks from coordinates and add them to the list
-    for (final wp in waypoints) {
-      var landmark = Landmark.create();
-      landmark.setCoordinates(Coordinates(latitude: wp.latitude, longitude: wp.longitude));
-      landmarkWaypoints.push_back(landmark);
-    }
-
+    // Define the route preferences.
     final routePreferences = RoutePreferences();
+    _showSnackBar(context);
 
-    routeListener = gem.RoutingService.calculateRoute(landmarkWaypoints, routePreferences, (err, routes) async {
-      if (err != GemError.success || routes == null) {
+    _routingHandler = RoutingService.calculateRoute(
+        [departureLandmark, intermediaryPointLandmark, destinationLandmark], routePreferences, (err, routes) async {
+      // If the route calculation is finished, we don't have a progress listener anymore.
+      _routingHandler = null;
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+
+      // If there is an error, we return from this callback.
+      if (err != GemError.success) {
+        setState(() {
+          _areRoutesBuilt = false;
+        });
         return;
-      } else {
-        // Get the controller's preferences
-        final mapViewPreferences = _mapController.preferences();
-        // Get the routes from the preferences
-        final routesMap = mapViewPreferences.routes();
-
-        bool firstRoute = true;
-        for (final route in routes) {
-          shownRoutes.add(route);
-
-          final timeDistance = route.getTimeDistance();
-
-          final totalDistance = convertDistance(timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM);
-
-          final totalTime = convertDuration(timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS);
-          //Add labels to the routes
-          routesMap.add(route, firstRoute, label: '$totalDistance \n $totalTime');
-          firstRoute = false;
-        }
-        // Select the first route as the main one
-        final mainRoute = routes.at(0);
-
-        final segments = mainRoute.getSegments();
-
-        _mapController.centerOnRoute(mainRoute);
-
-        instructions = _getInstructionsFromSegments(segments);
       }
+
+      // Get the routes collection from map preferences.
+      final routesMap = _mapController.preferences.routes;
+
+      // Select the first route as the main one.
+      final mainRoute = routes!.first;
+
+      // Display the routes on map.
+      for (final route in routes) {
+        routesMap.add(route, route == mainRoute, label: route.getMapLabel());
+      }
+
+      // Center the camera on routes.
+      _mapController.centerOnRoutes(routes);
+
+      // Get the segments of the main route.
+      final segments = mainRoute.segments;
+      instructions = _getInstructionsFromSegments(segments);
+    });
+
+    setState(() {
+      _areRoutesBuilt = true;
     });
   }
 
-  Future<List<RouteInstructionModel>> _getInstructionsFromSegments(RouteSegmentList segments) async {
-    List<Future<RouteInstructionModel>> instructionFutures = [];
+  void _onRouteCancelButtonPressed() async {
+    // Remove the routes from map.
+    _mapController.preferences.routes.clear();
 
-    //Parse all segments and gather all instructions
-
-    for (final segment in segments) {
-      final instructionsList = segment.getInstructions();
-
-      for (final instruction in instructionsList) {
-        final instr = RouteInstructionModel.fromGemRouteInstruction(instruction);
-        instructionFutures.add(instr);
-      }
+    if (_routingHandler != null) {
+      // Cancel the calculation of the route.
+      RoutingService.cancelRoute(_routingHandler!);
+      _routingHandler = null;
     }
-    List<RouteInstructionModel> instructions = await Future.wait(instructionFutures);
-    return instructions;
+
+    // Remove the instructions.
+    if (instructions != null) {
+      instructions!.clear();
+    }
+
+    setState(() {
+      _areRoutesBuilt = false;
+    });
   }
 
-  _removeRoutes(List<gem.Route> routes) async {
-    final prefs = _mapController.preferences();
-    final routesMap = prefs.routes();
+  void _onRouteInstructionsButtonPressed() {
+    Navigator.of(context)
+        .push(MaterialPageRoute<dynamic>(builder: (context) => RouteInstructionsPage(instructionList: instructions!)));
+  }
 
-    for (final route in routes) {
-      routesMap.remove(route);
+  //Parse all segments and gather all instructions
+  List<RouteInstruction> _getInstructionsFromSegments(RouteSegmentList segments) {
+    List<RouteInstruction> instructionsList = [];
+
+    for (final segment in segments) {
+      final segmentInstructions = segment.instructions;
+      instructionsList.addAll(segmentInstructions);
     }
-    shownRoutes.clear();
+    return instructionsList;
+  }
+
+  // Method to show message in case calculate route is not finished
+  void _showSnackBar(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text("The route is calculating."),
+      duration: Duration(hours: 1),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

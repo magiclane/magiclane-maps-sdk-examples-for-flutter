@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "Magic Lane B.V." "\0"
-            VALUE "FileDescription", "multiview_map" "\0"
+            VALUE "FileDescription", "multi_map_routing" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "multiview_map" "\0"
+            VALUE "InternalName", "multi_map_routing" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2017-2024 Magic Lane B.V. <info@magiclane.com>" "\0"
-            VALUE "OriginalFilename", "multiview_map.exe" "\0"
-            VALUE "ProductName", "multiview_map" "\0"
+            VALUE "OriginalFilename", "multi_map_routing.exe" "\0"
+            VALUE "ProductName", "multi_map_routing" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

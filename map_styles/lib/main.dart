@@ -1,22 +1,26 @@
-import 'package:gem_kit/api/gem_contentstore.dart';
-import 'package:gem_kit/api/gem_contentstoreitem.dart';
-import 'package:gem_kit/api/gem_contenttypes.dart';
-import 'package:gem_kit/api/gem_offboardlistener.dart';
-import 'package:gem_kit/api/gem_sdksettings.dart';
-import 'package:gem_kit/gem_kit_basic.dart';
-import 'package:gem_kit/gem_kit_map_controller.dart';
-import 'package:gem_kit/gem_kit_platform_interface.dart';
-import 'package:gem_kit/widget/gem_kit_map.dart';
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+// ignore_for_file: avoid_print
+
+import 'package:gem_kit/content_store.dart';
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
 
 import 'package:flutter/material.dart';
 
 import 'dart:async';
 
 void main() {
-  const token = "YOUR_API_TOKEN";
-  GemKitPlatform.instance.loadNative().then((value) {
-    SdkSettings.setAppAuthorization(token);
-  });
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  GemKit.initialize(appAuthorization: projectApiToken);
+
   runApp(const MyApp());
 }
 
@@ -44,19 +48,14 @@ class _MyHomePageState extends State<MyHomePage> {
   // GemMapController object used to interact with the map
   late GemMapController _mapController;
 
-  List<ContentStoreItem> stylesList = [];
-  int indexOfCurrentStyle = 0;
-  bool isDownloadingStyle = false;
+  final _stylesList = <ContentStoreItem>[];
+  int _indexOfCurrentStyle = 0;
+  bool _isDownloadingStyle = false;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  Future<void> onMapCreated(GemMapController controller) async {
-    _mapController = controller;
-    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(EServiceGroupType.ContentService, true);
-    await getStyles();
+  void dispose() {
+    GemKit.release();
+    super.dispose();
   }
 
   @override
@@ -69,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(color: Colors.white),
         ),
         actions: [
-          if (isDownloadingStyle == true)
+          if (_isDownloadingStyle == true)
             const SizedBox(
               width: 20,
               height: 20,
@@ -83,24 +82,25 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => _onMapButtonTap(context), icon: const Icon(Icons.map_outlined, color: Colors.white))
         ],
       ),
-      body: Center(
-        child: GemMap(
-          onMapCreated: onMapCreated,
-        ),
-      ),
-      resizeToAvoidBottomInset: false,
+      body: GemMap(onMapCreated: _onMapCreated),
     );
   }
 
+  void _onMapCreated(GemMapController controller) async {
+    _mapController = controller;
+    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(ServiceGroupType.contentService, true);
+    getStyles();
+  }
+
   // Method to load the styles
-  Future<void> getStyles() async {
-    await ContentStore.asyncGetStoreContentList(EContentType.CT_ViewStyleLowRes, (err, items, isCached) {
+  void getStyles() {
+    ContentStore.asyncGetStoreContentList(ContentType.viewStyleLowRes, (err, items, isCached) {
       if (err != GemError.success || items == null) {
         return;
       }
 
       for (final item in items) {
-        stylesList.add(item);
+        _stylesList.add(item);
       }
       ScaffoldMessenger.of(context).clearSnackBars();
     });
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // Method to download a style
   Future<bool> _downloadStyle(ContentStoreItem style) async {
     setState(() {
-      isDownloadingStyle = true;
+      _isDownloadingStyle = true;
     });
     Completer<bool> completer = Completer<bool>();
     await style.asyncDownload((err) {
@@ -117,14 +117,14 @@ class _MyHomePageState extends State<MyHomePage> {
         // An error was encountered during download
         completer.complete(false);
         setState(() {
-          isDownloadingStyle = false;
+          _isDownloadingStyle = false;
         });
         return;
       }
       // Download was succesful
       completer.complete(true);
       setState(() {
-        isDownloadingStyle = false;
+        _isDownloadingStyle = false;
       });
     }, onProgressCallback: (progress) {
       // Gets called everytime download progresses with a value between [0, 100]
@@ -145,24 +145,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Method to change the current style
   Future<void> _onMapButtonTap(BuildContext context) async {
-    if (stylesList.isEmpty) {
+    if (_stylesList.isEmpty) {
       _showSnackBar(context);
-      await getStyles();
+      getStyles();
       return;
     }
 
-    final indexOfNextStyle = (indexOfCurrentStyle >= stylesList.length - 1) ? 0 : indexOfCurrentStyle + 1;
-    ContentStoreItem currentStyle = stylesList[indexOfNextStyle];
+    final indexOfNextStyle = (_indexOfCurrentStyle >= _stylesList.length - 1) ? 0 : _indexOfCurrentStyle + 1;
+    ContentStoreItem currentStyle = _stylesList[indexOfNextStyle];
 
-    if (currentStyle.isCompleted() == false) {
+    if (currentStyle.isCompleted == false) {
       final didDownloadSucessfully = await _downloadStyle(currentStyle);
       if (didDownloadSucessfully == false) return;
     }
 
-    indexOfCurrentStyle = indexOfNextStyle;
+    _indexOfCurrentStyle = indexOfNextStyle;
 
-    final String filename = currentStyle.getFileName();
-    _mapController.preferences().setMapStyleByPath(filename);
+    final String filename = currentStyle.fileName;
+    _mapController.preferences.setMapStyleByPath(filename);
     setState(() {});
   }
 }
