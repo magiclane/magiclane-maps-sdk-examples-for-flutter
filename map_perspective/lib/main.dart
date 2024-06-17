@@ -14,10 +14,10 @@ import 'package:gem_kit/map.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -65,12 +65,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Perspective Map', style: TextStyle(color: Colors.white)),
+        title: const Text('Perspective Map',
+            style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
               onPressed: _onChangePersectiveButtonPressed,
               icon: Icon(
-                _isInPerspectiveView ? CupertinoIcons.view_2d : CupertinoIcons.view_3d,
+                _isInPerspectiveView
+                    ? CupertinoIcons.view_2d
+                    : CupertinoIcons.view_3d,
                 color: Colors.white,
               ))
         ],

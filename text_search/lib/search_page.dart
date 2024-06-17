@@ -70,21 +70,22 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onSearchSubmitted(String text) {
-    SearchPreferences preferences = SearchPreferences(maxMatches: 40, allowFuzzyResults: true);
+    SearchPreferences preferences =
+        SearchPreferences(maxMatches: 40, allowFuzzyResults: true);
 
     search(text, widget.coordinates, preferences: preferences);
   }
 
-  late Completer<List<Landmark>> completer;
-
 // Search method. Text and coordinates parameters are mandatory, preferences are optional.
-  Future<void> search(String text, Coordinates coordinates, {SearchPreferences? preferences}) async {
-    completer = Completer<List<Landmark>>();
+  Future<void> search(String text, Coordinates coordinates,
+      {SearchPreferences? preferences}) async {
+    Completer<List<Landmark>> completer = Completer<List<Landmark>>();
 
 // Calling the search method from the sdk.
 // (err, results) - is a callback function that calls when the computing is done.
 // err is an error code, results is a list of landmarks
-    SearchService.search(text, coordinates, preferences: preferences, (err, results) async {
+    SearchService.search(text, coordinates, preferences: preferences,
+        (err, results) async {
       // If there is an error or there aren't any results, the method will return an empty list.
       if (err != GemError.success || results == null) {
         completer.complete([]);
@@ -121,19 +122,21 @@ class _SearchResultItemState extends State<SearchResultItem> {
         padding: const EdgeInsets.all(8),
         width: 50,
         child: Image.memory(
-          widget.landmark.getImage(size: const Size(100, 100)),
+          widget.landmark.getImage(),
         ),
       ),
       title: Text(
         widget.landmark.name,
         overflow: TextOverflow.fade,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
         maxLines: 2,
       ),
       subtitle: Text(
         '${widget.landmark.getFormattedDistance()} ${widget.landmark.getAddress()}',
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
       ),
     );
   }
@@ -153,7 +156,9 @@ extension LandmarkExtension on Landmark {
   String getFormattedDistance() {
     String formattedDistance = '';
 
-    double distance = (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) / 1000) as double;
+    double distance =
+        (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) /
+            1000) as double;
     formattedDistance = "${distance.toStringAsFixed(0)}km";
     return formattedDistance;
   }

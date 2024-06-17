@@ -45,11 +45,13 @@ class _MapsItemState extends State<MapsItem> {
     if (_isDownloadingOrWaiting()) {
       final errCode = widget.map.pauseDownload();
       if (errCode != GemError.success) {
-        print("Download pause for item ${widget.map.id} failed with code $errCode");
+        print(
+            "Download pause for item ${widget.map.id} failed with code $errCode");
         return;
       }
 
-      Future<dynamic>.delayed(const Duration(milliseconds: 500)).then((value) => _downloadMap());
+      Future<dynamic>.delayed(const Duration(milliseconds: 500))
+          .then((value) => _downloadMap());
     }
   }
 
@@ -68,15 +70,18 @@ class _MapsItemState extends State<MapsItem> {
   Widget build(BuildContext context) {
     return Slidable(
       enabled: _isDownloaded,
-      endActionPane: ActionPane(motion: const ScrollMotion(), extentRatio: 0.25, children: [
-        SlidableAction(
-          onPressed: (context) => _deleteMap(widget.map),
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          padding: EdgeInsets.zero,
-          icon: Icons.delete,
-        )
-      ]),
+      endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          extentRatio: 0.25,
+          children: [
+            SlidableAction(
+              onPressed: (context) => _deleteMap(widget.map),
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.zero,
+              icon: Icons.delete,
+            )
+          ]),
       child: ListTile(
         onTap: _onTileTap,
         leading: Container(
@@ -86,7 +91,8 @@ class _MapsItemState extends State<MapsItem> {
         ),
         title: Text(
           widget.map.name,
-          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
           "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
@@ -126,7 +132,8 @@ class _MapsItemState extends State<MapsItem> {
   // Method that returns the image of a map
   Uint8List _getMapImage(ContentStoreItem map) {
     final countryCodes = map.countryCodes;
-    final countryImage = MapDetails.getCountryFlag(countryCode: countryCodes[0], size: const Size(100, 100));
+    final countryImage = MapDetails.getCountryFlag(
+        countryCode: countryCodes[0], size: const Size(100, 100));
     return countryImage;
   }
 
@@ -144,32 +151,28 @@ class _MapsItemState extends State<MapsItem> {
   void _downloadMap() {
     // Download the map.
     widget.map.asyncDownload(_onMapDownloadFinished,
-        onProgressCallback: _onMapDownloadProgressUpdated, allowChargedNetworks: true);
+        onProgressCallback: _onMapDownloadProgressUpdated,
+        allowChargedNetworks: true);
   }
 
   void _pauseDownload() {
     // Pause the download.
     widget.map.pauseDownload();
+
     setState(() {});
   }
 
   void _onMapDownloadProgressUpdated(int progress) {
-    if (!mounted) return;
-    setState(() {
-      _downloadProgress = progress.toDouble();
-    });
+    if (mounted) {
+      setState(() => _downloadProgress = progress.toDouble());
+    }
   }
 
   void _onMapDownloadFinished(GemError err) {
-    // If there is an error, we return from this callback.
-    if (err != GemError.success) {
-      return;
+    // If there is no error, we change the state
+    if (err == GemError.success && mounted) {
+      setState(() => _isDownloaded = true);
     }
-    //Should not setState when widget is no longer in widget tree
-    if (!mounted) return;
-    setState(() {
-      _isDownloaded = true;
-    });
   }
 
   void _deleteMap(ContentStoreItem map) {

@@ -11,10 +11,10 @@ import 'package:gem_kit/map.dart';
 
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -24,7 +24,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(title: 'Multiview Map', debugShowCheckedModeBanner: false, home: MyHomePage());
+    return const MaterialApp(
+        title: 'Multiview Map',
+        debugShowCheckedModeBanner: false,
+        home: MyHomePage());
   }
 }
 
@@ -49,7 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.deepPurple[900],
-          title: const Text('Multiview Map', style: TextStyle(color: Colors.white)),
+          title: const Text('Multiview Map',
+              style: TextStyle(color: Colors.white)),
           actions: [
             IconButton(
                 onPressed: _addViewButtonPressed,
@@ -68,7 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // Arrange MapViews in a grid with fixed number on elements on row
         body: GridView.builder(
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2),
             itemCount: _mapViewsCount,
             itemBuilder: (context, index) {
               return Container(
@@ -77,7 +82,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       border: Border.all(color: Colors.black, width: 1),
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: const [
-                        BoxShadow(color: Colors.grey, offset: Offset(0, -2), spreadRadius: 1, blurRadius: 2)
+                        BoxShadow(
+                            color: Colors.grey,
+                            offset: Offset(0, -2),
+                            spreadRadius: 1,
+                            blurRadius: 2)
                       ]),
                   margin: const EdgeInsets.all(5),
                   child: const GemMap());

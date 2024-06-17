@@ -41,13 +41,17 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: _onLeadingPressed, icon: const Icon(CupertinoIcons.arrow_left)),
+        leading: IconButton(
+            onPressed: _onLeadingPressed,
+            icon: const Icon(CupertinoIcons.arrow_left)),
         title: const Text("Search Category"),
         backgroundColor: Colors.deepPurple[900],
         foregroundColor: Colors.white,
         actions: [
           if (landmarks.isEmpty)
-            IconButton(onPressed: () => _onSubmitted(_textController.text), icon: const Icon(Icons.search))
+            IconButton(
+                onPressed: () => _onSubmitted(_textController.text),
+                icon: const Icon(Icons.search))
         ],
       ),
       body: Column(
@@ -62,7 +66,8 @@ class _SearchPageState extends State<SearchPage> {
                   hintText: 'Enter text',
                   hintStyle: TextStyle(color: Colors.black),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.deepPurple, width: 2.0),
+                    borderSide:
+                        BorderSide(color: Colors.deepPurple, width: 2.0),
                   ),
                 ),
               ),
@@ -81,7 +86,8 @@ class _SearchPageState extends State<SearchPage> {
                   return CategoryItem(
                     onTap: () => _onCategoryTap(index),
                     category: widget.categories[index],
-                    categoryIcon: widget.categories[index].getImage(size: const Size(100, 100)),
+                    categoryIcon:
+                        widget.categories[index].getImage(size: Size(200, 200)),
                   );
                 },
               ),
@@ -112,7 +118,7 @@ class _SearchPageState extends State<SearchPage> {
 
   int? _isCategorySelected(LandmarkCategory category) {
     for (int index = 0; index < selectedCategories.length; index++) {
-      if (category.getId() == selectedCategories[index].getId()) {
+      if (category.id == selectedCategories[index].id) {
         return index;
       }
     }
@@ -121,8 +127,11 @@ class _SearchPageState extends State<SearchPage> {
 
   void _onSubmitted(String text) {
     // Setting the preferences so the results are only from the selected categories
-    SearchPreferences preferences =
-        SearchPreferences(maxMatches: 40, allowFuzzyResults: false, searchMapPOIs: true, searchAddresses: false);
+    SearchPreferences preferences = SearchPreferences(
+        maxMatches: 40,
+        allowFuzzyResults: false,
+        searchMapPOIs: true,
+        searchAddresses: false);
 
     // Adding in search preferences the selected categories
     for (final category in selectedCategories) {
@@ -135,13 +144,15 @@ class _SearchPageState extends State<SearchPage> {
   late Completer<List<Landmark>> completer;
 
   // Search method
-  Future<void> search(String text, Coordinates coordinates, SearchPreferences preferences) async {
+  Future<void> search(String text, Coordinates coordinates,
+      SearchPreferences preferences) async {
     completer = Completer<List<Landmark>>();
 
     // Calling the search around position SDK method.
     // (err, results) - is a callback function that calls when the computing is done.
     // err is an error code, results is a list of landmarks
-    SearchService.searchAroundPosition(coordinates, preferences: preferences, textFilter: text, (err, results) async {
+    SearchService.searchAroundPosition(coordinates,
+        preferences: preferences, textFilter: text, (err, results) async {
       // If there is an error or there aren't any results, the method will return an empty list.
       if (err != GemError.success || results == null) {
         completer.complete([]);
@@ -185,7 +196,11 @@ class CategoryItem extends StatefulWidget {
   final Uint8List categoryIcon;
   final VoidCallback onTap;
 
-  const CategoryItem({super.key, required this.category, required this.onTap, required this.categoryIcon});
+  const CategoryItem(
+      {super.key,
+      required this.category,
+      required this.onTap,
+      required this.categoryIcon});
 
   @override
   State<CategoryItem> createState() => _CategoryItemState();
@@ -210,7 +225,10 @@ class _CategoryItemState extends State<CategoryItem> {
           child: Image.memory(widget.categoryIcon),
         ),
         title: Text(widget.category.name,
-            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600)),
+            style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600)),
         trailing: (_isSelected)
             ? const SizedBox(
                 width: 50,
@@ -242,19 +260,21 @@ class _SearchResultItemState extends State<SearchResultItem> {
         padding: const EdgeInsets.all(8),
         width: 50,
         child: Image.memory(
-          widget.landmark.getImage(size: const Size(100, 100)),
+          widget.landmark.getImage(),
         ),
       ),
       title: Text(
         widget.landmark.name,
         overflow: TextOverflow.fade,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
         maxLines: 2,
       ),
       subtitle: Text(
         widget.landmark.getFormattedDistance() + widget.landmark.getAddress(),
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
       ),
     );
   }
@@ -274,7 +294,9 @@ extension LandmarkExtension on Landmark {
   String getFormattedDistance() {
     String formattedDistance = '';
 
-    double distance = (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) / 1000) as double;
+    double distance =
+        (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) /
+            1000) as double;
     formattedDistance = "${distance.toStringAsFixed(0)}km";
     return formattedDistance;
   }

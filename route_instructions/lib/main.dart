@@ -15,10 +15,10 @@ import 'utility.dart';
 
 import 'package:flutter/material.dart' hide Route;
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -63,7 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text("Route Instructions", style: TextStyle(color: Colors.white)),
+        title: const Text("Route Instructions",
+            style: TextStyle(color: Colors.white)),
         actions: [
           if (_areRoutesBuilt)
             IconButton(
@@ -81,7 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
             if (_areRoutesBuilt)
               IconButton(
                 onPressed: _onRouteInstructionsButtonPressed,
-                icon: const Icon(Icons.density_medium_sharp, color: Colors.white),
+                icon:
+                    const Icon(Icons.density_medium_sharp, color: Colors.white),
               ),
           ],
         ),
@@ -100,57 +102,49 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonRoute(BuildContext context) {
     // Define the departure.
-    final departureLandmark = Landmark();
-    departureLandmark.coordinates = Coordinates(latitude: 50.11428, longitude: 8.68133);
+    final departureLandmark =
+        Landmark.withLatLng(latitude: 50.11428, longitude: 8.68133);
 
     // Define the intermediary point.
-    final intermediaryPointLandmark = Landmark();
-    intermediaryPointLandmark.coordinates = Coordinates(latitude: 49.0069, longitude: 8.4037);
+    final intermediaryPointLandmark =
+        Landmark.withLatLng(latitude: 49.0069, longitude: 8.4037);
 
     // Define the destination.
-    final destinationLandmark = Landmark();
-    destinationLandmark.coordinates = Coordinates(latitude: 48.1351, longitude: 11.5820);
+    final destinationLandmark =
+        Landmark.withLatLng(latitude: 48.1351, longitude: 11.5820);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
-    _showSnackBar(context);
+    _showSnackBar(context, message: 'The route is calculating.');
 
     _routingHandler = RoutingService.calculateRoute(
-        [departureLandmark, intermediaryPointLandmark, destinationLandmark], routePreferences, (err, routes) async {
+        [departureLandmark, intermediaryPointLandmark, destinationLandmark],
+        routePreferences, (err, routes) async {
       // If the route calculation is finished, we don't have a progress listener anymore.
       _routingHandler = null;
 
       ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there is an error, we return from this callback.
-      if (err != GemError.success) {
+      // If there aren't an errors, we display the routes.
+      if (err == GemError.success) {
+        // Get the routes collection from map preferences.
+        final routesMap = _mapController.preferences.routes;
+
+        // Display the routes on map.
+        for (final route in routes!) {
+          routesMap.add(route, route == routes.first,
+              label: route.getMapLabel());
+        }
+
+        // Center the camera on routes.
+        _mapController.centerOnRoutes(routes);
+
+        // Get the segments of the main route.
+        instructions = _getInstructionsFromSegments(routes.first.segments);
         setState(() {
-          _areRoutesBuilt = false;
+          _areRoutesBuilt = true;
         });
-        return;
       }
-
-      // Get the routes collection from map preferences.
-      final routesMap = _mapController.preferences.routes;
-
-      // Select the first route as the main one.
-      final mainRoute = routes!.first;
-
-      // Display the routes on map.
-      for (final route in routes) {
-        routesMap.add(route, route == mainRoute, label: route.getMapLabel());
-      }
-
-      // Center the camera on routes.
-      _mapController.centerOnRoutes(routes);
-
-      // Get the segments of the main route.
-      final segments = mainRoute.segments;
-      instructions = _getInstructionsFromSegments(segments);
-    });
-
-    setState(() {
-      _areRoutesBuilt = true;
     });
   }
 
@@ -175,12 +169,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onRouteInstructionsButtonPressed() {
-    Navigator.of(context)
-        .push(MaterialPageRoute<dynamic>(builder: (context) => RouteInstructionsPage(instructionList: instructions!)));
+    Navigator.of(context).push(MaterialPageRoute<dynamic>(
+        builder: (context) =>
+            RouteInstructionsPage(instructionList: instructions!)));
   }
 
   //Parse all segments and gather all instructions
-  List<RouteInstruction> _getInstructionsFromSegments(RouteSegmentList segments) {
+  List<RouteInstruction> _getInstructionsFromSegments(
+      List<RouteSegment> segments) {
     List<RouteInstruction> instructionsList = [];
 
     for (final segment in segments) {
@@ -191,10 +187,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished
-  void _showSnackBar(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text("The route is calculating."),
-      duration: Duration(hours: 1),
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

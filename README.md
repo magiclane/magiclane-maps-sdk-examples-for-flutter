@@ -11,6 +11,8 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Address Search](address_search) - Showcase address search functionality.
 * [Calculate Route](calculate_route) - Calculate & display route.
 * [Center Coordinates](center_coordinates) - Show how to center the map on coordinates.
+* [Draw Shapes](draw_shapes) - Show how to draw and center on a polyline, polygon and on points.
+* [Finger Route](finger_route) - Calculate & display route using fingers movement.
 * [Follow Position](follow_position) - Show how to set live datasource & `startFollowingPosition`.
 * [GPX Route](gpx_route) - Display a map. Calculate route. Display route. Start navigation.
 * [Hello Map](hello_map) - Display a map.
@@ -18,17 +20,24 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Map Compass](map_compass) - Display a map. Show compass.
 * [Map Download](map_download) - Show list of maps. Show how to download maps.
 * [Map Perspective](map_perspective) - Show how to change map perspective, tilt angle.
+* [Map Selection](map_selection) - Show to save landmarks to your favorites list, as well as remove them from favorites list.
 * [Map Styles](map_styles) - Show list of styles. Show how to download and apply styles.
 * [Map Update](map_update) - Show list of maps. Show how to download maps.
-* [Multi-map routing](multi_map_routing) - Display a map. Show how to create multiple views.
+* [Multi-map Routing](multi_map_routing) - Display a map. Show how to create multiple views.
 * [Multimap View](multiview_map) - Show how to create multiple views.
 * [Navigate Route](navigate_route) - Calculate & display route. Navigate route.
-* [Route instructions](route_instructions) - Display a map. Show route instructions.
+* [Offline Routing](offline_routing) - Show how to download maps.
+* [Range Finder](range_finder) - Calculate & display route. Show route ranges panel.
+* [Route Instructions](route_instructions) - Display a map. Show route instructions.
+* [Route Profile](route_profile) - Show route profile panel (elevation chart, climb details).
 * [Save Favorites](save_favorites) - Show to save landmarks to your favorites list, as well as remove them from favorites list.
 * [Search Along Route](search_along_route) - Display a map. Calculate route. Display route. Show how to search along route.
-* [Search location](search_location) - Display a map. Text search. Shows search results and the distance towards them. Highlights the selected result on the map.
+* [Search Category](search_category) - Display a map. Text search. Shows search results and the distance towards them. Highlights the selected result on the map.
+* [Search Location](search_location) - Display a map. Text search. Shows search results and the distance towards them. Highlights the selected result on the map.
 * [Simulate Route](simulate_route) - Calculate & display route. Simulate route.
+* [Speed Watcher](speed_watcher) - Calculate & display route. Simulate route. Show speed indicator panel.
 * [Text Search](text_search) - Text search. Shows search results and the distance towards them. Highlights the selected result on the map.
+* [Voice Download](voice_download) - Show how to download and load voices.
 
 **Note:** As the very first step, we highly recommend that you get a token from [Magic Lane Portal](https://developer.magiclane.com/api). If no token is set, you can still test your apps, but a watermark will be displayed, and all the online services including mapping, searching, routing, etc. will slow down after a few minutes.
 

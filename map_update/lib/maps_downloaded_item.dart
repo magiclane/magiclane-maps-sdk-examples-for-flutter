@@ -20,7 +20,8 @@ class MapsDownloadedItem extends StatefulWidget {
   final ContentStoreItem map;
   final void Function(ContentStoreItem) deleteMap;
 
-  const MapsDownloadedItem({super.key, required this.map, required this.deleteMap});
+  const MapsDownloadedItem(
+      {super.key, required this.map, required this.deleteMap});
 
   @override
   State<MapsDownloadedItem> createState() => _MapsDownloadedItemState();
@@ -36,15 +37,18 @@ class _MapsDownloadedItemState extends State<MapsDownloadedItem> {
     _clientVersion = widget.map.clientVersion;
     _updateVersion = widget.map.updateVersion;
     return Slidable(
-      endActionPane: ActionPane(motion: const ScrollMotion(), extentRatio: 0.25, children: [
-        SlidableAction(
-          onPressed: (context) => widget.deleteMap(widget.map),
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          padding: EdgeInsets.zero,
-          icon: Icons.delete,
-        )
-      ]),
+      endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          extentRatio: 0.25,
+          children: [
+            SlidableAction(
+              onPressed: (context) => widget.deleteMap(widget.map),
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.zero,
+              icon: Icons.delete,
+            )
+          ]),
       child: ListTile(
           leading: Container(
             padding: const EdgeInsets.all(8),
@@ -53,7 +57,8 @@ class _MapsDownloadedItemState extends State<MapsDownloadedItem> {
           ),
           title: Text(
             widget.map.name,
-            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+                color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,9 +70,11 @@ class _MapsDownloadedItemState extends State<MapsDownloadedItem> {
                   fontSize: 16,
                 ),
               ),
-              Text("Current Version: ${_clientVersion.major}.${_clientVersion.minor}"),
+              Text(
+                  "Current Version: ${_clientVersion.major}.${_clientVersion.minor}"),
               if (_updateVersion.major != 0 && _updateVersion.minor != 0)
-                Text("New version available: ${_updateVersion.major}.${_updateVersion.minor}")
+                Text(
+                    "New version available: ${_updateVersion.major}.${_updateVersion.minor}")
               else
                 const Text("Version up to date"),
             ],
@@ -84,7 +91,8 @@ class _MapsDownloadedItemState extends State<MapsDownloadedItem> {
   // Method that returns the image of a map
   Uint8List _getMapImage(ContentStoreItem map) {
     final countryCodes = map.countryCodes;
-    final countryImage = MapDetails.getCountryFlag(countryCode: countryCodes[0], size: const Size(100, 100));
+    final countryImage = MapDetails.getCountryFlag(
+        countryCode: countryCodes[0], size: const Size(100, 100));
     return countryImage;
   }
 }

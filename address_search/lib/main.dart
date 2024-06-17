@@ -16,10 +16,10 @@ import 'package:flutter/material.dart' hide Animation;
 
 import 'dart:async';
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -58,11 +58,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Address Search', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('Address Search', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-              onPressed: () =>
-                  _onSearchButtonPressed(context).then((value) => ScaffoldMessenger.of(context).clearSnackBars()),
+              onPressed: () => _onSearchButtonPressed(context).then(
+                  (value) => ScaffoldMessenger.of(context).clearSnackBars()),
               icon: const Icon(
                 Icons.search,
                 color: Colors.white,
@@ -82,27 +83,34 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _onSearchButtonPressed(BuildContext context) async {
-    _showSnackBar(context);
+    _showSnackBar(context, message: "Search is in progress.");
 
     // Predefined landmark for Spain.
-    final countryLandmark = GuidedAddressSearchService.getCountryLevelItem('ESP');
+    final countryLandmark =
+        GuidedAddressSearchService.getCountryLevelItem('ESP');
     print('Country: ${countryLandmark.name}');
 
     // Use the address search to get a landmark for a city in Spain (e.g., Barcelona).
-    final cityLandmark =
-        await _searchAddress(landmark: countryLandmark, detailLevel: AddressDetailLevel.city, text: 'Barcelona');
+    final cityLandmark = await _searchAddress(
+        landmark: countryLandmark,
+        detailLevel: AddressDetailLevel.city,
+        text: 'Barcelona');
     if (cityLandmark == null) return;
     print('City: ${cityLandmark.name}');
 
     // Use the address search to get a predefined street's landmark in the city (e.g., Carrer de Mallorca).
     final streetLandmark = await _searchAddress(
-        landmark: cityLandmark, detailLevel: AddressDetailLevel.street, text: 'Carrer de Mallorca');
+        landmark: cityLandmark,
+        detailLevel: AddressDetailLevel.street,
+        text: 'Carrer de Mallorca');
     if (streetLandmark == null) return;
     print('Street: ${streetLandmark.name}');
 
     // Use the address search to get a predefined house number's landmark on the street (e.g., House Number 401).
-    final houseNumberLandmark =
-        await _searchAddress(landmark: streetLandmark, detailLevel: AddressDetailLevel.houseNumber, text: '401');
+    final houseNumberLandmark = await _searchAddress(
+        landmark: streetLandmark,
+        detailLevel: AddressDetailLevel.houseNumber,
+        text: '401');
     if (houseNumberLandmark == null) return;
     print('House number: ${houseNumberLandmark.name}');
 
@@ -115,28 +123,28 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController.activateHighlight([landmark]);
 
     // Create an animation (optional).
-    final animation = GemAnimation(type: Animation.linear);
+    final animation = GemAnimation(type: AnimationType.linear);
 
     // Use the map controller to center on coordinates.
-    _mapController.centerOnCoordinates(landmark.coordinates, animation: animation);
+    _mapController.centerOnCoordinates(landmark.coordinates,
+        animation: animation);
   }
 
   // Address search method.
   Future<Landmark?> _searchAddress(
-      {required Landmark landmark, required AddressDetailLevel detailLevel, required String text}) async {
+      {required Landmark landmark,
+      required AddressDetailLevel detailLevel,
+      required String text}) async {
     final completer = Completer<Landmark?>();
 
     // Calling the address search SDK method.
     // (err, results) - is a callback function that gets called when the search is finished.
     // err is an error enum, results is a list of landmarks.
-    GuidedAddressSearchService.search(text, landmark, detailLevel, (err, results) {
+    GuidedAddressSearchService.search(text, landmark, detailLevel,
+        (err, results) {
       // If there is an error, the method will return a null list.
-      if (err != GemError.success && err != GemError.reducedResult) {
-        completer.complete(null);
-        return;
-      }
-
-      if (results!.isEmpty) {
+      if (err != GemError.success && err != GemError.reducedResult ||
+          results!.isEmpty) {
         completer.complete(null);
         return;
       }
@@ -148,10 +156,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Show a snackbar indicating that the search is in progress.
-  void _showSnackBar(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text("Search is in progress."),
-      duration: Duration(hours: 1),
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

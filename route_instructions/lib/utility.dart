@@ -41,8 +41,10 @@ Future<Uint8List?> imageToUint8List(Image? image) async {
 // Define an extension for route for calculating the route label which will be displayed on map
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM;
-    final totalDuration = timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS;
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+        getTimeDistance().restrictedDistanceM;
+    final totalDuration =
+        getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
 
     return '${convertDistance(totalDistance)} \n${convertDuration(totalDuration)}';
   }
@@ -51,7 +53,8 @@ extension RouteExtension on Route {
 // Define an extension for route instruction to calculate distance and duration
 extension RouteInstructionExtension on RouteInstruction {
   String getFormattedDistanceUntilInstruction() {
-    final rawDistance = traveledTimeDistance.restrictedDistanceM + traveledTimeDistance.unrestrictedDistanceM;
+    final rawDistance = traveledTimeDistance.restrictedDistanceM +
+        traveledTimeDistance.unrestrictedDistanceM;
     return convertDistance(rawDistance);
   }
 }

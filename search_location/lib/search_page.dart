@@ -77,7 +77,8 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
           ),
-          ElevatedButton(onPressed: _onSearchSubmitted, child: const Text("Search")),
+          ElevatedButton(
+              onPressed: _onSearchSubmitted, child: const Text("Search")),
           Expanded(
             child: ListView.separated(
               padding: EdgeInsets.zero,
@@ -110,7 +111,8 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     Coordinates coords = Coordinates(latitude: latitude, longitude: longitude);
-    SearchPreferences preferences = SearchPreferences(maxMatches: 40, allowFuzzyResults: true);
+    SearchPreferences preferences =
+        SearchPreferences(maxMatches: 40, allowFuzzyResults: true);
 
     search(coords, preferences: preferences);
   }
@@ -118,13 +120,15 @@ class _SearchPageState extends State<SearchPage> {
   late Completer<List<Landmark>> completer;
 
   // Search method. Coordinates are mandatory, preferences are optional.
-  Future<void> search(Coordinates coordinates, {SearchPreferences? preferences}) async {
+  Future<void> search(Coordinates coordinates,
+      {SearchPreferences? preferences}) async {
     completer = Completer<List<Landmark>>();
 
     // Calling the search around position SDK method.
     // (err, results) - is a callback function that calls when the computing is done.
     // err is an error code, results is a list of landmarks
-    SearchService.searchAroundPosition(coordinates, preferences: preferences, (err, results) async {
+    SearchService.searchAroundPosition(coordinates, preferences: preferences,
+        (err, results) async {
       // If there is an error or there aren't any results, the method will return an empty list.
       if (err != GemError.success || results == null) {
         completer.complete([]);
@@ -161,19 +165,21 @@ class _SearchResultItemState extends State<SearchResultItem> {
         padding: const EdgeInsets.all(8),
         width: 50,
         child: Image.memory(
-          widget.landmark.getImage(size: const Size(100, 100)),
+          widget.landmark.getImage(),
         ),
       ),
       title: Text(
         widget.landmark.name,
         overflow: TextOverflow.fade,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
         maxLines: 2,
       ),
       subtitle: Text(
         widget.landmark.getFormattedDistance() + widget.landmark.getAddress(),
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
       ),
     );
   }
@@ -193,7 +199,9 @@ extension LandmarkExtension on Landmark {
   String getFormattedDistance() {
     String formattedDistance = '';
 
-    double distance = (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) / 1000) as double;
+    double distance =
+        (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) /
+            1000) as double;
     formattedDistance = "${distance.toStringAsFixed(0)}km";
     return formattedDistance;
   }

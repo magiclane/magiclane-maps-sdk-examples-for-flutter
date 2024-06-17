@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 void main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -79,30 +79,30 @@ class _MyHomePageState extends State<MyHomePage> {
 // Taking the coordinates at the center of the screen as reference coordinates for search.
     final x = MediaQuery.of(context).size.width / 2;
     final y = MediaQuery.of(context).size.height / 2;
-    final mapCoords = _mapController.transformScreenToWgs(XyType(x: x.toInt(), y: y.toInt()));
+    final mapCoords =
+        _mapController.transformScreenToWgs(XyType(x: x.toInt(), y: y.toInt()));
 
 // Navigating to search screen. The result will be the selected search result(Landmark)
     final result = await Navigator.of(context).push(MaterialPageRoute<dynamic>(
       builder: (context) => SearchPage(coordinates: mapCoords!),
     ));
 
-    if (result is! Landmark) {
-      return;
+    if (result is Landmark) {
+      // Retrieves the LandmarkStore with the given name.
+      var historyStore = LandmarkStoreService.getLandmarkStoreByName("History");
+
+      // If there is no LandmarkStore with this name, then create it.
+      historyStore ??= LandmarkStoreService.createLandmarkStore("History");
+
+      // Add the landmark to the store.
+      historyStore.addLandmark(result);
+
+      // Activating the highlight
+      _mapController
+          .activateHighlight([result], renderSettings: RenderSettings());
+
+      // Centering the map on the desired coordinates
+      _mapController.centerOnCoordinates(result.coordinates);
     }
-
-    // Retrieves the LandmarkStore with the given name.
-    var historyStore = LandmarkStoreService.getLandmarkStoreByName("History");
-
-    // If there is no LandmarkStore with this name, then create it.
-    historyStore ??= LandmarkStoreService.createLandmarkStore("History");
-
-    // Add the landmark to the store.
-    historyStore.addLandmark(result);
-
-    // Activating the highlight
-    _mapController.activateHighlight([result], renderSettings: RenderSettings());
-
-    // Centering the map on the desired coordinates
-    _mapController.centerOnCoordinates(result.coordinates);
   }
 }

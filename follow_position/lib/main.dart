@@ -15,10 +15,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Animation;
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -28,7 +28,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(title: 'Follow Position', debugShowCheckedModeBanner: false, home: MyHomePage());
+    return const MaterialApp(
+        title: 'Follow Position',
+        debugShowCheckedModeBanner: false,
+        home: MyHomePage());
   }
 }
 
@@ -56,7 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Follow Position', style: TextStyle(color: Colors.white)),
+        title: const Text('Follow Position',
+            style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
               onPressed: _onFollowPositionButtonPressed,
@@ -88,25 +92,21 @@ class _MyHomePageState extends State<MyHomePage> {
       _locationPermissionStatus = await Permission.locationWhenInUse.request();
     }
 
-    if (_locationPermissionStatus != PermissionStatus.granted) {
-      return;
-    }
-
-    // After the permission was granted, we can set the live data source (in most cases the GPS).
-    // The data source should be set only once, otherwise we'll get -5 error.
-    if (!_hasLiveDataSource) {
-      PositionService.instance.setLiveDataSource();
-      _hasLiveDataSource = true;
-    }
-
-    // After data source is set, startFollowingPosition can be safely called.
     if (_locationPermissionStatus == PermissionStatus.granted) {
+      // After the permission was granted, we can set the live data source (in most cases the GPS).
+      // The data source should be set only once, otherwise we'll get -5 error.
+      if (!_hasLiveDataSource) {
+        PositionService.instance.setLiveDataSource();
+        _hasLiveDataSource = true;
+      }
+
       // Optionally, we can set an animation
-      final animation = GemAnimation(type: Animation.linear);
+      final animation = GemAnimation(type: AnimationType.linear);
 
       // Calling the start following position SDK method.
       _mapController.startFollowingPosition(animation: animation);
+
+      setState(() {});
     }
-    setState(() {});
   }
 }

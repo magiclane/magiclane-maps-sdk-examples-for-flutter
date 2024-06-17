@@ -6,6 +6,7 @@
 // Information and shall use it only in accordance with the terms of the
 // license agreement you entered into with Magic Lane.
 
+import 'package:gem_kit/core.dart';
 import 'package:gem_kit/navigation.dart';
 
 import 'utility.dart';
@@ -23,13 +24,15 @@ class NavigationInstructionPanel extends StatelessWidget {
       width: MediaQuery.of(context).size.width - 20,
       height: MediaQuery.of(context).size.height * 0.2,
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(
+          color: Colors.black, borderRadius: BorderRadius.circular(15)),
       child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
         Container(
           padding: const EdgeInsets.all(20),
           width: 100,
           child: Image.memory(
-            instruction.nextTurnDetails.getAbstractGeometryImage(size: const Size(50, 50)),
+            instruction.nextTurnDetails.getAbstractGeometryImage(
+                renderSettings: AbstractGeometryImageRenderSettings()),
             gaplessPlayback: true,
           ),
         ),
@@ -42,11 +45,17 @@ class NavigationInstructionPanel extends StatelessWidget {
               Text(
                 instruction.getFormattedDistanceToNextTurn(),
                 textAlign: TextAlign.left,
-                style: const TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.w600),
               ),
               Text(
                 instruction.nextStreetName,
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600),
               )
             ],
           ),

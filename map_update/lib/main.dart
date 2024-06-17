@@ -6,14 +6,15 @@
 // Information and shall use it only in accordance with the terms of the
 // license agreement you entered into with Magic Lane.
 
+// ignore_for_file: avoid_print
+
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
+import 'package:map_update/update_persistence.dart';
 
 import 'maps_page.dart';
 
 import 'package:flutter/material.dart';
-
-OffBoardListener? offBoardListener;
 
 // In order to test with older map you need to manually modify the app files on the device:
 // Put old region .cmap file into \Data\Maps
@@ -22,11 +23,14 @@ void main() {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
   GemKit.initialize(appAuthorization: projectApiToken).then((value) {
-    offBoardListener = OffBoardListener(false);
-    offBoardListener!.registerOnApiTokenUpdated(() {});
-
-    SdkSettings.setAllowConnection(true, offBoardListener!);
-    SdkSettings.setAppAuthorization(projectApiToken);
+    SdkSettings.setAllowConnection(true,
+        onWorldwideRoadMapSupportStatusCallback: (status) {
+      print("UpdatePersistence: onWorldwideRoadMapSupportStatus $status");
+      if (status != Status.upToDate) {
+        UpdatePersistence.instance.isOldData = true;
+      }
+    });
+    SdkSettings.appAuthorization = projectApiToken;
   });
 
   runApp(const MyApp());
@@ -39,7 +43,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Map update',
+      title: 'Map Update',
       home: MyHomePage(),
     );
   }
@@ -91,9 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Method to navigate to the Maps Page.
   void _onMapButtonTap(BuildContext context) async {
-    if (mapId == null) return;
-    Navigator.of(context).push(MaterialPageRoute<dynamic>(
-      builder: (context) => MapsPage(mapId: mapId!),
-    ));
+    if (mapId != null) {
+      Navigator.of(context).push(MaterialPageRoute<dynamic>(
+        builder: (context) => MapsPage(mapId: mapId!),
+      ));
+    }
   }
 }

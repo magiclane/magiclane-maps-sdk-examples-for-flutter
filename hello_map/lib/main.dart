@@ -6,15 +6,14 @@
 // Information and shall use it only in accordance with the terms of the
 // license agreement you entered into with Magic Lane.
 
+import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 
-import 'package:flutter/material.dart';
-
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }

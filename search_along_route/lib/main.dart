@@ -16,10 +16,10 @@ import 'package:gem_kit/search.dart';
 
 import 'package:flutter/material.dart' hide Route;
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -114,16 +114,14 @@ class _MyHomePageState extends State<MyHomePage> {
   // Compute & show route.
   Future<void> _onBuildRouteButtonPressed() async {
     // Define the departure.
-    final departureLandmark = Landmark();
-    departureLandmark.coordinates = Coordinates(latitude: 37.77903, longitude: -122.41991);
+    final departureLandmark = Landmark.withLatLng(latitude: 37.77903, longitude: -122.41991);
 
     // Define the destination.
-    final destinationLandmark = Landmark();
-    destinationLandmark.coordinates = Coordinates(latitude: 37.33619, longitude: -121.89058);
+    final destinationLandmark = Landmark.withLatLng(latitude: 37.33619, longitude: -121.89058);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
-    _showSnackBar(context);
+    _showSnackBar(context, message: 'The route is calculating.');
 
     _routingHandler =
         RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (err, routes) async {
@@ -132,28 +130,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there is an error, we return from this callback.
-      if (err != GemError.success) {
-        setState(() {
-          _areRoutesBuilt = false;
-        });
-        return;
-      }
-      // Get the routes collection from map preferences.
-      final routesMap = _mapController.preferences.routes;
+      // If there aren't any errors, we display the routes.
+      if (err == GemError.success) {
+        // Get the routes collection from map preferences.
+        final routesMap = _mapController.preferences.routes;
 
-      // Select the first route as the main one.
-      final mainRoute = routes!.first;
+        // Display the routes on map.
+        for (final route in routes!) {
+          routesMap.add(route, route == routes.first, label: route.getMapLabel());
+        }
 
-      // Display the routes on map.
-      for (final route in routes) {
-        routesMap.add(route, route == mainRoute, label: route.getMapLabel());
+        _mapController.centerOnRoute(routes.first);
       }
 
-      _mapController.centerOnRoute(mainRoute);
-    });
-    setState(() {
-      _areRoutesBuilt = true;
+      setState(() {
+        _areRoutesBuilt = true;
+      });
     });
   }
 
@@ -162,17 +154,15 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_isSimulationActive) return;
     if (!_areRoutesBuilt) return;
 
-    // Get the main route from map routes collection;
+    _mapController.preferences.routes.clearAllButMainRoute();
     final routes = _mapController.preferences.routes;
-    final mainRoute = routes.mainRoute;
-    _navigationHandler = NavigationService.startSimulation(mainRoute, speedMultiplier: 2, (type, instruction) {
+    _navigationHandler = NavigationService.startSimulation(routes.first, speedMultiplier: 2, (type, instruction) {
       if (type == NavigationEventType.destinationReached || type == NavigationEventType.error) {
         // If the navigation has ended or if and error occured while navigating, remove routes.
         setState(() {
           _isSimulationActive = false;
           _cancelRoute();
         });
-        return;
       }
     });
 
@@ -218,12 +208,11 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!_areRoutesBuilt) return;
 
     final routes = _mapController.preferences.routes;
-    final mainRoute = routes.mainRoute;
 
     // Calling the search along route SDK method.
     // (err, results) - is a callback function that gets called when the search is finished.
     // err is an error enum, results is a list of landmarks.
-    SearchService.searchAlongRoute(mainRoute, (err, results) {
+    SearchService.searchAlongRoute(routes.mainRoute, (err, results) {
       if (err != GemError.success || results == null) {
         print("SearchAlongRoute - no results found");
         return;
@@ -238,10 +227,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished
-  void _showSnackBar(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text("The route is calculating."),
-      duration: Duration(hours: 1),
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -251,8 +240,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM;
-    final totalDuration = timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS;
+    final totalDistance = getTimeDistance().unrestrictedDistanceM + getTimeDistance().restrictedDistanceM;
+    final totalDuration = getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
 
     return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
   }

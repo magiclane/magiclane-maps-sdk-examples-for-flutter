@@ -17,10 +17,10 @@ import 'utility.dart';
 
 import 'package:flutter/material.dart' hide Animation, Route;
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Simulate Route ',
+      title: 'Simulate Route',
       home: MyHomePage(),
     );
   }
@@ -136,16 +136,14 @@ class _MyHomePageState extends State<MyHomePage> {
 // Custom method for calling calculate route and displaying the results.
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark = Landmark();
-    departureLandmark.coordinates = Coordinates(latitude: 45.6517672, longitude: 25.6271132);
+    final departureLandmark = Landmark.withLatLng(latitude: 45.6517672, longitude: 25.6271132);
 
     // Define the destination.
-    final destinationLandmark = Landmark();
-    destinationLandmark.coordinates = Coordinates(latitude: 44.4379187, longitude: 26.0122374);
+    final destinationLandmark = Landmark.withLatLng(latitude: 44.4379187, longitude: 26.0122374);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
-    _showSnackBar(context);
+    _showSnackBar(context, message: 'The route is calculating.');
 
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
@@ -157,40 +155,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there is an error, we return from this callback.
-      if (err != GemError.success) {
-        setState(() {
-          _areRoutesBuilt = false;
-        });
-        return;
+      // If there aren't any errors, we display the routes.
+      if (err == GemError.success) {
+        // Get the routes collection from map preferences.
+        final routesMap = _mapController.preferences.routes;
+
+        // Display the routes on map.
+        for (final route in routes!) {
+          routesMap.add(route, route == routes.first, label: route.getMapLabel());
+        }
+
+        // Center the camera on routes.
+        _mapController.centerOnRoutes(routes);
       }
-      // Get the routes collection from map preferences.
-      final routesMap = _mapController.preferences.routes;
-
-      // Select the first route as the main one.
-      final mainRoute = routes!.first;
-
-      // Display the routes on map.
-      for (final route in routes) {
-        routesMap.add(route, route == mainRoute, label: route.getMapLabel());
-      }
-
-      // Center the camera on routes.
-      _mapController.centerOnRoutes(routes);
-    });
-
-    setState(() {
-      _areRoutesBuilt = true;
+      setState(() {
+        _areRoutesBuilt = true;
+      });
     });
   }
 
   // Method for starting the simulation and following the position,
   void _startSimulation() {
-    // Get the main route from map routes collection;
     final routes = _mapController.preferences.routes;
-    final mainRoute = routes.mainRoute;
 
-    _navigationHandler = NavigationService.startSimulation(mainRoute, (type, instruction) async {
+    _mapController.preferences.routes.clearAllButMainRoute();
+
+    _navigationHandler = NavigationService.startSimulation(routes.mainRoute, (type, instruction) async {
       if (type == NavigationEventType.destinationReached || type == NavigationEventType.error) {
         // If the navigation has ended or if and error occured while navigating, remove routes.
         setState(() {
@@ -201,11 +191,9 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       _isSimulationActive = true;
 
-      if (instruction == null) {
-        return;
+      if (instruction != null) {
+        setState(() => currentInstruction = instruction);
       }
-
-      setState(() => currentInstruction = instruction);
     });
 
     // Set the camera to follow position.
@@ -240,10 +228,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished,
-  void _showSnackBar(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text("The route is calculating."),
-      duration: Duration(hours: 1),
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

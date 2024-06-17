@@ -15,10 +15,10 @@ import 'landmark_panel.dart';
 
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -100,10 +100,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController = controller;
 
     // Retrieves the LandmarkStore with the given name.
-    _favoritesStore = LandmarkStoreService.getLandmarkStoreByName(favoritesStoreName);
+    _favoritesStore =
+        LandmarkStoreService.getLandmarkStoreByName(favoritesStoreName);
 
     // If there is no LandmarkStore with this name, then create it.
-    _favoritesStore ??= LandmarkStoreService.createLandmarkStore(favoritesStoreName);
+    _favoritesStore ??=
+        LandmarkStoreService.createLandmarkStore(favoritesStoreName);
 
     // Listen for map landmark selection events.
     _registerLandmarkTapCallback();
@@ -112,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _registerLandmarkTapCallback() {
     _mapController.registerTouchCallback((pos) async {
       // Select the object at the tap position.
-      await _mapController.selectMapObjects(pos);
+      _mapController.setCursorScreenPosition(pos);
 
       // Get the selected landmarks.
       final landmarks = _mapController.cursorSelectionLandmarks();
@@ -141,12 +143,12 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      final coordinates = _mapController.transformScreenToWgs(XyType(x: pos.x as int, y: pos.y as int));
+      final coordinates = _mapController
+          .transformScreenToWgs(XyType(x: pos.x as int, y: pos.y as int));
       if (coordinates == null) return;
 
       // If no landmark was found, we create one.
-      final lmk = Landmark();
-      lmk.coordinates = coordinates;
+      final lmk = Landmark.withCoordinates(coordinates);
       lmk.name = '${coordinates.latitude} ${coordinates.longitude}';
       lmk.setImageFromIconId(GemIcon.searchResultsPin);
 
@@ -178,20 +180,19 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) => FavoritesPage(landmarkList: favoritesList),
     ));
 
-    if (result is! Landmark) {
-      return;
+    if (result is Landmark) {
+      // Highlight the landmark on the map.
+      _mapController
+          .activateHighlight([result], renderSettings: RenderSettings());
+
+      // Centering the camera on landmark's coordinates.
+      _mapController.centerOnCoordinates(result.coordinates);
+
+      setState(() {
+        _focusedLandmark = result;
+      });
+      _checkIfFavourite();
     }
-
-    // Highlight the landmark on the map.
-    _mapController.activateHighlight([result], renderSettings: RenderSettings());
-
-    // Centering the camera on landmark's coordinates.
-    _mapController.centerOnCoordinates(result.coordinates);
-
-    setState(() {
-      _focusedLandmark = result;
-    });
-    _checkIfFavourite();
   }
 
   void _onCancelLandmarkPanelTap() {
@@ -228,7 +229,8 @@ class _MyHomePageState extends State<MyHomePage> {
       late Coordinates coords;
       coords = lmk.coordinates;
 
-      if (focusedLandmarkCoords.latitude == coords.latitude && focusedLandmarkCoords.longitude == coords.longitude) {
+      if (focusedLandmarkCoords.latitude == coords.latitude &&
+          focusedLandmarkCoords.longitude == coords.longitude) {
         setState(() {
           _isLandmarkFavorite = true;
         });

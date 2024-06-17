@@ -71,10 +71,10 @@ fi
 set -eEuo pipefail
 
 SDK_ARCHIVE_PATH=""
-BUILD_ANDROID=1
-BUILD_IOS=1
-BUILD_WEB=1
-FLUTTER_ANALYZE=1
+BUILD_ANDROID=false
+BUILD_IOS=false
+BUILD_WEB=false
+ANALYZE=false
 
 MY_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -127,16 +127,16 @@ while true; do
             SDK_ARCHIVE_PATH="${1}"
             ;;
         --android)
-            BUILD_ANDROID=0
+            BUILD_ANDROID=true
             ;;
         --ios)
-            BUILD_IOS=0
+            BUILD_IOS=true
             ;;
         --web)
-            BUILD_WEB=0
+            BUILD_WEB=true
             ;;
         --analyze)
-            FLUTTER_ANALYZE=0
+            ANALYZE=true
             ;;
         --)
             shift
@@ -152,7 +152,7 @@ done
 
 msg "Checking prerequisites..."
 
-if [ ${BUILD_IOS} -eq 0 ]; then
+if ${BUILD_IOS}; then
     if ! is_mac; then
         error_msg "Examples can be built for iOS/OSX only under OSX"
         exit 1
@@ -192,7 +192,7 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
 
     flutter pub upgrade --major-versions
 
-    if [ ${BUILD_IOS} -eq 0 ]; then
+    if ${BUILD_IOS}; then
         if is_mac; then
             (cd ios; pod install --repo-update; cd ..)
             flutter build ios --release --no-codesign
@@ -202,15 +202,15 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
         fi
     fi
 
-    if [ ${BUILD_ANDROID} -eq 0 ]; then
+    if ${BUILD_ANDROID}; then
         flutter build apk --release
     fi
 
-    if [ ${BUILD_WEB} -eq 0 ]; then
+    if ${BUILD_WEB}; then
         flutter build web --release
     fi
 
-    if [ ${FLUTTER_ANALYZE} -eq 0 ]; then
+    if ${ANALYZE}; then
         flutter analyze --preamble --no-pub --no-fatal-infos --no-fatal-warnings
     fi
 
@@ -222,23 +222,23 @@ pushd "${MY_DIR}" &>/dev/null
 if [ -d "APK" ]; then
     rm -rf "APK"
 fi
-if [ ${BUILD_ANDROID} -eq 0 ]; then
+if ${BUILD_ANDROID}; then
     mkdir APK
 fi
 
 if [ -d "WEB" ]; then
     rm -rf "WEB"
 fi
-if [ ${BUILD_WEB} -eq 0 ]; then
+if ${BUILD_WEB}; then
     mkdir WEB
 fi
 
 for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
     EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
-    if [ ${BUILD_ANDROID} -eq 0 ]; then
+    if ${BUILD_ANDROID}; then
         mv "${EXAMPLE_PATH}/build/app/outputs/flutter-apk"/app-release.apk "APK/${EXAMPLE_NAME}_app-release.apk"
     fi
-    if [ ${BUILD_WEB} -eq 0 ]; then
+    if ${BUILD_WEB}; then
         mkdir -p "WEB/${EXAMPLE_NAME}"
         mv "${EXAMPLE_PATH}/build/web"/* "WEB/${EXAMPLE_NAME}"/
     fi

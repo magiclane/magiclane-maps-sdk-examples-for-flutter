@@ -36,9 +36,15 @@ String convertDuration(int seconds) {
 }
 
 // Utility function to add the given additional time to current time
-String getCurrentTime({int additionalHours = 0, int additionalMinutes = 0, int additionalSeconds = 0}) {
+String getCurrentTime(
+    {int additionalHours = 0,
+    int additionalMinutes = 0,
+    int additionalSeconds = 0}) {
   var now = DateTime.now();
-  var updatedTime = now.add(Duration(hours: additionalHours, minutes: additionalMinutes, seconds: additionalSeconds));
+  var updatedTime = now.add(Duration(
+      hours: additionalHours,
+      minutes: additionalMinutes,
+      seconds: additionalSeconds));
   var formatter = DateFormat('HH:mm');
   return formatter.format(updatedTime);
 }
@@ -53,8 +59,10 @@ Future<Uint8List?> imageToUint8List(Image? image) async {
 // Define an extension for route for calculating the route label which will be displayed on map
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM;
-    final totalDuration = timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS;
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+        getTimeDistance().restrictedDistanceM;
+    final totalDuration =
+        getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
 
     return '${convertDistance(totalDistance)} \n${convertDuration(totalDuration)}';
   }
@@ -63,31 +71,33 @@ extension RouteExtension on Route {
 // Define an extension for navigation instruction to calculate distance and duration
 extension NavigationInstructionExtension on NavigationInstruction {
   String getFormattedDistanceToNextTurn() {
-    final totalDistanceToTurn =
-        timeDistanceToNextTurn.unrestrictedDistanceM + timeDistanceToNextTurn.restrictedDistanceM;
+    final totalDistanceToTurn = timeDistanceToNextTurn.unrestrictedDistanceM +
+        timeDistanceToNextTurn.restrictedDistanceM;
     return convertDistance(totalDistanceToTurn);
   }
 
   String getFormattedDurationToNextTurn() {
-    final totalDurationToTurn = timeDistanceToNextTurn.unrestrictedTimeS + timeDistanceToNextTurn.restrictedTimeS;
+    final totalDurationToTurn = timeDistanceToNextTurn.unrestrictedTimeS +
+        timeDistanceToNextTurn.restrictedTimeS;
     return convertDuration(totalDurationToTurn);
   }
 
   String getFormattedRemainingDistance() {
     final remainingDistance =
-        remainingTravelTimeDistance.unrestrictedDistanceM + remainingTravelTimeDistance.restrictedDistanceM;
+        remainingTravelTimeDistance.unrestrictedDistanceM +
+            remainingTravelTimeDistance.restrictedDistanceM;
     return convertDistance(remainingDistance);
   }
 
   String getFormattedRemainingDuration() {
-    final remainingDuration =
-        remainingTravelTimeDistance.unrestrictedTimeS + remainingTravelTimeDistance.restrictedTimeS;
+    final remainingDuration = remainingTravelTimeDistance.unrestrictedTimeS +
+        remainingTravelTimeDistance.restrictedTimeS;
     return convertDuration(remainingDuration);
   }
 
   String getFormattedETA() {
-    final remainingDuration =
-        remainingTravelTimeDistance.unrestrictedTimeS + remainingTravelTimeDistance.restrictedTimeS;
+    final remainingDuration = remainingTravelTimeDistance.unrestrictedTimeS +
+        remainingTravelTimeDistance.restrictedTimeS;
     return getCurrentTime(additionalSeconds: remainingDuration);
   }
 }

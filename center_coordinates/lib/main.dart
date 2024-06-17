@@ -11,10 +11,10 @@ import 'package:gem_kit/map.dart';
 
 import 'package:flutter/material.dart' hide Animation;
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -53,7 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Center Coordinates', style: TextStyle(color: Colors.white)),
+        title: const Text('Center Coordinates',
+            style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
               onPressed: _onCenterCoordinatesButtonPressed,
@@ -77,10 +78,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onCenterCoordinatesButtonPressed() {
     // Predefined coordinates for Rome, Italy.
-    final targetCoordinates = Coordinates(latitude: 41.902782, longitude: 12.496366);
+    final targetCoordinates =
+        Coordinates(latitude: 41.902782, longitude: 12.496366);
 
     // Create an animation (optional).
-    final animation = GemAnimation(type: Animation.linear);
+    final animation = GemAnimation(type: AnimationType.linear);
 
     // Use the map controller to center on coordinates.
     _mapController.centerOnCoordinates(targetCoordinates, animation: animation);

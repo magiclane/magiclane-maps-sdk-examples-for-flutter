@@ -16,10 +16,10 @@ import 'package:flutter/material.dart';
 
 import 'dart:async';
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Map styles',
+      title: 'Map Styles',
       home: MyHomePage(),
     );
   }
@@ -79,7 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           IconButton(
-              onPressed: () => _onMapButtonTap(context), icon: const Icon(Icons.map_outlined, color: Colors.white))
+              onPressed: () => _onMapButtonTap(context),
+              icon: const Icon(Icons.map_outlined, color: Colors.white))
         ],
       ),
       body: GemMap(onMapCreated: _onMapCreated),
@@ -88,21 +89,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onMapCreated(GemMapController controller) async {
     _mapController = controller;
-    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(ServiceGroupType.contentService, true);
+    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(
+        ServiceGroupType.contentService, true);
     getStyles();
   }
 
   // Method to load the styles
   void getStyles() {
-    ContentStore.asyncGetStoreContentList(ContentType.viewStyleLowRes, (err, items, isCached) {
-      if (err != GemError.success || items == null) {
-        return;
+    ContentStore.asyncGetStoreContentList(ContentType.viewStyleLowRes,
+        (err, items, isCached) {
+      if (err == GemError.success && items != null) {
+        for (final item in items) {
+          _stylesList.add(item);
+        }
+        ScaffoldMessenger.of(context).clearSnackBars();
       }
-
-      for (final item in items) {
-        _stylesList.add(item);
-      }
-      ScaffoldMessenger.of(context).clearSnackBars();
     });
   }
 
@@ -112,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _isDownloadingStyle = true;
     });
     Completer<bool> completer = Completer<bool>();
-    await style.asyncDownload((err) {
+    style.asyncDownload((err) {
       if (err != GemError.success) {
         // An error was encountered during download
         completer.complete(false);
@@ -134,10 +135,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case the styles are still loading
-  void _showSnackBar(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text("The map styles are loading"),
-      duration: Duration(hours: 1),
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -146,12 +148,14 @@ class _MyHomePageState extends State<MyHomePage> {
   // Method to change the current style
   Future<void> _onMapButtonTap(BuildContext context) async {
     if (_stylesList.isEmpty) {
-      _showSnackBar(context);
+      _showSnackBar(context, message: "The map styles are loading.");
       getStyles();
       return;
     }
 
-    final indexOfNextStyle = (_indexOfCurrentStyle >= _stylesList.length - 1) ? 0 : _indexOfCurrentStyle + 1;
+    final indexOfNextStyle = (_indexOfCurrentStyle >= _stylesList.length - 1)
+        ? 0
+        : _indexOfCurrentStyle + 1;
     ContentStoreItem currentStyle = _stylesList[indexOfNextStyle];
 
     if (currentStyle.isCompleted == false) {

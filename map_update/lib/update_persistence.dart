@@ -11,28 +11,17 @@
 import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
 
-import 'main.dart';
-
 // Singleton class for persisting update related state and logic between instances of MapsPage
 class UpdatePersistence {
   ContentUpdater? _contentUpdater;
-  bool _isOldData = false;
+  bool isOldData = false;
 
   void Function(int?)? onProgress;
   void Function(ContentUpdaterStatus)? onStatusChanged;
 
-  static final UpdatePersistence instance = UpdatePersistence._internal();
-
-  UpdatePersistence._internal() {
-    offBoardListener!.registerOnWorldwideRoadMapSupportStatus((status) {
-      print("UpdatePersistence: onWorldwideRoadMapSupportStatus $status");
-      if (status != Status.upToDate) {
-        _isOldData = true;
-      }
-    });
-  }
-
-  bool get isOldData => _isOldData;
+  UpdatePersistence._privateConstructor();
+  static final UpdatePersistence instance =
+      UpdatePersistence._privateConstructor();
 
   GemError checkForUpdate() {
     //The user will be notified via registerOnWorldwideRoadMapSupportStatus
@@ -48,8 +37,9 @@ class UpdatePersistence {
       true,
       onStatusUpdated: (status) {
         print("UpdatePersistence: onNotifyStatusChanged with code $status");
-        if (status == ContentUpdaterStatus.fullyReady || status == ContentUpdaterStatus.partiallyReady) {
-          _isOldData = false;
+        if (status == ContentUpdaterStatus.fullyReady ||
+            status == ContentUpdaterStatus.partiallyReady) {
+          isOldData = false;
 
           final err = _contentUpdater!.apply();
           print("UpdatePersistence: apply resolved with code ${err.code}");

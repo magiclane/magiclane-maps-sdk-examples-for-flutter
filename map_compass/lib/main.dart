@@ -14,10 +14,10 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -103,12 +103,14 @@ class _MyHomePageState extends State<MyHomePage> {
     mapController = controller;
 
     // Register the map angle update callback.
-    mapController.registerOnMapAngleUpdate((angle) => setState(() => compassAngle = angle));
+    mapController.registerOnMapAngleUpdate(
+        (angle) => setState(() => compassAngle = angle));
   }
 
   Uint8List _compassImage() {
     // We will use the SDK image for compass but any widget can be used to represent the compass.
-    final image = SdkSettings.getImageById(id: EngineMisc.compassEnableSensorOFF.id, size: const Size(100, 100));
+    final image = SdkSettings.getImageById(
+        id: EngineMisc.compassEnableSensorOFF.id, size: const Size(100, 100));
     return image;
   }
 

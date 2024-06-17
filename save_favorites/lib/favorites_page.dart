@@ -61,19 +61,21 @@ class _FavoritesItemState extends State<FavoritesItem> {
         padding: const EdgeInsets.all(8),
         width: 50,
         child: Image.memory(
-          widget.landmark.getImage(size: const Size(100, 100)),
+          widget.landmark.getImage(),
         ),
       ),
       title: Text(
         widget.landmark.name,
         overflow: TextOverflow.fade,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
         maxLines: 2,
       ),
       subtitle: Text(
         '${widget.landmark.coordinates.latitude.toString()}, ${widget.landmark.coordinates.longitude.toString()}',
         overflow: TextOverflow.fade,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
         maxLines: 2,
       ),
     );

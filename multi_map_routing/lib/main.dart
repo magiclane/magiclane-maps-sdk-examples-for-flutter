@@ -12,10 +12,10 @@ import 'package:gem_kit/routing.dart';
 
 import 'package:flutter/material.dart' hide Route;
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -25,7 +25,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(title: 'Multi Map Routing', debugShowCheckedModeBanner: false, home: MyHomePage());
+    return const MaterialApp(
+        title: 'Multi Map Routing',
+        debugShowCheckedModeBanner: false,
+        home: MyHomePage());
   }
 }
 
@@ -55,7 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Multi Map Routing', style: TextStyle(color: Colors.white)),
+        title: const Text('Multi Map Routing',
+            style: TextStyle(color: Colors.white)),
         leading: IconButton(
             onPressed: _removeRoutes,
             icon: const Icon(
@@ -102,12 +106,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Method to show message in case calculate route is not finished.
-  void _showSnackBar(BuildContext context, int map) {
-    String whichMap = map == 1 ? 'first' : 'second';
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(
-      content: Text("The $whichMap route is calculating."),
-      duration: const Duration(hours: 1),
+      content: Text(message),
+      duration: duration,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -129,23 +132,23 @@ class _MyHomePageState extends State<MyHomePage> {
     final waypoints = <Landmark>[];
     if (isFirstMap) {
       // Define the departure.
-      final departure = Landmark();
-      departure.coordinates = Coordinates(latitude: 37.77903, longitude: -122.41991);
+      final departure =
+          Landmark.withLatLng(latitude: 37.77903, longitude: -122.41991);
 
       // Define the destination.
-      final destination = Landmark();
-      destination.coordinates = Coordinates(latitude: 37.33619, longitude: -121.89058);
+      final destination =
+          Landmark.withLatLng(latitude: 37.33619, longitude: -121.89058);
 
       waypoints.add(departure);
       waypoints.add(destination);
     } else {
       // Define the departure.
-      final departure = Landmark();
-      departure.coordinates = Coordinates(latitude: 51.50732, longitude: -0.12765);
+      final departure =
+          Landmark.withLatLng(latitude: 51.50732, longitude: -0.12765);
 
       // Define the destination.
-      final destination = Landmark();
-      destination.coordinates = Coordinates(latitude: 51.27483, longitude: 0.52316);
+      final destination =
+          Landmark.withLatLng(latitude: 51.27483, longitude: 0.52316);
 
       waypoints.add(departure);
       waypoints.add(destination);
@@ -154,21 +157,29 @@ class _MyHomePageState extends State<MyHomePage> {
     // Define the route preferences.
     final routePreferences = RoutePreferences();
 
-    _showSnackBar(context, isFirstMap ? 1 : 2);
+    _showSnackBar(context,
+        message: isFirstMap
+            ? 'The first route is calculating.'
+            : 'The second route is calculating.');
 
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
     if (isFirstMap) {
       _routingHandler1 = RoutingService.calculateRoute(
-          waypoints, routePreferences, (err, routes) => _onRouteBuiltFinished(err, routes, true));
+          waypoints,
+          routePreferences,
+          (err, routes) => _onRouteBuiltFinished(err, routes, true));
     } else {
       _routingHandler2 = RoutingService.calculateRoute(
-          waypoints, routePreferences, (err, routes) => _onRouteBuiltFinished(err, routes, false));
+          waypoints,
+          routePreferences,
+          (err, routes) => _onRouteBuiltFinished(err, routes, false));
     }
   }
 
-  void _onRouteBuiltFinished(GemError err, List<Route>? routes, bool isFirstMap) {
+  void _onRouteBuiltFinished(
+      GemError err, List<Route>? routes, bool isFirstMap) {
     // If the route calculation is finished, we don't have a progress listener anymore.
     if (isFirstMap) {
       _routingHandler1 = null;
@@ -177,28 +188,32 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     ScaffoldMessenger.of(context).clearSnackBars();
-
-    // If there is an error, we return from this callback.
-    if (err != GemError.success) {
-      return;
+    if (_routingHandler1 != null) {
+      _showSnackBar(context, message: 'The first route is calculating.');
+    }
+    if (_routingHandler2 != null) {
+      _showSnackBar(context, message: 'The second route is calculating.');
     }
 
-    // Get the routes collection from map preferences.
-    final routesMap = (isFirstMap ? _mapController1.preferences : _mapController2.preferences).routes;
+    // If there aren't any errors, we display the routes.
+    if (err == GemError.success) {
+      // Get the routes collection from map preferences.
+      final routesMap = (isFirstMap
+              ? _mapController1.preferences
+              : _mapController2.preferences)
+          .routes;
 
-    // Select the first route as the main one.
-    final mainRoute = routes!.first;
+      // Display the routes on map.
+      for (final route in routes!) {
+        routesMap.add(route, route == routes.first, label: route.getMapLabel());
+      }
 
-    // Display the routes on map.
-    for (final route in routes) {
-      routesMap.add(route, route == mainRoute, label: route.getMapLabel());
-    }
-
-    // Center the camera on routes.
-    if (isFirstMap) {
-      _mapController1.centerOnRoutes(routes);
-    } else {
-      _mapController2.centerOnRoutes(routes);
+      // Center the camera on routes.
+      if (isFirstMap) {
+        _mapController1.centerOnRoutes(routes);
+      } else {
+        _mapController2.centerOnRoutes(routes);
+      }
     }
   }
 
@@ -224,8 +239,10 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM;
-    final totalDuration = timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS;
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+        getTimeDistance().restrictedDistanceM;
+    final totalDuration =
+        getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
 
     return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
   }

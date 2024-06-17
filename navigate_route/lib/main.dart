@@ -23,10 +23,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Route, Animation;
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -79,7 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Navigate Route", style: TextStyle(color: Colors.white)),
+        title:
+            const Text("Navigate Route", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           if (!_isNavigationActive && _areRoutesBuilt)
@@ -137,8 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
             bottom: MediaQuery.of(context).padding.bottom + 10,
             left: 0,
             child: NavigationBottomPanel(
-              remainingDistance: currentInstruction.getFormattedRemainingDistance(),
-              remainingDuration: currentInstruction.getFormattedRemainingDuration(),
+              remainingDistance:
+                  currentInstruction.getFormattedRemainingDistance(),
+              remainingDuration:
+                  currentInstruction.getFormattedRemainingDuration(),
               eta: currentInstruction.getFormattedETA(),
             ),
           ),
@@ -155,71 +158,67 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     if (_currentLocation == null) {
-      _showCurrentLocationSnackBar(context);
+      _showSnackBar(context,
+          message: 'Current location is needed to compute the route.',
+          duration: const Duration(seconds: 3));
       return;
     }
 
     // Define the departure
-    final departureLandmark = Landmark();
-    departureLandmark.coordinates =
-        Coordinates(latitude: _currentLocation!.latitude, longitude: _currentLocation!.longitude);
+    final departureLandmark = Landmark.withCoordinates(_currentLocation!);
 
     // Define the destination.
-    final destinationLandmark = Landmark();
-    destinationLandmark.coordinates = Coordinates(latitude: 52.5161449, longitude: 13.3774831);
+    final destinationLandmark =
+        Landmark.withLatLng(latitude: 52.51614, longitude: 13.37748);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
-    _showSnackBar(context);
+    _showSnackBar(context, message: 'The route is calculating.');
 
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
-    _routingHandler =
-        RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (err, routes) {
+    _routingHandler = RoutingService.calculateRoute(
+        [departureLandmark, destinationLandmark], routePreferences,
+        (err, routes) {
       // If the route calculation is finished, we don't have a progress listener anymore.
       _routingHandler = null;
 
       ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there is an error, we return from this callback.
-      if (err != GemError.success) {
-        setState(() {
-          _areRoutesBuilt = false;
-        });
-        if (err == GemError.routeTooLong) {
-          print('The destination is too far from your current location. Change the coordinates of the destination.');
-        }
+      if (err == GemError.routeTooLong) {
+        print(
+            'The destination is too far from your current location. Change the coordinates of the destination.');
         return;
       }
 
-      // Get the routes collection from map preferences.
-      final routesMap = _mapController.preferences.routes;
+      // If there aren't any errors, we display the routes.
+      if (err == GemError.success) {
+        // Get the routes collection from map preferences.
+        final routesMap = _mapController.preferences.routes;
 
-      // Select the first route as the main one.
-      final mainRoute = routes!.first;
+        // Display the routes on map.
+        for (final route in routes!) {
+          routesMap.add(route, route == routes.first,
+              label: route.getMapLabel());
+        }
 
-      // Display the routes on map.
-      for (final route in routes) {
-        routesMap.add(route, route == mainRoute, label: route.getMapLabel());
+        // Center the camera on routes.
+        _mapController.centerOnRoutes(routes);
+        setState(() {
+          _areRoutesBuilt = true;
+        });
       }
-
-      // Center the camera on routes.
-      _mapController.centerOnRoutes(routes);
-    });
-
-    setState(() {
-      _areRoutesBuilt = true;
     });
   }
 
   void _startNavigation() {
-    // Get the main route from map routes collection;
     final routes = _mapController.preferences.routes;
-    final mainRoute = routes.mainRoute;
 
-    _navigationHandler = NavigationService.startNavigation(mainRoute, (type, instruction) async {
-      if (type == NavigationEventType.destinationReached || type == NavigationEventType.error) {
+    _navigationHandler = NavigationService.startNavigation(routes.mainRoute,
+        (type, instruction) async {
+      if (type == NavigationEventType.destinationReached ||
+          type == NavigationEventType.error) {
         // If the navigation has ended or if and error occured while navigating, remove routes.
         setState(() {
           _isNavigationActive = false;
@@ -229,11 +228,9 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       _isNavigationActive = true;
 
-      if (instruction == null) {
-        return;
+      if (instruction != null) {
+        setState(() => currentInstruction = instruction);
       }
-
-      setState(() => currentInstruction = instruction);
     });
 
     // Set the camera to follow position.
@@ -275,22 +272,18 @@ class _MyHomePageState extends State<MyHomePage> {
       _locationPermissionStatus = await Permission.locationWhenInUse.request();
     }
 
-    if (_locationPermissionStatus != PermissionStatus.granted) {
-      return;
-    }
-
-    // After the permission was granted, we can set the live data source (in most cases the GPS).
-    // The data source should be set only once, otherwise we'll get -5 error.
-    if (!_hasLiveDataSource) {
-      PositionService.instance.setLiveDataSource();
-      _getCurrentLocation();
-      _hasLiveDataSource = true;
-    }
-
-    // After data source is set, startFollowingPosition can be safely called.
     if (_locationPermissionStatus == PermissionStatus.granted) {
+      // After the permission was granted, we can set the live data source (in most cases the GPS).
+      // The data source should be set only once, otherwise we'll get -5 error.
+      if (!_hasLiveDataSource) {
+        PositionService.instance.setLiveDataSource();
+        _getCurrentLocation();
+        _hasLiveDataSource = true;
+      }
+
+      // After data source is set, startFollowingPosition can be safely called.
       // Optionally, we can set an animation
-      final animation = GemAnimation(type: Animation.linear);
+      final animation = GemAnimation(type: AnimationType.linear);
 
       // Calling the start following position SDK method.
       _mapController.startFollowingPosition(animation: animation);
@@ -304,21 +297,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // Method to show message in case calculate route is not finished.
-  void _showSnackBar(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text("The route is calculating."),
-      duration: Duration(hours: 1),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  // Method to show message in case current location is not available.
-  void _showCurrentLocationSnackBar(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text("Current location is needed to compute the route."),
-      duration: Duration(seconds: 3),
+  // Method to show message in case calculate route is not finished or if current location is not available.
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -358,7 +342,10 @@ class FollowPositionButton extends StatelessWidget {
             Icon(Icons.navigation),
             Text(
               'Recenter',
-              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
             )
           ],
         ),

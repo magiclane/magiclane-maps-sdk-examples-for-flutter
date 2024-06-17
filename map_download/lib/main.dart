@@ -13,10 +13,10 @@ import 'maps_page.dart';
 
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Map download',
+      title: 'Map Download',
       home: MyHomePage(),
     );
   }
@@ -71,7 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onMapCreated(GemMapController controller) async {
-    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(ServiceGroupType.contentService, true);
+    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(
+        ServiceGroupType.contentService, true);
   }
 
   // Method to navigate to the Maps Page.

@@ -21,10 +21,10 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:io';
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -126,22 +126,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //Read GPX data from file, then calculate & show the routes on map
   Future<void> _importGPX() async {
-    _showSnackBar(context);
+    _showSnackBar(context, message: 'The route is calculating.');
 
     //Read file from app documents directory
     final docDirectory = await getApplicationDocumentsDirectory();
     final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
 
-    //Read binary GPX file if found
-    Uint8List pathData;
+    //Return if GPX file is not found
     if (!await gpxFile.exists()) {
-      pathData = Uint8List(0);
       print('GPX file does not exist (${gpxFile.path})');
       return;
-    } else {
-      final bytes = await gpxFile.readAsBytes();
-      pathData = Uint8List.fromList(bytes);
     }
+
+    final bytes = await gpxFile.readAsBytes();
+    final pathData = Uint8List.fromList(bytes);
 
     //Get landmarklist containing all GPX points from file.
     final gemPath = Path.create(data: pathData, format: 0);
@@ -150,7 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
     print("GPX Landmarklist size: ${landmarkList.length}");
 
     // Define the route preferences.
-    final routePreferences = RoutePreferences(transportMode: RouteTransportMode.bicycle);
+    final routePreferences =
+        RoutePreferences(transportMode: RouteTransportMode.bicycle);
 
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
@@ -161,29 +160,25 @@ class _MyHomePageState extends State<MyHomePage> {
       (err, routes) {
         ScaffoldMessenger.of(context).clearSnackBars();
 
-        // If there is an error, we return from this callback.
-        if (err != GemError.success) {
+        // If there aren't any errors, we display the routes.
+        if (err == GemError.success) {
+          // Get the routes collection from map preferences.
+          final routesMap = _mapController.preferences.routes;
+
+          // Display the routes on map.
+          for (final route in routes!) {
+            // The first route is the main route
+            routesMap.add(route, route == routes.first,
+                label: route.getMapLabel());
+          }
+
+          // Center the camera on routes.
+          _mapController.centerOnRoutes(routes);
+
           setState(() {
-            _areRoutesBuilt = false;
+            _areRoutesBuilt = true;
           });
-          return;
         }
-
-        // Get the routes collection from map preferences.
-        final routesMap = _mapController.preferences.routes;
-
-        // Display the routes on map.
-        for (final route in routes!) {
-          // The first route is the main route
-          routesMap.add(route, route == routes.first, label: route.getMapLabel());
-        }
-
-        // Center the camera on routes.
-        _mapController.centerOnRoutes(routes);
-
-        setState(() {
-          _areRoutesBuilt = true;
-        });
       },
     );
     _isGpxDataLoaded = true;
@@ -193,44 +188,41 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_isSimulationActive) return;
     if (!_isGpxDataLoaded) return;
 
-    // Get the main route from map routes collection;
     final routes = _mapController.preferences.routes;
-    final mainRoute = routes.mainRoute;
 
     // Start navigation one the main route.
-    _navigationHandler = NavigationService.startSimulation(mainRoute, (eventType, instruction) {
+    _navigationHandler = NavigationService.startSimulation(routes.mainRoute,
+        (eventType, instruction) {
       // Navigation instruction callback.
     }, speedMultiplier: 2);
 
     // Set the camera to follow position.
     _mapController.startFollowingPosition();
 
-    setState(() {
-      _isSimulationActive = true;
-    });
+    setState(() => _isSimulationActive = true);
   }
 
   void _stopSimulation() {
     // Remove the routes from map.
     _mapController.preferences.routes.clear();
+
     setState(() => _areRoutesBuilt = false);
 
-    if (!_isSimulationActive) {
-      return;
+    if (_isSimulationActive) {
+      // Cancel the navigation.
+      NavigationService.cancelNavigation(_navigationHandler!);
+      _navigationHandler = null;
+
+      setState(() => _isSimulationActive = false);
     }
-
-    // Cancel the navigation.
-    NavigationService.cancelNavigation(_navigationHandler!);
-    _navigationHandler = null;
-
-    setState(() => _isSimulationActive = false);
   }
 
   // Method to show message in case calculate route is not finished
-  void _showSnackBar(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text("The route is calculating."),
-      duration: Duration(hours: 1),
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -240,8 +232,10 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM;
-    final totalDuration = timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS;
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+        getTimeDistance().restrictedDistanceM;
+    final totalDuration =
+        getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
 
     return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
   }

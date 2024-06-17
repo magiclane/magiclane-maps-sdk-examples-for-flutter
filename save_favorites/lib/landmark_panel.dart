@@ -31,7 +31,8 @@ class LandmarkPanel extends StatelessWidget {
       width: MediaQuery.of(context).size.width - 20,
       padding: const EdgeInsets.symmetric(horizontal: 5),
       margin: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(15)),
       child: Row(
         children: [
           Container(
@@ -39,7 +40,7 @@ class LandmarkPanel extends StatelessWidget {
             width: 70,
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Image.memory(
-              landmark.getImage(size: const Size(48, 48)),
+              landmark.getImage(),
             ),
           ),
           Row(
@@ -58,16 +59,24 @@ class LandmarkPanel extends StatelessWidget {
                           landmark.name,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(
                           height: 5,
                         ),
                         Text(
-                          landmark.categories.isNotEmpty ? landmark.categories.first.name : '',
+                          landmark.categories.isNotEmpty
+                              ? landmark.categories.first.name
+                              : '',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w800),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(
                           height: 5,
@@ -76,7 +85,10 @@ class LandmarkPanel extends StatelessWidget {
                           '${landmark.coordinates.latitude.toString()}, ${landmark.coordinates.longitude.toString()}',
                           maxLines: 2,
                           overflow: TextOverflow.visible,
-                          style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400),
                         ),
                       ],
                     ),
@@ -104,7 +116,9 @@ class LandmarkPanel extends StatelessWidget {
                       padding: EdgeInsets.zero,
                       onPressed: onFavoritesTap,
                       icon: Icon(
-                        isFavoriteLandmark ? Icons.favorite : Icons.favorite_outline,
+                        isFavoriteLandmark
+                            ? Icons.favorite
+                            : Icons.favorite_outline,
                         color: Colors.red,
                         size: 40,
                       ),

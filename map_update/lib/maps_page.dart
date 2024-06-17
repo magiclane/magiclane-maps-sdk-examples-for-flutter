@@ -59,7 +59,8 @@ class _MapsPageState extends State<MapsPage> {
               style: TextStyle(color: Colors.white),
             ),
             const SizedBox(width: 10),
-            if (updateProgress != null) Expanded(child: ProgressBar(value: updateProgress!)),
+            if (updateProgress != null)
+              Expanded(child: ProgressBar(value: updateProgress!)),
             const SizedBox(width: 10),
           ],
         ),
@@ -152,17 +153,16 @@ class _MapsPageState extends State<MapsPage> {
   }
 
   // Method to load the online map list
-  Future<List<ContentStoreItem>?> _getMaps() async {
-    final mapsListCompleter = Completer<List<ContentStoreItem>?>();
-    await ContentStore.asyncGetStoreContentList(ContentType.roadMap, (err, items, isCached) {
-      if (err != GemError.success || items == null) {
-        mapsListCompleter.complete(null);
-        return;
+  Future<List<ContentStoreItem>> _getMaps() async {
+    Completer<List<ContentStoreItem>> mapsList =
+        Completer<List<ContentStoreItem>>();
+    await ContentStore.asyncGetStoreContentList(ContentType.roadMap,
+        (err, items, isCached) {
+      if (err == GemError.success && items != null) {
+        mapsList.complete(items);
       }
-      mapsListCompleter.complete(items);
     });
-
-    return await mapsListCompleter.future;
+    return mapsList.future;
   }
 
   // Method to load the downloaded map list
@@ -184,7 +184,8 @@ class _MapsPageState extends State<MapsPage> {
     final id = updatePersistence.checkForUpdate();
 
     if (id != GemError.success) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error checking for updates $id")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error checking for updates $id")));
     }
   }
 
@@ -231,7 +232,8 @@ class _MapsPageState extends State<MapsPage> {
               content: Column(
                 children: [
                   const Text("New world map available."),
-                  Text("Size: ${(computeUpdateSize() / (1024.0 * 1024.0)).toStringAsFixed(2)} MB"),
+                  Text(
+                      "Size: ${(computeUpdateSize() / (1024.0 * 1024.0)).toStringAsFixed(2)} MB"),
                   const Text("Do you wish to update?")
                 ],
               ),
@@ -253,7 +255,8 @@ class _MapsPageState extends State<MapsPage> {
                     final statusId = updatePersistence.update();
 
                     if (statusId != GemError.success) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error updating $statusId")));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Error updating $statusId")));
                     }
 
                     Navigator.pop(context);
@@ -286,52 +289,50 @@ class _MapsPageState extends State<MapsPage> {
   }
 
   void onProgressListener(int? value) {
-    if (!mounted) return;
-
-    setState(() {
-      updateProgress = value;
-    });
+    if (mounted) {
+      setState(() {
+        updateProgress = value;
+      });
+    }
   }
 
   void onStatusChanged(ContentUpdaterStatus status) {
-    if (!mounted) return;
-
-    if (!(status == ContentUpdaterStatus.fullyReady || status == ContentUpdaterStatus.partiallyReady)) {
-      return;
-    }
-
-    showDialog<dynamic>(
-      context: context,
-      builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AlertDialog(
-              title: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Update finished"),
-                ],
-              ),
-              content: const Column(
-                children: [
-                  Text("The update is done."),
-                ],
-              ),
-              actions: [
-                CupertinoDialogAction(
-                  child: const Text("Ok"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+    if (mounted &&
+        (status == ContentUpdaterStatus.fullyReady ||
+            status == ContentUpdaterStatus.partiallyReady)) {
+      showDialog<dynamic>(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AlertDialog(
+                title: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Update finished"),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
+                content: const Column(
+                  children: [
+                    Text("The update is done."),
+                  ],
+                ),
+                actions: [
+                  CupertinoDialogAction(
+                    child: const Text("Ok"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }
 

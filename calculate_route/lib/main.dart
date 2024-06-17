@@ -12,10 +12,10 @@ import 'package:gem_kit/routing.dart';
 
 import 'package:flutter/material.dart' hide Route;
 
-void main() {
+Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(appAuthorization: projectApiToken);
 
   runApp(const MyApp());
 }
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Build route example',
+      title: 'Calculate Route',
       home: MyHomePage(),
     );
   }
@@ -59,7 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Calculate Route', style: TextStyle(color: Colors.white)),
+        title: const Text('Calculate Route',
+            style: TextStyle(color: Colors.white)),
         actions: [
           // Routes are not built.
           if (_routingHandler == null && _routes == null)
@@ -107,50 +108,46 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark = Landmark();
-    departureLandmark.coordinates = Coordinates(latitude: 48.85682120481962, longitude: 2.343751354197309);
+    final departureLandmark =
+        Landmark.withLatLng(latitude: 48.85682, longitude: 2.34375);
 
     // Define the destination.
-    final destinationLandmark = Landmark();
-    destinationLandmark.coordinates = Coordinates(latitude: 50.846442672966944, longitude: 4.345870353765759);
+    final destinationLandmark =
+        Landmark.withLatLng(latitude: 50.84644, longitude: 4.34587);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
 
-    _showSnackBar(context);
+    _showSnackBar(context, message: "The route is being calculated.");
 
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
 
-    _routingHandler =
-        RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (err, routes) {
+    _routingHandler = RoutingService.calculateRoute(
+        [departureLandmark, destinationLandmark], routePreferences,
+        (err, routes) {
       // If the route calculation is finished, we don't have a progress listener anymore.
       _routingHandler = null;
-
       ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there is an error, we return from this callback.
-      if (err != GemError.success) {
-        return;
+      // If there aren't any errors, we display the routes.
+      if (err == GemError.success) {
+        // Get the routes collection from map preferences.
+        final routesMap = _mapController.preferences.routes;
+
+        // Display the routes on map.
+        for (final route in routes!) {
+          routesMap.add(route, route == routes.first,
+              label: route.getMapLabel());
+        }
+
+        // Center the camera on routes.
+        _mapController.centerOnRoutes(routes);
+        setState(() {
+          _routes = routes;
+        });
       }
-
-      // Get the routes collection from map preferences.
-      final routesMap = _mapController.preferences.routes;
-
-      // Select the first route as the main one.
-      final mainRoute = routes!.first;
-
-      // Display the routes on map.
-      for (final route in routes) {
-        routesMap.add(route, route == mainRoute, label: route.getMapLabel());
-      }
-
-      // Center the camera on routes.
-      _mapController.centerOnRoutes(routes);
-      setState(() {
-        _routes = routes;
-      });
     });
 
     setState(() {});
@@ -169,6 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // If we have a progress listener we cancel the route calculation.
     if (_routingHandler != null) {
       RoutingService.cancelRoute(_routingHandler!);
+
       setState(() {
         _routingHandler = null;
       });
@@ -180,29 +178,24 @@ class _MyHomePageState extends State<MyHomePage> {
     // Register the generic map touch gesture.
     _mapController.registerTouchCallback((pos) async {
       // Select the map objects at gives position.
-      await _mapController.selectMapObjects(pos);
+      _mapController.setCursorScreenPosition(pos);
 
       // Get the selected routes.
       final routes = _mapController.cursorSelectionRoutes();
 
-      // If there isn't any route at position, we return from this method.
-      if (routes.isEmpty) {
-        return;
+      // If there is  a route at position, we select it as the main one on the map.
+      if (routes.isNotEmpty) {
+        _mapController.preferences.routes.mainRoute = routes[0];
       }
-
-      // We take the first route as the selected.
-      final route = routes[0];
-
-      // We set the selected route as the main one on the map.
-      _mapController.preferences.routes.mainRoute = route;
     });
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text("The route is being calculating."),
-      duration: Duration(hours: 1),
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -212,8 +205,10 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = timeDistance.unrestrictedDistanceM + timeDistance.restrictedDistanceM;
-    final totalDuration = timeDistance.unrestrictedTimeS + timeDistance.restrictedTimeS;
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+        getTimeDistance().restrictedDistanceM;
+    final totalDuration =
+        getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
 
     return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
   }
