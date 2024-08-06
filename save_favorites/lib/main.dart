@@ -125,15 +125,6 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      // Get the selected overlays.
-      final overlays = _mapController.cursorSelectionOverlayItems();
-
-      // Check if there is a selected overlay.
-      if (overlays.isNotEmpty) {
-        _highlightLandmarks(overlays);
-        return;
-      }
-
       // Get the selected streets.
       final streets = _mapController.cursorSelectionStreets();
 
@@ -150,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // If no landmark was found, we create one.
       final lmk = Landmark.withCoordinates(coordinates);
       lmk.name = '${coordinates.latitude} ${coordinates.longitude}';
-      lmk.setImageFromIconId(GemIcon.searchResultsPin);
+      lmk.setImageFromIcon(GemIcon.searchResultsPin);
 
       _highlightLandmarks([lmk]);
     });

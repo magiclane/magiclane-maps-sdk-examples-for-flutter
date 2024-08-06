@@ -67,7 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text("Search Along Route", style: TextStyle(color: Colors.white)),
+        title: const Text("Search Along Route",
+            style: TextStyle(color: Colors.white)),
         leading: Row(
           children: [
             if (_areRoutesBuilt)
@@ -114,17 +115,20 @@ class _MyHomePageState extends State<MyHomePage> {
   // Compute & show route.
   Future<void> _onBuildRouteButtonPressed() async {
     // Define the departure.
-    final departureLandmark = Landmark.withLatLng(latitude: 37.77903, longitude: -122.41991);
+    final departureLandmark =
+        Landmark.withLatLng(latitude: 37.77903, longitude: -122.41991);
 
     // Define the destination.
-    final destinationLandmark = Landmark.withLatLng(latitude: 37.33619, longitude: -121.89058);
+    final destinationLandmark =
+        Landmark.withLatLng(latitude: 37.33619, longitude: -121.89058);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
     _showSnackBar(context, message: 'The route is calculating.');
 
-    _routingHandler =
-        RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (err, routes) async {
+    _routingHandler = RoutingService.calculateRoute(
+        [departureLandmark, destinationLandmark], routePreferences,
+        (err, routes) async {
       // If the route calculation is finished, we don't have a progress listener anymore.
       _routingHandler = null;
 
@@ -137,7 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // Display the routes on map.
         for (final route in routes!) {
-          routesMap.add(route, route == routes.first, label: route.getMapLabel());
+          routesMap.add(route, route == routes.first,
+              label: route.getMapLabel());
         }
 
         _mapController.centerOnRoute(routes.first);
@@ -156,8 +161,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _mapController.preferences.routes.clearAllButMainRoute();
     final routes = _mapController.preferences.routes;
-    _navigationHandler = NavigationService.startSimulation(routes.first, speedMultiplier: 2, (type, instruction) {
-      if (type == NavigationEventType.destinationReached || type == NavigationEventType.error) {
+    _navigationHandler = NavigationService.startSimulation(routes.first,
+        speedMultiplier: 2, (type, instruction) {
+      if (type == NavigationEventType.destinationReached ||
+          type == NavigationEventType.error) {
         // If the navigation has ended or if and error occured while navigating, remove routes.
         setState(() {
           _isSimulationActive = false;
@@ -227,7 +234,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished
-  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(
       content: Text(message),
       duration: duration,
@@ -240,8 +248,10 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM + getTimeDistance().restrictedDistanceM;
-    final totalDuration = getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+        getTimeDistance().restrictedDistanceM;
+    final totalDuration =
+        getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
 
     return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
   }

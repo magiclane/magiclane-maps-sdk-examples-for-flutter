@@ -50,6 +50,12 @@ fi
 
 set -eEuo pipefail
 
+if ! command -v rename >/dev/null; then
+    error_msg "rename command not found. Install via e.g. 'apt install rename'"
+    echo
+    exit 2
+fi
+
 if ! command -v flutter >/dev/null; then
     error_msg "flutter command not found. Please get it from: https://docs.flutter.dev/get-started/install"
     echo
@@ -74,8 +80,13 @@ for i in "${!EXAMPLE_PROJECTS[@]}"; do
 
         EXAMPLE_J="$(basename ${EXAMPLE_PROJECTS[${j}]})"
         if grep -rl "${EXAMPLE_J}" ${EXAMPLE_PROJECTS[${i}]}; then
-            msg "Found mismatch: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
+            msg "Found mismatch string: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
             find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -prune \) -exec sed -i "s/${EXAMPLE_J}/${EXAMPLE_I}/g" {} +
         fi
+        MISMATCH_DIRS=( $(find "${EXAMPLE_PROJECTS[${i}]}" -type d -name "${EXAMPLE_J}" 2>/dev/null) )
+		if [ ${#MISMATCH_DIRS[@]} -gt 0 ]; then
+			msg "Found mismatch folder: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
+			find ${EXAMPLE_PROJECTS[${i}]} -depth -type d -name "${EXAMPLE_J}" -execdir rename -v "s/${EXAMPLE_J}/${EXAMPLE_I}/" '{}' +
+		fi
     done
 done

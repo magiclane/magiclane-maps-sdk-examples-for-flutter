@@ -84,7 +84,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height / 2 - 50,
+            height: (MediaQuery.of(context).size.height -
+                    kToolbarHeight -
+                    MediaQuery.of(context).padding.bottom -
+                    MediaQuery.of(context).padding.top) /
+                2,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: GemMap(
@@ -93,7 +97,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           SizedBox(
-            height: MediaQuery.of(context).size.height / 2 - 50,
+            height: (MediaQuery.of(context).size.height -
+                    kToolbarHeight -
+                    MediaQuery.of(context).padding.bottom -
+                    MediaQuery.of(context).padding.top) /
+                2,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: GemMap(

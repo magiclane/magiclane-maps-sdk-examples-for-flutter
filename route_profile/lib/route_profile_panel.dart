@@ -191,8 +191,8 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
   }
 
   void _centerOnArea(RectangleGeographicArea area) {
-    var br = area.bottomright!;
-    var tl = area.topleft!;
+    var br = area.bottomRight!;
+    var tl = area.topLeft!;
 
     final deltaLat = tl.latitude! - br.latitude!;
     br.latitude = br.latitude! - deltaLat;
@@ -382,7 +382,7 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
     final landmark = Landmark();
     final coords = widget.route.getCoordinateOnRoute(distance);
 
-    landmark.setImageFromIconId(GemIcon.searchResultsPin);
+    landmark.setImageFromIcon(GemIcon.searchResultsPin);
     landmark.coordinates = coords;
 
     widget.mapController.activateHighlight([landmark]);

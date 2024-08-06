@@ -92,7 +92,10 @@ class _MapsItemState extends State<MapsItem> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           width: 50,
-          child: Image.memory(_getMapImage(widget.map)),
+          child: Image.memory(
+            _getMapImage(widget.map),
+            gaplessPlayback: true,
+          ),
         ),
         title: Text(
           widget.map.name,
