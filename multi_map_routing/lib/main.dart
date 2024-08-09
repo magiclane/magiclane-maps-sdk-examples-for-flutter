@@ -218,9 +218,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
       // Center the camera on routes.
       if (isFirstMap) {
-        _mapController1.centerOnRoutes(routes);
+        _mapController1.centerOnRoutes(routes: routes);
       } else {
-        _mapController2.centerOnRoutes(routes);
+        _mapController2.centerOnRoutes(routes: routes);
       }
     }
   }

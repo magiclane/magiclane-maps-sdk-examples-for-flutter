@@ -143,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         // Center the camera on routes.
-        _mapController.centerOnRoutes(routes);
+        _mapController.centerOnRoutes(routes: routes);
         setState(() {
           _routes = routes;
         });

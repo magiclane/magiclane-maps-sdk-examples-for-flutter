@@ -12,7 +12,6 @@ import 'package:gem_kit/map.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 Future<void> main() async {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
@@ -46,6 +45,13 @@ class _MyHomePageState extends State<MyHomePage> {
   late GemMapController mapController;
 
   double compassAngle = 0;
+  late Uint8List compassImage;
+
+  @override
+  void initState() {
+    compassImage = _compassImage();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -77,19 +83,20 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Transform.rotate(
                 angle: -compassAngle * (3.141592653589793 / 180),
                 child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
+                  padding: const EdgeInsets.all(3),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                  ),
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Image.memory(
+                      compassImage,
+                      gaplessPlayback: true,
                     ),
-                    child: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Image.memory(
-                        _compassImage(),
-                        gaplessPlayback: true,
-                      ),
-                    )),
+                  ),
+                ),
               ),
             ),
           )
@@ -101,7 +108,6 @@ class _MyHomePageState extends State<MyHomePage> {
   // The callback for when map is ready to use.
   void _onMapCreated(GemMapController controller) {
     mapController = controller;
-
     // Register the map angle update callback.
     mapController.registerOnMapAngleUpdate(
         (angle) => setState(() => compassAngle = angle));
@@ -112,12 +118,5 @@ class _MyHomePageState extends State<MyHomePage> {
     final image = SdkSettings.getImageById(
         id: EngineMisc.compassEnableSensorOFF.id, size: const Size(100, 100));
     return image;
-  }
-
-  // Utility function to convert a raw image in byte data
-  Future<Uint8List?> imageToUint8List(ui.Image? image) async {
-    if (image == null) return null;
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    return byteData!.buffer.asUint8List();
   }
 }

@@ -39,25 +39,64 @@ function is_mac() {
     return 1
 }
 
+function check_cmd() {
+    type "${1}" >/dev/null 2>&1;
+}
+
 if is_mac; then
-    if [ ! -f "$(brew --prefix)/opt/gnu-getopt/bin/getopt" ]; then
-        error_msg "This script requires 'brew install gnu-getopt && brew link --force gnu-getopt'"
+    if ! check_cmd brew; then
+        error_msg "Missing Homebrew. Run: \n\
+$ bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
         exit 1
     fi
 
-    PATH="$(brew --prefix)/opt/gnu-getopt/bin:${PATH}"
+    if [ ! -f "$(brew --prefix)/opt/gnu-getopt/bin/getopt" ]; then
+        error_msg "Missing gnu-getopt. Run 'brew install gnu-getopt && brew link --force gnu-getopt'"
+        exit 1
+    fi
+    export PATH="$(brew --prefix)/opt/gnu-getopt/bin:${PATH}"
+
+    if ! brew ls --versions gnu-sed > /dev/null; then
+        error_msg "Missing gnu-sed. Run 'brew install gnu-sed && brew link --force gnu-sed'"
+        exit 1
+    fi
+    export PATH="$(brew --prefix)/opt/gnu-sed/libexec/gnubin:${PATH}"
+
+    if ! brew ls --versions grep > /dev/null; then
+        error_msg "Missing grep. Run 'brew install grep && brew link --force grep'"
+        exit 1
+    fi
+    export PATH="$(brew --prefix)/opt/grep/libexec/gnubin:${PATH}"
+
+    if ! brew ls --versions coreutils > /dev/null; then
+        error_msg "Missing coreutils. Run 'brew install coreutils && brew link --force coreutils'"
+        exit 1
+    fi
+    export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin:${PATH}"
+
+    if ! brew ls --versions findutils > /dev/null; then
+        error_msg "Missing findutils. Run 'brew install findutils && brew link --force findutils'"
+        exit 1
+    fi
+    export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin:${PATH}"
+
+    if ! brew ls --versions rename > /dev/null; then
+        error_msg "Missing rename. Run 'brew install rename && brew link --force rename'"
+        exit 1
+    fi
+    export PATH="$(brew --prefix)/opt/rename/libexec/gnubin:${PATH}"
+else
+	if ! check_cmd rename; then
+		error_msg "Missing rename. Run 'apt install rename'"
+		echo
+		exit 2
+	fi
 fi
 
 set -eEuo pipefail
 
-if ! command -v rename >/dev/null; then
-    error_msg "rename command not found. Install via e.g. 'apt install rename'"
-    echo
-    exit 2
-fi
-
-if ! command -v flutter >/dev/null; then
-    error_msg "flutter command not found. Please get it from: https://docs.flutter.dev/get-started/install"
+if ! check_cmd flutter; then
+    error_msg "Missing flutter. Please get it from: https://docs.flutter.dev/get-started/install"
     echo
     exit 2
 fi
@@ -79,9 +118,14 @@ for i in "${!EXAMPLE_PROJECTS[@]}"; do
         fi
 
         EXAMPLE_J="$(basename ${EXAMPLE_PROJECTS[${j}]})"
-        if grep -rl "${EXAMPLE_J}" ${EXAMPLE_PROJECTS[${i}]}; then
+        if grep -irl "${EXAMPLE_J}" ${EXAMPLE_PROJECTS[${i}]}; then
             msg "Found mismatch string: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
             find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -prune \) -exec sed -i "s/${EXAMPLE_J}/${EXAMPLE_I}/g" {} +
+        fi
+        EXAMPLE_J_NO_UNDERSCORE=${EXAMPLE_J//_}
+        if grep -irl --exclude "*.dart" "${EXAMPLE_J_NO_UNDERSCORE}" ${EXAMPLE_PROJECTS[${i}]}; then
+            msg "Found mismatch string: '${EXAMPLE_J_NO_UNDERSCORE}' in '${EXAMPLE_I}'"
+            find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -exec sed -i "s/${EXAMPLE_J_NO_UNDERSCORE}/${EXAMPLE_I//_}/gI" {} +
         fi
         MISMATCH_DIRS=( $(find "${EXAMPLE_PROJECTS[${i}]}" -type d -name "${EXAMPLE_J}" 2>/dev/null) )
 		if [ ${#MISMATCH_DIRS[@]} -gt 0 ]; then

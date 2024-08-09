@@ -173,8 +173,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (result is Landmark) {
       // Highlight the landmark on the map.
-      _mapController
-          .activateHighlight([result], renderSettings: RenderSettings());
+      _mapController.activateHighlight([result],
+          renderSettings: HighlightRenderSettings());
 
       // Centering the camera on landmark's coordinates.
       _mapController.centerOnCoordinates(result.coordinates);

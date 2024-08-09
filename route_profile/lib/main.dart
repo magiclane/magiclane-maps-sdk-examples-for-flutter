@@ -230,7 +230,8 @@ class _MyHomePageState extends State<MyHomePage> {
     const padding = 20;
 
     // Use the map controller to center on route above the panel.
-    _mapController.centerOnRoutes(route,
+    _mapController.centerOnRoutes(
+        routes: route,
         screenRect: RectType(
           x: 0,
           y: (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)

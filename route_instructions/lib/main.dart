@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         // Center the camera on routes.
-        _mapController.centerOnRoutes(routes);
+        _mapController.centerOnRoutes(routes: routes);
 
         // Get the segments of the main route.
         instructions = _getInstructionsFromSegments(routes.first.segments);
