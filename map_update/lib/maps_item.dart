@@ -10,7 +10,6 @@
 
 import 'dart:typed_data';
 
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -73,67 +72,67 @@ class _MapsItemState extends State<MapsItem> {
   @override
   Widget build(BuildContext context) {
     _isDownloaded = widget.map.isCompleted;
-    return Slidable(
-      enabled: _downloadProgress != 0 && !_isDownloaded,
-      endActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          extentRatio: 0.25,
-          children: [
-            SlidableAction(
-              onPressed: (context) => widget.deleteMap(widget.map),
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.zero,
-              icon: Icons.delete,
-            )
-          ]),
-      child: ListTile(
-        onTap: () => _onTileTap(),
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          width: 50,
-          child: Image.memory(
-            _getMapImage(widget.map),
-            gaplessPlayback: true,
+    return Row(
+      children: [
+        Expanded(
+          child: ListTile(
+            onTap: () => _onTileTap(),
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              width: 50,
+              child: Image.memory(
+                _getMapImage(widget.map),
+                gaplessPlayback: true,
+              ),
+            ),
+            title: Text(
+              widget.map.name,
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
+            ),
+            trailing: SizedBox.square(
+                dimension: 50,
+                child: Builder(
+                  builder: (context) {
+                    if (_isDownloaded == true) {
+                      return const Icon(
+                        Icons.download_done,
+                        color: Colors.green,
+                      );
+                    } else if (_isDownloadingOrWaiting()) {
+                      return SizedBox(
+                        height: 10,
+                        child: CircularProgressIndicator(
+                          value: _downloadProgress / 100,
+                          color: Colors.blue,
+                          backgroundColor: Colors.grey.shade300,
+                        ),
+                      );
+                    } else if (widget.map.status ==
+                        ContentStoreItemStatus.paused) {
+                      return const Icon(Icons.pause);
+                    }
+                    return const SizedBox.shrink();
+                  },
+                )),
           ),
         ),
-        title: Text(
-          widget.map.name,
-          style: const TextStyle(
-              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
+        if (_downloadProgress != 0 && !_isDownloaded)
+          IconButton(
+            onPressed: () => widget.deleteMap(widget.map),
+            padding: EdgeInsets.zero,
+            icon: const Icon(Icons.delete),
           ),
-        ),
-        trailing: SizedBox.square(
-            dimension: 50,
-            child: Builder(
-              builder: (context) {
-                if (_isDownloaded == true) {
-                  return const Icon(
-                    Icons.download_done,
-                    color: Colors.green,
-                  );
-                } else if (_isDownloadingOrWaiting()) {
-                  return SizedBox(
-                    height: 10,
-                    child: CircularProgressIndicator(
-                      value: _downloadProgress / 100,
-                      color: Colors.blue,
-                      backgroundColor: Colors.grey.shade300,
-                    ),
-                  );
-                } else if (widget.map.status == ContentStoreItemStatus.paused) {
-                  return const Icon(Icons.pause);
-                }
-                return const SizedBox.shrink();
-              },
-            )),
-      ),
+      ],
     );
   }
 

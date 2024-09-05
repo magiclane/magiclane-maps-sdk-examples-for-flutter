@@ -17,7 +17,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   another_xlider: ^3.0.2
-  fl_chart: ^0.68.0
+  fl_chart: ^0.69.0
 
 dev_dependencies:
   flutter_test:

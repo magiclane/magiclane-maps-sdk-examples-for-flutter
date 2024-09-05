@@ -8,9 +8,11 @@ This repository holds a series of example projects using the **Magic Lane - Maps
 
 This set of individual, use-case based projects is designed to be cloned by developers for their own use.
 
+* [Add Markers](add_markers) - Handle marker tap. Customize position tracker.
 * [Address Search](address_search) - Showcase address search functionality.
 * [Calculate Route](calculate_route) - Calculate & display route.
 * [Center Coordinates](center_coordinates) - Show how to center the map on coordinates.
+* [Custom Position Icon](custom_position_icon) - Show how to set a custom icon for the position tracker.
 * [Draw Shapes](draw_shapes) - Show how to draw and center on a polyline, polygon and on points.
 * [Finger Route](finger_route) - Calculate & display route using fingers movement.
 * [Follow Position](follow_position) - Show how to set live datasource & `startFollowingPosition`.
@@ -23,7 +25,6 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Map Selection](map_selection) - Show to save landmarks to your favorites list, as well as remove them from favorites list.
 * [Map Styles](map_styles) - Show list of styles. Show how to download and apply styles.
 * [Map Update](map_update) - Show list of maps. Show how to download maps.
-* [Marker Sketches](marker_sketches) - Display a marker sketch with image on map.
 * [Multi-map Routing](multi_map_routing) - Display a map. Show how to create multiple views.
 * [Multimap View](multiview_map) - Show how to create multiple views.
 * [Navigate Route](navigate_route) - Calculate & display route. Navigate route.

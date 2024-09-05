@@ -10,8 +10,6 @@ import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 
-import 'package:flutter_slidable/flutter_slidable.dart';
-
 import 'package:flutter/material.dart';
 
 import 'dart:typed_data';
@@ -36,55 +34,55 @@ class _MapsDownloadedItemState extends State<MapsDownloadedItem> {
     bool isOld = widget.map.isUpdatable;
     _clientVersion = widget.map.clientVersion;
     _updateVersion = widget.map.updateVersion;
-    return Slidable(
-      endActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          extentRatio: 0.25,
-          children: [
-            SlidableAction(
-              onPressed: (context) => widget.deleteMap(widget.map),
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.zero,
-              icon: Icons.delete,
-            )
-          ]),
-      child: ListTile(
-          leading: Container(
-            padding: const EdgeInsets.all(8),
-            width: 50,
-            child: Image.memory(_getMapImage(widget.map)),
-          ),
-          title: Text(
-            widget.map.name,
-            style: const TextStyle(
-                color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
-                style: const TextStyle(
+    return Row(
+      children: [
+        Expanded(
+          child: ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              width: 50,
+              child: Image.memory(_getMapImage(widget.map)),
+            ),
+            title: Text(
+              widget.map.name,
+              style: const TextStyle(
                   color: Colors.black,
                   fontSize: 16,
-                ),
-              ),
-              Text(
-                  "Current Version: ${_clientVersion.major}.${_clientVersion.minor}"),
-              if (_updateVersion.major != 0 && _updateVersion.minor != 0)
+                  fontWeight: FontWeight.w600),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                    "New version available: ${_updateVersion.major}.${_updateVersion.minor}")
-              else
-                const Text("Version up to date"),
-            ],
+                  "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                    "Current Version: ${_clientVersion.major}.${_clientVersion.minor}"),
+                if (_updateVersion.major != 0 && _updateVersion.minor != 0)
+                  Text(
+                      "New version available: ${_updateVersion.major}.${_updateVersion.minor}")
+                else
+                  const Text("Version up to date"),
+              ],
+            ),
+            trailing: (isOld)
+                ? const Icon(
+                    Icons.warning,
+                    color: Colors.orange,
+                  )
+                : null,
           ),
-          trailing: (isOld)
-              ? const Icon(
-                  Icons.warning,
-                  color: Colors.orange,
-                )
-              : null),
+        ),
+        IconButton(
+          onPressed: () => widget.deleteMap(widget.map),
+          padding: EdgeInsets.zero,
+          icon: const Icon(Icons.delete),
+        )
+      ],
     );
   }
 

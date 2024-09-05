@@ -14,8 +14,6 @@ import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 
-import 'package:flutter_slidable/flutter_slidable.dart';
-
 import 'package:flutter/material.dart';
 
 import 'dart:async';
@@ -68,64 +66,65 @@ class _MapsItemState extends State<MapsItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Slidable(
-      enabled: _isDownloaded,
-      endActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          extentRatio: 0.25,
-          children: [
-            SlidableAction(
-              onPressed: (context) => _deleteMap(widget.map),
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.zero,
-              icon: Icons.delete,
-            )
-          ]),
-      child: ListTile(
-        onTap: _onTileTap,
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          width: 50,
-          child: Image.memory(_getMapImage(widget.map)),
-        ),
-        title: Text(
-          widget.map.name,
-          style: const TextStyle(
-              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
+    return Row(
+      children: [
+        Expanded(
+          child: ListTile(
+            onTap: _onTileTap,
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              width: 50,
+              child: Image.memory(_getMapImage(widget.map)),
+            ),
+            title: Text(
+              widget.map.name,
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
+            ),
+            trailing: SizedBox.square(
+              dimension: 50,
+              child: Builder(
+                builder: (context) {
+                  if (_isDownloaded == true) {
+                    return const Icon(
+                      Icons.download_done,
+                      color: Colors.green,
+                    );
+                  } else if (_isDownloadingOrWaiting()) {
+                    return SizedBox(
+                      height: 10,
+                      child: CircularProgressIndicator(
+                        value: _downloadProgress / 100,
+                        color: Colors.blue,
+                        backgroundColor: Colors.grey.shade300,
+                      ),
+                    );
+                  } else if (widget.map.status ==
+                      ContentStoreItemStatus.paused) {
+                    return const Icon(Icons.pause);
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
           ),
         ),
-        trailing: SizedBox.square(
-            dimension: 50,
-            child: Builder(
-              builder: (context) {
-                if (_isDownloaded == true) {
-                  return const Icon(
-                    Icons.download_done,
-                    color: Colors.green,
-                  );
-                } else if (_isDownloadingOrWaiting()) {
-                  return SizedBox(
-                    height: 10,
-                    child: CircularProgressIndicator(
-                      value: _downloadProgress / 100,
-                      color: Colors.blue,
-                      backgroundColor: Colors.grey.shade300,
-                    ),
-                  );
-                } else if (widget.map.status == ContentStoreItemStatus.paused) {
-                  return const Icon(Icons.pause);
-                }
-                return const SizedBox.shrink();
-              },
-            )),
-      ),
+        if (_isDownloaded)
+          IconButton(
+            onPressed: () => _deleteMap(widget.map),
+            padding: EdgeInsets.zero,
+            icon: const Icon(Icons.delete),
+          )
+      ],
     );
   }
 

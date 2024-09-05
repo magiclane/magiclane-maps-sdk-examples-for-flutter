@@ -22,9 +22,6 @@ import 'maps_page.dart';
 
 import 'package:flutter/material.dart';
 
-// In order to test with older map you need to manually modify the app files on the device:
-// Put old region .cmap file into \Data\Maps
-// Put old VM .map file into \Data\Res
 void main() {
   const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
