@@ -118,7 +118,7 @@ packages:
       path: "plugins/gem_kit"
       relative: true
     source: path
-    version: "2.5.0"
+    version: "2.6.0"
   leak_tracker:
     dependency: transitive
     description:
