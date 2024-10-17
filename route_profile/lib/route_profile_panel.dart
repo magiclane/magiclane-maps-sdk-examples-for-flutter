@@ -1,3 +1,11 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
 import 'dart:math';
 
 import 'package:route_profile/elevation_chart.dart';
@@ -191,11 +199,11 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
   }
 
   void _centerOnArea(RectangleGeographicArea area) {
-    var br = area.bottomRight!;
-    var tl = area.topLeft!;
+    var br = area.bottomRight;
+    var tl = area.topLeft;
 
-    final deltaLat = tl.latitude! - br.latitude!;
-    br.latitude = br.latitude! - deltaLat;
+    final deltaLat = tl.latitude - br.latitude;
+    br.latitude = br.latitude - deltaLat;
 
     // Use the map controller to center on area above the panel.
     widget.mapController.centerOnArea(area);

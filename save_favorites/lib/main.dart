@@ -134,8 +134,8 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      final coordinates = _mapController
-          .transformScreenToWgs(XyType(x: pos.x as int, y: pos.y as int));
+      final coordinates =
+          _mapController.transformScreenToWgs(XyType(x: pos.x, y: pos.y));
       if (coordinates == null) return;
 
       // If no landmark was found, we create one.

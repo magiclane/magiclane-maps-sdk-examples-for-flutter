@@ -156,7 +156,7 @@ class _MapsPageState extends State<MapsPage> {
   Future<List<ContentStoreItem>> _getMaps() async {
     Completer<List<ContentStoreItem>> mapsList =
         Completer<List<ContentStoreItem>>();
-    await ContentStore.asyncGetStoreContentList(ContentType.roadMap,
+    ContentStore.asyncGetStoreContentList(ContentType.roadMap,
         (err, items, isCached) {
       if (err == GemError.success && items != null) {
         mapsList.complete(items);

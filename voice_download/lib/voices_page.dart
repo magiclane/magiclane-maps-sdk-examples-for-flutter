@@ -69,10 +69,10 @@ class _VoicesPageState extends State<VoicesPage> {
   }
 
   // Method to load the voices
-  Future<List<ContentStoreItem>> _getVoices() async {
+  Future<List<ContentStoreItem>> _getVoices() {
     Completer<List<ContentStoreItem>> voicesList =
         Completer<List<ContentStoreItem>>();
-    await ContentStore.asyncGetStoreContentList(ContentType.humanVoice,
+    ContentStore.asyncGetStoreContentList(ContentType.humanVoice,
         (err, items, isCached) {
       if (err == GemError.success && items != null) {
         voicesList.complete(items);

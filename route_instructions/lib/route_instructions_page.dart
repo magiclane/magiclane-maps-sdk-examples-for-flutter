@@ -7,7 +7,6 @@
 // license agreement you entered into with Magic Lane.
 
 import 'package:gem_kit/core.dart';
-import 'package:gem_kit/routing.dart';
 
 import 'utility.dart';
 
@@ -28,7 +27,8 @@ class _RouteInstructionsState extends State<RouteInstructionsPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        title: const Text("Route Instructions", style: TextStyle(color: Colors.white)),
+        title: const Text("Route Instructions",
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple[900],
         foregroundColor: Colors.white,
       ),
@@ -64,24 +64,29 @@ class _InstructionsItemState extends State<InstructionsItem> {
         padding: const EdgeInsets.all(8),
         width: 50,
         child: Image.memory(widget.instruction.turnDetails
-            .getAbstractGeometryImage(renderSettings: AbstractGeometryImageRenderSettings(), size: Size(100, 100))),
+            .getAbstractGeometryImage(
+                renderSettings: AbstractGeometryImageRenderSettings(),
+                size: Size(100, 100))),
       ),
       title: Text(
         widget.instruction.turnInstruction,
         overflow: TextOverflow.fade,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
         maxLines: 2,
       ),
       subtitle: Text(
         widget.instruction.followRoadInstruction,
         overflow: TextOverflow.fade,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
         maxLines: 2,
       ),
       trailing: Text(
         widget.instruction.getFormattedDistanceUntilInstruction(),
         overflow: TextOverflow.fade,
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
       ),
     );
   }
