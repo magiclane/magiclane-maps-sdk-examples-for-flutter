@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - gem_kit (2.7.0):
+  - gem_kit (2.8.0):
     - Flutter
 
 DEPENDENCIES:
@@ -15,7 +15,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  gem_kit: 2cf9d0880326b9ddce38920572c244f0095a702a
+  gem_kit: adc9c16339f9823339dd4f2d715512b1e52b9966
 
 PODFILE CHECKSUM: 176b5471b99dc31171d2eb9018ce88be808dc5fd
 

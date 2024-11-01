@@ -1,21 +1,41 @@
 PODS:
+  - CocoaAsyncSocket (7.6.5)
   - Flutter (1.0.0)
-  - gem_kit (2.7.0):
+  - gem_kit (2.8.0):
+    - Flutter
+  - patrol (0.0.1):
+    - CocoaAsyncSocket (~> 7.6)
+    - Flutter
+    - FlutterMacOS
+  - permission_handler_apple (9.3.0):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - gem_kit (from `.symlinks/plugins/gem_kit/ios`)
+  - patrol (from `.symlinks/plugins/patrol/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+
+SPEC REPOS:
+  trunk:
+    - CocoaAsyncSocket
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   gem_kit:
     :path: ".symlinks/plugins/gem_kit/ios"
+  patrol:
+    :path: ".symlinks/plugins/patrol/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
 
 SPEC CHECKSUMS:
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  gem_kit: 2cf9d0880326b9ddce38920572c244f0095a702a
+  gem_kit: adc9c16339f9823339dd4f2d715512b1e52b9966
+  patrol: 0564cee315ff6c86fb802b3647db05cc2d3d0624
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
 
 PODFILE CHECKSUM: 9c46fd01abff66081b39f5fa5767b3f1d0b11d76
 

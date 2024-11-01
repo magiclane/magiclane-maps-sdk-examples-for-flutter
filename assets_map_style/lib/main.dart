@@ -1,0 +1,125 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
+// ignore_for_file: avoid_print
+
+import 'package:flutter/services.dart';
+import 'package:gem_kit/core.dart';
+import 'package:gem_kit/map.dart';
+
+import 'package:flutter/material.dart';
+
+import 'dart:async';
+
+Future<void> main() async {
+  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
+  await GemKit.initialize(appAuthorization: projectApiToken);
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Map Styles',
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  // GemMapController object used to interact with the map
+  late GemMapController _mapController;
+
+  bool _isStyleLoaded = false;
+
+  @override
+  void dispose() {
+    GemKit.release();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.deepPurple[900],
+        title: const Text(
+          'Map Styles',
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: [
+          if (!_isStyleLoaded)
+            IconButton(
+                onPressed: () => _applyStyle(),
+                icon: Icon(Icons.map, color: Colors.white)),
+        ],
+      ),
+      body: GemMap(onMapCreated: _onMapCreated),
+    );
+  }
+
+  void _onMapCreated(GemMapController controller) async {
+    _mapController = controller;
+  }
+
+  // Method to change the current style
+  Future<void> _applyStyle() async {
+    _showSnackBar(context, message: "The map style is loading.");
+
+    await Future<void>.delayed(Duration(milliseconds: 250));
+
+    final styleData = await _loadStyle();
+
+    _mapController.preferences
+        .setMapStyleByBuffer(styleData, smoothTransition: true);
+
+    setState(() {
+      _isStyleLoaded = true;
+    });
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    _mapController.centerOnCoordinates(Coordinates(latitude: 45, longitude: 20),
+        zoomLevel: 25);
+  }
+
+  // Method to load style and return it as bytes
+  Future<Uint8List> _loadStyle() async {
+    // Load style into memory
+    final data = await rootBundle.load('assets/Basic_1_Oldtime-1_21_656.style');
+
+    // Convert it to Uint8List
+    final bytes = data.buffer.asUint8List();
+
+    return bytes;
+  }
+
+  // Method to show message in case the styles are still loading
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+}

@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "map_update" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "map_update" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2017-2024 Magic Lane B.V. <info@magiclane.com>" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2019-2024, Magic Lane B.V. <info@magiclane.com>" "\0"
             VALUE "OriginalFilename", "map_update.exe" "\0"
             VALUE "ProductName", "map_update" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

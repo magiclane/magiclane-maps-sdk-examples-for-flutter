@@ -214,6 +214,12 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
         flutter analyze --preamble --no-pub --no-fatal-infos --no-fatal-warnings
     fi
 
+    flutter clean || error_msg "flutter clean failed"
+    if [ -d "plugins/gem_kit" ]; then
+		rm -rf "plugins/gem_kit"
+	fi
+	find . -type d -name ".gradle" -exec rm -rf {} +
+
     popd &>/dev/null
 done
 

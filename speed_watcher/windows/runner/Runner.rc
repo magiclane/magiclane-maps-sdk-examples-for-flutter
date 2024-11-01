@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "speed_watcher" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "speed_watcher" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2017-2024 Magic Lane B.V. <info@magiclane.com>" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2019-2024, Magic Lane B.V. <info@magiclane.com>" "\0"
             VALUE "OriginalFilename", "speed_watcher.exe" "\0"
             VALUE "ProductName", "speed_watcher" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
