@@ -1,3 +1,11 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -51,8 +59,12 @@ class _WhatIsNearbyPageState extends State<WhatIsNearbyPage> {
 
   Future<List<Landmark>?> _getNearbyLocations() async {
     // Add all categories to SearchPreferences
-    final preferences = SearchPreferences(searchAddresses: false)
-      ..landmarkCategories = GenericCategories.categories;
+    final preferences = SearchPreferences(searchAddresses: false);
+    final genericCategories = GenericCategories.categories;
+    for (final category in genericCategories) {
+      preferences.landmarks
+          .addStoreCategoryId(category.landmarkStoreId, category.id);
+    }
     final completer = Completer<List<Landmark>?>();
     // Perform search around position with current position and all categories
     SearchService.searchAroundPosition(

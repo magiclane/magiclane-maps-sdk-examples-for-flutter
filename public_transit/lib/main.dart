@@ -13,11 +13,9 @@ import 'package:gem_kit/routing.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:public_transit/utility.dart';
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -95,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(alignment: AlignmentDirectional.bottomCenter, children: [
         GemMap(
           onMapCreated: _onMapCreated,
+          appAuthorization: projectApiToken,
         ),
         if (_ptSegments != null)
           Padding(
@@ -118,9 +117,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // The callback for when map is ready to use.
-  void _onMapCreated(GemMapController controller) {
+  Future<void> _onMapCreated(GemMapController controller) async {
     // Save controller for further usage.
     _mapController = controller;
+
+    // Register route tap gesture callback.
+    await _registerRouteTapCallback();
   }
 
   void _onBuildRouteButtonPressed(BuildContext context) {
@@ -154,8 +156,11 @@ class _MyHomePageState extends State<MyHomePage> {
         // Get the routes collection from map preferences.
         final routesMap = _mapController.preferences.routes;
 
-        // Display the route on map.
-        routesMap.add(routes!.first, true, label: routes.first.getMapLabel());
+        // Display the routes on map.
+        for (final route in routes!) {
+          routesMap.add(route, route == routes.first,
+              label: route == routes.first ? route.getMapLabel() : null);
+        }
 
         // Center the camera on routes.
         _mapController.centerOnRoutes(routes: routes);
@@ -192,6 +197,23 @@ class _MyHomePageState extends State<MyHomePage> {
         _routingHandler = null;
       });
     }
+  }
+
+  // In order to be able to select an alternative route, we have to register the route tap gesture callback.
+  Future<void> _registerRouteTapCallback() async {
+    // Register the generic map touch gesture.
+    _mapController.registerTouchCallback((pos) async {
+      // Select the map objects at gives position.
+      await _mapController.setCursorScreenPosition(pos);
+
+      // Get the selected routes.
+      final routes = _mapController.cursorSelectionRoutes();
+
+      // If there is  a route at position, we select it as the main one on the map.
+      if (routes.isNotEmpty) {
+        _mapController.preferences.routes.mainRoute = routes[0];
+      }
+    });
   }
 
   // Show a snackbar indicating that the route calculation is in progress.

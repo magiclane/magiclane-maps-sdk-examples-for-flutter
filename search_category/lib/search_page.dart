@@ -135,7 +135,8 @@ class _SearchPageState extends State<SearchPage> {
 
     // Adding in search preferences the selected categories
     for (final category in selectedCategories) {
-      preferences.landmarkCategories.add(category);
+      preferences.landmarks
+          .addStoreCategoryId(category.landmarkStoreId, category.id);
     }
 
     search(text, widget.coordinates, preferences);

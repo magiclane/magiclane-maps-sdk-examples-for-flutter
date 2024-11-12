@@ -13,11 +13,9 @@ import 'search_page.dart';
 
 import 'package:flutter/material.dart';
 
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+
 void main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
-
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
   runApp(const MyApp());
 }
 
@@ -66,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: GemMap(
         onMapCreated: _onMapCreated,
+        appAuthorization: projectApiToken,
       ),
     );
   }

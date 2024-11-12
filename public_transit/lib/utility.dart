@@ -8,7 +8,6 @@
 
 import 'package:gem_kit/routing.dart';
 
-// Utility function to convert the meters distance into a suitable format
 String convertDistance(int meters) {
   if (meters >= 1000) {
     double kilometers = meters / 1000;
@@ -18,7 +17,6 @@ String convertDistance(int meters) {
   }
 }
 
-// Utility function to convert the seconds duration into a suitable format
 String convertDuration(int seconds) {
   int hours = seconds ~/ 3600; // Number of whole hours
   int minutes = (seconds % 3600) ~/ 60; // Number of whole minutes
@@ -40,8 +38,9 @@ extension RouteExtension on Route {
 
     // Convert the route to a public transit route (PTRoute).
     final publicTransitRoute = toPTRoute();
-    if (publicTransitRoute == null)
-      return ""; // If no route is available, return an empty string.
+    if (publicTransitRoute == null) {
+      return "";
+    }
 
     // Get the first and last segments of the route.
     final firstSegment = publicTransitRoute.segments.first.toPTRouteSegment();

@@ -16,11 +16,9 @@ import 'package:flutter/material.dart' hide Animation;
 
 import 'dart:async';
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -62,8 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text('Address Search', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-              onPressed: () => _onSearchButtonPressed(context).then(
-                  (value) => ScaffoldMessenger.of(context).clearSnackBars()),
+              onPressed: () {
+                _onSearchButtonPressed(context).then(
+                  (value) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                    }
+                  },
+                );
+              },
               icon: const Icon(
                 Icons.search,
                 color: Colors.white,
@@ -72,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: GemMap(
         onMapCreated: _onMapCreated,
+        appAuthorization: projectApiToken,
       ),
     );
   }

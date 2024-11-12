@@ -12,11 +12,8 @@ import 'package:gem_kit/routing.dart';
 
 import 'package:flutter/material.dart' hide Route;
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
-
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+void main() {
   runApp(const MyApp());
 }
 
@@ -93,17 +90,18 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: GemMap(
         onMapCreated: _onMapCreated,
+        appAuthorization: projectApiToken,
       ),
     );
   }
 
   // The callback for when map is ready to use.
-  void _onMapCreated(GemMapController controller) {
+  Future<void> _onMapCreated(GemMapController controller) async {
     // Save controller for further usage.
     _mapController = controller;
 
     // Register route tap gesture callback.
-    _registerRouteTapCallback();
+    await _registerRouteTapCallback();
   }
 
   void _onBuildRouteButtonPressed(BuildContext context) {
@@ -174,11 +172,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // In order to be able to select an alternative route, we have to register the route tap gesture callback.
-  void _registerRouteTapCallback() {
+  Future<void> _registerRouteTapCallback() async {
     // Register the generic map touch gesture.
     _mapController.registerTouchCallback((pos) async {
       // Select the map objects at gives position.
-      _mapController.setCursorScreenPosition(pos);
+      await _mapController.setCursorScreenPosition(pos);
 
       // Get the selected routes.
       final routes = _mapController.cursorSelectionRoutes();

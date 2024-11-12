@@ -178,10 +178,22 @@ msg "Extract SDK..."
 SDK_TEMP_DIR="$(mktemp -d)"
 tar -xvf "${SDK_ARCHIVE_PATH}" --strip-components=1 -C "${SDK_TEMP_DIR}"
 
+pushd "${MY_DIR}" &>/dev/null
+
+[ -d "APK" ] && rm -rf APK
+${BUILD_ANDROID} && mkdir APK
+
+[ -d "WEB" ] && rm -rf WEB
+${BUILD_WEB} && mkdir WEB
+
+popd &>/dev/null
+
 # Find paths that contain an app module
 EXAMPLE_PROJECTS=$(find "${MY_DIR}" -maxdepth 1 -type d -exec [ -d {}/plugins ] \; -print -prune)
 
 for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
+	EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
+
     cp -R "${SDK_TEMP_DIR}"/gem_kit "${EXAMPLE_PATH}"/plugins/
 
     pushd "${EXAMPLE_PATH}" &>/dev/null
@@ -214,6 +226,14 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
         flutter analyze --preamble --no-pub --no-fatal-infos --no-fatal-warnings
     fi
 
+    if ${BUILD_ANDROID}; then
+        mv "build/app/outputs/flutter-apk"/app-release.apk "${MY_DIR}/APK/${EXAMPLE_NAME}_app-release.apk"
+    fi
+    if ${BUILD_WEB}; then
+        mkdir -p "${MY_DIR}/WEB/${EXAMPLE_NAME}"
+        mv "build/web"/* "${MY_DIR}/WEB/${EXAMPLE_NAME}"/
+    fi
+
     flutter clean || error_msg "flutter clean failed"
     if [ -d "plugins/gem_kit" ]; then
 		rm -rf "plugins/gem_kit"
@@ -223,31 +243,4 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
     popd &>/dev/null
 done
 
-pushd "${MY_DIR}" &>/dev/null
-
-if [ -d "APK" ]; then
-    rm -rf "APK"
-fi
-if ${BUILD_ANDROID}; then
-    mkdir APK
-fi
-
-if [ -d "WEB" ]; then
-    rm -rf "WEB"
-fi
-if ${BUILD_WEB}; then
-    mkdir WEB
-fi
-
-for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
-    EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
-    if ${BUILD_ANDROID}; then
-        mv "${EXAMPLE_PATH}/build/app/outputs/flutter-apk"/app-release.apk "APK/${EXAMPLE_NAME}_app-release.apk"
-    fi
-    if ${BUILD_WEB}; then
-        mkdir -p "WEB/${EXAMPLE_NAME}"
-        mv "${EXAMPLE_PATH}/build/web"/* "WEB/${EXAMPLE_NAME}"/
-    fi
-done
-
-popd &>/dev/null
+exit 0

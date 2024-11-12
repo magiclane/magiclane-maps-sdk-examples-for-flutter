@@ -16,11 +16,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Animation;
 import 'package:what_is_nearby/what_is_nearby_page.dart';
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -73,6 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: GemMap(
         onMapCreated: _onMapCreated,
+        appAuthorization: projectApiToken,
       ),
     );
   }

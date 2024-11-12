@@ -8,6 +8,7 @@
 
 // ignore_for_file: avoid_print
 
+import 'package:flutter/foundation.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 import 'package:gem_kit/navigation.dart';
@@ -21,11 +22,9 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:io';
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -103,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: GemMap(
         onMapCreated: _onMapCreated,
+        appAuthorization: projectApiToken,
       ),
     );
   }
@@ -115,35 +115,50 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //Copy the recorded_route.gpx file from assets directory to app documents directory
   Future<void> _copyGpxToAppDocsDir() async {
-    final docDirectory = await getApplicationDocumentsDirectory();
-    final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
-    final imageBytes = await rootBundle.load('assets/recorded_route.gpx');
-    final buffer = imageBytes.buffer;
-    await gpxFile.writeAsBytes(
-      buffer.asUint8List(imageBytes.offsetInBytes, imageBytes.lengthInBytes),
-    );
+    if (!kIsWeb) {
+      final docDirectory = await getApplicationDocumentsDirectory();
+      final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
+      final imageBytes = await rootBundle.load('assets/recorded_route.gpx');
+      final buffer = imageBytes.buffer;
+      await gpxFile.writeAsBytes(
+        buffer.asUint8List(imageBytes.offsetInBytes, imageBytes.lengthInBytes),
+      );
+    }
   }
 
   //Read GPX data from file, then calculate & show the routes on map
   Future<void> _importGPX() async {
     _showSnackBar(context, message: 'The route is calculating.');
 
-    //Read file from app documents directory
-    final docDirectory = await getApplicationDocumentsDirectory();
-    final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
+    List<Landmark> landmarkList = [];
 
-    //Return if GPX file is not found
-    if (!await gpxFile.exists()) {
-      print('GPX file does not exist (${gpxFile.path})');
-      return;
+    if (kIsWeb) {
+      final imageBytes = await rootBundle.load('assets/recorded_route.gpx');
+      final buffer = imageBytes.buffer;
+      final pathData = buffer.asUint8List(
+          imageBytes.offsetInBytes, imageBytes.lengthInBytes);
+
+      // Process GPX data using your existing method
+      final gemPath = Path.create(data: pathData, format: PathFileFormat.gpx);
+      landmarkList = gemPath.toLandmarkList();
+    } else {
+      //Read file from app documents directory
+      final docDirectory = await getApplicationDocumentsDirectory();
+      final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
+
+      //Return if GPX file is not found
+      if (!await gpxFile.exists()) {
+        print('GPX file does not exist (${gpxFile.path})');
+        return;
+      }
+
+      final bytes = await gpxFile.readAsBytes();
+      final pathData = Uint8List.fromList(bytes);
+
+      //Get landmarklist containing all GPX points from file.
+      final gemPath = Path.create(data: pathData, format: PathFileFormat.gpx);
+      landmarkList = gemPath.toLandmarkList();
     }
-
-    final bytes = await gpxFile.readAsBytes();
-    final pathData = Uint8List.fromList(bytes);
-
-    //Get landmarklist containing all GPX points from file.
-    final gemPath = Path.create(data: pathData, format: PathFileFormat.gpx);
-    final landmarkList = gemPath.toLandmarkList();
 
     print("GPX Landmarklist size: ${landmarkList.length}");
 

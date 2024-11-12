@@ -12,11 +12,9 @@ import 'package:gem_kit/routing.dart';
 
 import 'package:flutter/material.dart' hide Route;
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -93,6 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: GemMap(
                 onMapCreated: _onMap1Created,
+                appAuthorization: projectApiToken,
               ),
             ),
           ),
@@ -106,6 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: GemMap(
                 onMapCreated: _onMap2Created,
+                appAuthorization: projectApiToken,
               ),
             ),
           ),

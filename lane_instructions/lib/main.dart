@@ -15,11 +15,9 @@ import 'utility.dart';
 
 import 'package:flutter/material.dart' hide Animation, Route;
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -96,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(children: [
         GemMap(
           onMapCreated: _onMapCreated,
+          appAuthorization: projectApiToken,
         ),
         if (_isSimulationActive)
           Align(

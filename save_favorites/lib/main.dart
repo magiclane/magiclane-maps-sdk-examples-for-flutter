@@ -15,11 +15,9 @@ import 'landmark_panel.dart';
 
 import 'package:flutter/material.dart';
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -79,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(children: [
         GemMap(
           onMapCreated: _onMapCreated,
+          appAuthorization: projectApiToken,
         ),
         if (_focusedLandmark != null)
           Positioned(
@@ -95,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // The callback for when map is ready to use.
-  void _onMapCreated(GemMapController controller) {
+  Future<void> _onMapCreated(GemMapController controller) async {
     // Save controller for further usage.
     _mapController = controller;
 
@@ -108,13 +107,13 @@ class _MyHomePageState extends State<MyHomePage> {
         LandmarkStoreService.createLandmarkStore(favoritesStoreName);
 
     // Listen for map landmark selection events.
-    _registerLandmarkTapCallback();
+    await _registerLandmarkTapCallback();
   }
 
-  void _registerLandmarkTapCallback() {
+  Future<void> _registerLandmarkTapCallback() async {
     _mapController.registerTouchCallback((pos) async {
       // Select the object at the tap position.
-      _mapController.setCursorScreenPosition(pos);
+      await _mapController.setCursorScreenPosition(pos);
 
       // Get the selected landmarks.
       final landmarks = _mapController.cursorSelectionLandmarks();

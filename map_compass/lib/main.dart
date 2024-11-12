@@ -13,11 +13,9 @@ import 'package:flutter/material.dart';
 
 import 'dart:typed_data';
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -45,11 +43,10 @@ class _MyHomePageState extends State<MyHomePage> {
   late GemMapController mapController;
 
   double compassAngle = 0;
-  late Uint8List compassImage;
+  Uint8List? compassImage;
 
   @override
   void initState() {
-    compassImage = _compassImage();
     super.initState();
   }
 
@@ -73,33 +70,35 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           GemMap(
             onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
           ),
-          Positioned(
-            right: 12,
-            top: 12,
-            child: InkWell(
-              // Align the map north to up.
-              onTap: () => mapController.alignNorthUp(),
-              child: Transform.rotate(
-                angle: -compassAngle * (3.141592653589793 / 180),
-                child: Container(
-                  padding: const EdgeInsets.all(3),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: Image.memory(
-                      compassImage,
-                      gaplessPlayback: true,
+          if (compassImage != null)
+            Positioned(
+              right: 12,
+              top: 12,
+              child: InkWell(
+                // Align the map north to up.
+                onTap: () => mapController.alignNorthUp(),
+                child: Transform.rotate(
+                  angle: -compassAngle * (3.141592653589793 / 180),
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image.memory(
+                        compassImage!,
+                        gaplessPlayback: true,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          )
+            )
         ],
       ),
     );
@@ -111,6 +110,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // Register the map angle update callback.
     mapController.registerOnMapAngleUpdate(
         (angle) => setState(() => compassAngle = angle));
+    setState(() {
+      compassImage = _compassImage();
+    });
   }
 
   Uint8List _compassImage() {

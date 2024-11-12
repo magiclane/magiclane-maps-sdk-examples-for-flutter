@@ -11,11 +11,9 @@ import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 import 'package:location_wikipedia/location_wikipedia_page.dart';
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -62,7 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ))
         ],
       ),
-      body: const GemMap(),
+      body: const GemMap(
+        appAuthorization: projectApiToken,
+      ),
     );
   }
 

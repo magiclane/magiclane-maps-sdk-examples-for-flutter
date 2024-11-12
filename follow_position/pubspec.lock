@@ -94,7 +94,7 @@ packages:
       path: "plugins/gem_kit"
       relative: true
     source: path
-    version: "2.8.0"
+    version: "2.9.0"
   leak_tracker:
     dependency: transitive
     description:

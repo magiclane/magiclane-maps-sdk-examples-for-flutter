@@ -16,11 +16,9 @@ import 'package:flutter/material.dart';
 
 import 'dart:async';
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -83,7 +81,10 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: const Icon(Icons.map_outlined, color: Colors.white))
         ],
       ),
-      body: GemMap(onMapCreated: _onMapCreated),
+      body: GemMap(
+        onMapCreated: _onMapCreated,
+        appAuthorization: projectApiToken,
+      ),
     );
   }
 

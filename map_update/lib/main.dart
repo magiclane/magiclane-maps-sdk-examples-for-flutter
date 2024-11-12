@@ -22,9 +22,9 @@ import 'maps_page.dart';
 
 import 'package:flutter/material.dart';
 
-void main() {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
+void main() {
   GemKit.initialize(appAuthorization: projectApiToken).then((value) {
     SdkSettings.setAllowConnection(true,
         onWorldwideRoadMapSupportStatusCallback: (status) {

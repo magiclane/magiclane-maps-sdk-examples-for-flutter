@@ -1,3 +1,11 @@
+// Copyright (C) 2019-2024, Magic Lane B.V.
+// All rights reserved.
+//
+// This software is confidential and proprietary information of Magic Lane
+// ("Confidential Information"). You shall not disclose such Confidential
+// Information and shall use it only in accordance with the terms of the
+// license agreement you entered into with Magic Lane.
+
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/weather.dart';
@@ -31,8 +39,9 @@ class ForecastNowPage extends StatelessWidget {
                       height:
                           30), // Decodes the image data for the weather icon.
                   builder: (context, snapshot) {
-                    if (snapshot.data != null)
+                    if (snapshot.data != null) {
                       return RawImage(image: snapshot.data!);
+                    }
                     return Container();
                   }),
             ),

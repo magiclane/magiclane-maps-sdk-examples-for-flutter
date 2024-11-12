@@ -6,8 +6,6 @@
 // Information and shall use it only in accordance with the terms of the
 // license agreement you entered into with Magic Lane.
 
-// ignore_for_file: avoid_print
-
 import 'package:flutter/services.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -16,11 +14,9 @@ import 'package:flutter/material.dart';
 
 import 'dart:async';
 
-Future<void> main() async {
-  const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-  await GemKit.initialize(appAuthorization: projectApiToken);
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -31,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Map Styles',
+      title: 'Assets Map Style',
       home: MyHomePage(),
     );
   }
@@ -62,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
         title: const Text(
-          'Map Styles',
+          'Assets Map Style',
           style: TextStyle(color: Colors.white),
         ),
         actions: [
@@ -72,7 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icon(Icons.map, color: Colors.white)),
         ],
       ),
-      body: GemMap(onMapCreated: _onMapCreated),
+      body: GemMap(
+        onMapCreated: _onMapCreated,
+        appAuthorization: projectApiToken,
+      ),
     );
   }
 
@@ -95,7 +94,9 @@ class _MyHomePageState extends State<MyHomePage> {
       _isStyleLoaded = true;
     });
 
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    if (mounted) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    }
 
     _mapController.centerOnCoordinates(Coordinates(latitude: 45, longitude: 20),
         zoomLevel: 25);
