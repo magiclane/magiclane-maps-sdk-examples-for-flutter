@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMapCreated(GemMapController controller) async {
     _mapController = controller;
 
-    _mapController.registerOnMapAngleUpdate((angle) {
+    _mapController.registerOnMapAngleUpdateCallback((angle) {
       print("Gesture: onMapAngleUpdate $angle");
     });
 

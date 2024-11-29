@@ -180,11 +180,11 @@ tar -xvf "${SDK_ARCHIVE_PATH}" --strip-components=1 -C "${SDK_TEMP_DIR}"
 
 pushd "${MY_DIR}" &>/dev/null
 
-[ -d "APK" ] && rm -rf APK
-${BUILD_ANDROID} && mkdir APK
+[ -d "_APK" ] && rm -rf _APK
+${BUILD_ANDROID} && mkdir _APK
 
-[ -d "WEB" ] && rm -rf WEB
-${BUILD_WEB} && mkdir WEB
+[ -d "_WEB" ] && rm -rf _WEB
+${BUILD_WEB} && mkdir _WEB
 
 popd &>/dev/null
 
@@ -227,11 +227,11 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
     fi
 
     if ${BUILD_ANDROID}; then
-        mv "build/app/outputs/flutter-apk"/app-release.apk "${MY_DIR}/APK/${EXAMPLE_NAME}_app-release.apk"
+        mv "build/app/outputs/flutter-apk"/app-release.apk "${MY_DIR}/_APK/${EXAMPLE_NAME}_app-release.apk"
     fi
     if ${BUILD_WEB}; then
-        mkdir -p "${MY_DIR}/WEB/${EXAMPLE_NAME}"
-        mv "build/web"/* "${MY_DIR}/WEB/${EXAMPLE_NAME}"/
+        mkdir -p "${MY_DIR}/_WEB/${EXAMPLE_NAME}"
+        mv "build/web"/* "${MY_DIR}/_WEB/${EXAMPLE_NAME}"/
     fi
 
     flutter clean || error_msg "flutter clean failed"

@@ -41,46 +41,46 @@ class TruckProfileDialogState extends State<TruckProfileDialog> {
             // Sliders to adjust various truck parameters.
             _buildSlider(
                 'Height',
-                profile.height.toDouble() < 1.8
-                    ? 1.8
+                profile.height.toDouble() < 180
+                    ? 180
                     : profile.height.toDouble(),
-                1.8,
-                4.0, (value) {
+                180,
+                400, (value) {
               setState(() {
                 profile.height = value.toInt();
               });
-            }, "m"),
+            }, "cm"),
             _buildSlider(
                 'Length',
-                profile.length.toDouble() < 5.0
-                    ? 5.0
+                profile.length.toDouble() < 500
+                    ? 500
                     : profile.length.toDouble(),
-                5.0,
-                20.0, (value) {
+                500,
+                2000, (value) {
               setState(() {
                 profile.length = value.toInt();
               });
-            }, "m"),
+            }, "cm"),
             _buildSlider(
                 'Width',
-                profile.width.toDouble() < 2.0 ? 2.0 : profile.width.toDouble(),
-                2.0,
-                4.0, (value) {
+                profile.width.toDouble() < 200 ? 200 : profile.width.toDouble(),
+                200,
+                400, (value) {
               setState(() {
                 profile.width = value.toInt();
               });
-            }, "m"),
+            }, "cm"),
             _buildSlider(
-                'Axle Weight',
-                profile.axleLoad.toDouble() < 1.5
-                    ? 1.5
+                'Axle Load',
+                profile.axleLoad.toDouble() < 1500
+                    ? 1500
                     : profile.axleLoad.toDouble(),
-                1.5,
-                10, (value) {
+                1500,
+                10000, (value) {
               setState(() {
                 profile.axleLoad = value.toInt();
               });
-            }, "t"),
+            }, "kg"),
             _buildSlider(
                 'Max Speed',
                 profile.maxSpeed < 60 ? 60 : profile.maxSpeed,
@@ -90,15 +90,16 @@ class TruckProfileDialogState extends State<TruckProfileDialog> {
                 profile.maxSpeed = value;
               });
             }, "km/h"),
+
             _buildSlider(
                 'Weight',
-                profile.mass.toDouble() < 3.0 ? 3.0 : profile.mass.toDouble(),
-                3.0,
-                50.0, (value) {
+                profile.mass.toDouble() < 3000 ? 3000 : profile.mass.toDouble(),
+                3000,
+                50000, (value) {
               setState(() {
                 profile.mass = value.toInt();
               });
-            }, "t"),
+            }, "kg"),
           ],
         ),
       ),
@@ -130,7 +131,7 @@ class TruckProfileDialogState extends State<TruckProfileDialog> {
                 Text("$min $measureUnit"),
               ],
             ),
-            Text("${value.toInt()} $measureUnit"),
+            Text("${value.toInt()}"),
             Text("$max $measureUnit"),
           ],
         ),
@@ -139,7 +140,7 @@ class TruckProfileDialogState extends State<TruckProfileDialog> {
           min: min,
           max: max,
           divisions: 100,
-          label: value.toStringAsFixed(2),
+          label: value.toStringAsFixed(0),
           onChanged: onChanged,
         ),
       ],

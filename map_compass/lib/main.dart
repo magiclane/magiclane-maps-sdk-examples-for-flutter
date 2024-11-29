@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMapCreated(GemMapController controller) {
     mapController = controller;
     // Register the map angle update callback.
-    mapController.registerOnMapAngleUpdate(
+    mapController.registerOnMapAngleUpdateCallback(
         (angle) => setState(() => compassAngle = angle));
     setState(() {
       compassImage = _compassImage();
