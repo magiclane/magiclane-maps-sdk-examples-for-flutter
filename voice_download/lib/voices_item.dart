@@ -43,13 +43,11 @@ class _VoicesItemState extends State<VoicesItem> {
     if (_isDownloadingOrWaiting()) {
       final errCode = widget.voice.pauseDownload();
       if (errCode != GemError.success) {
-        print(
-            "Download pause for item ${widget.voice.id} failed with code $errCode");
+        print("Download pause for item ${widget.voice.id} failed with code $errCode");
         return;
       }
 
-      Future<dynamic>.delayed(const Duration(milliseconds: 500))
-          .then((value) => _downloadVoice());
+      Future<dynamic>.delayed(const Duration(milliseconds: 500)).then((value) => _downloadVoice());
     }
   }
 
@@ -58,7 +56,7 @@ class _VoicesItemState extends State<VoicesItem> {
     return [
       ContentStoreItemStatus.downloadQueued,
       ContentStoreItemStatus.downloadRunning,
-      ContentStoreItemStatus.downloadWaiting,
+      ContentStoreItemStatus.downloadWaitingNetwork,
       ContentStoreItemStatus.downloadWaitingFreeNetwork,
       ContentStoreItemStatus.downloadWaitingNetwork,
     ].contains(status);
@@ -78,10 +76,7 @@ class _VoicesItemState extends State<VoicesItem> {
             ),
             title: Text(
               '${widget.voice.name} (${(widget.voice.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB)',
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
+              style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
               '${widget.voice.contentParameters[3].value as String} - ${widget.voice.contentParameters[1].value as String}',
@@ -108,8 +103,7 @@ class _VoicesItemState extends State<VoicesItem> {
                           backgroundColor: Colors.grey.shade300,
                         ),
                       );
-                    } else if (widget.voice.status ==
-                        ContentStoreItemStatus.paused) {
+                    } else if (widget.voice.status == ContentStoreItemStatus.paused) {
                       return const Icon(Icons.pause);
                     }
                     return const SizedBox.shrink();
@@ -130,8 +124,7 @@ class _VoicesItemState extends State<VoicesItem> {
   // Method that returns the image of the country
   Uint8List _getCountryImage(ContentStoreItem voice) {
     final countryCodes = voice.countryCodes;
-    final countryImage = MapDetails.getCountryFlag(
-        countryCode: countryCodes[0], size: const Size(100, 100));
+    final countryImage = MapDetails.getCountryFlag(countryCode: countryCodes[0], size: const Size(100, 100));
     return countryImage;
   }
 
@@ -149,8 +142,7 @@ class _VoicesItemState extends State<VoicesItem> {
   void _downloadVoice() {
     // Download the voice.
     widget.voice.asyncDownload(_onVoiceDownloadFinished,
-        onProgressCallback: _onVoiceDownloadProgressUpdated,
-        allowChargedNetworks: true);
+        onProgressCallback: _onVoiceDownloadProgressUpdated, allowChargedNetworks: true);
   }
 
   void _pauseDownload() {

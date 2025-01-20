@@ -33,7 +33,7 @@ class NavigationInstructionPanel extends StatelessWidget {
           child: Image.memory(instruction.nextTurnDetails
               .getAbstractGeometryImage(
                   renderSettings: AbstractGeometryImageRenderSettings(),
-                  size: Size(100, 100))),
+                  size: Size(200, 200))),
         ),
         SizedBox(
           width: MediaQuery.of(context).size.width - 150,

@@ -184,7 +184,7 @@ class _SlidingSectionState extends State<SlidingSection> {
     _debounce = Timer(const Duration(milliseconds: 500), () {
       double total = 0;
       for (final section in widget.sections) {
-        total += section.lenght;
+        total += section.length;
         final diff = (total - dest).abs();
         if (diff < 0.01) {
           widget.onSelectionChanged(section);

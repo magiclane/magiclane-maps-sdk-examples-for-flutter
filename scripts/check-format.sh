@@ -86,7 +86,7 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
 done
 
 if [ ${FORMAT_OK} -eq 0 ]; then
-     error_msg "Some files are not well formated"
+     error_msg "Some files were formatted"
      exit 1
 fi
 

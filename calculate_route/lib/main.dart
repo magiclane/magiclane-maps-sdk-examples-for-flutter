@@ -135,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
         final routesMap = _mapController.preferences.routes;
 
         // Display the routes on map.
-        for (final route in routes!) {
+        for (final route in routes) {
           routesMap.add(route, route == routes.first,
               label: route.getMapLabel());
         }

@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
         final routesMap = _mapController.preferences.routes;
 
         // Display the routes on map.
-        for (final route in routes!) {
+        for (final route in routes) {
           routesMap.add(route, route == routes.first,
               label: route.getMapLabel());
         }
@@ -160,16 +160,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _mapController.preferences.routes.clearAllButMainRoute();
     final routes = _mapController.preferences.routes;
-    _navigationHandler = NavigationService.startSimulation(routes.first,
-        speedMultiplier: 2, (type, instruction) {
-      if (type == NavigationEventType.destinationReached ||
-          type == NavigationEventType.error) {
-        // If the navigation has ended or if and error occured while navigating, remove routes.
-        setState(() {
-          _isSimulationActive = false;
-          _cancelRoute();
-        });
+
+    _navigationHandler = NavigationService.startSimulation(
+        routes.mainRoute, null, onNavigationInstruction: (instruction, events) {
+      setState(() {
+        _isSimulationActive = true;
+      });
+    }, onError: (error) {
+      // If the navigation has ended or if and error occurred while navigating, remove routes.
+      setState(() {
+        _isSimulationActive = false;
+        _cancelRoute();
+      });
+
+      if (error != GemError.cancel) {
+        _stopSimulation();
       }
+      return;
     });
 
     // Set the camera to follow position.
@@ -219,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // (err, results) - is a callback function that gets called when the search is finished.
     // err is an error enum, results is a list of landmarks.
     SearchService.searchAlongRoute(routes.mainRoute, (err, results) {
-      if (err != GemError.success || results == null) {
+      if (err != GemError.success) {
         print("SearchAlongRoute - no results found");
         return;
       }

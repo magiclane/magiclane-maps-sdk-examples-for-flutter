@@ -23,11 +23,7 @@ class MapsItem extends StatefulWidget {
   final void Function(bool) onDownloadStateChanged;
   final void Function(ContentStoreItem) deleteMap;
 
-  const MapsItem(
-      {super.key,
-      required this.map,
-      required this.onDownloadStateChanged,
-      required this.deleteMap});
+  const MapsItem({super.key, required this.map, required this.onDownloadStateChanged, required this.deleteMap});
 
   @override
   State<MapsItem> createState() => _MapsItemState();
@@ -48,13 +44,11 @@ class _MapsItemState extends State<MapsItem> {
     if (_isDownloadingOrWaiting()) {
       final errCode = widget.map.pauseDownload();
       if (errCode != GemError.success) {
-        print(
-            "Download pause for item ${widget.map.id} failed with code $errCode");
+        print("Download pause for item ${widget.map.id} failed with code $errCode");
         return;
       }
 
-      Future<dynamic>.delayed(const Duration(milliseconds: 500))
-          .then((value) => _onTileTap());
+      Future<dynamic>.delayed(const Duration(milliseconds: 500)).then((value) => _onTileTap());
     }
   }
 
@@ -63,7 +57,7 @@ class _MapsItemState extends State<MapsItem> {
     return [
       ContentStoreItemStatus.downloadQueued,
       ContentStoreItemStatus.downloadRunning,
-      ContentStoreItemStatus.downloadWaiting,
+      ContentStoreItemStatus.downloadWaitingNetwork,
       ContentStoreItemStatus.downloadWaitingFreeNetwork,
       ContentStoreItemStatus.downloadWaitingNetwork,
     ].contains(status);
@@ -87,10 +81,7 @@ class _MapsItemState extends State<MapsItem> {
             ),
             title: Text(
               widget.map.name,
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
+              style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
               "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
@@ -117,8 +108,7 @@ class _MapsItemState extends State<MapsItem> {
                           backgroundColor: Colors.grey.shade300,
                         ),
                       );
-                    } else if (widget.map.status ==
-                        ContentStoreItemStatus.paused) {
+                    } else if (widget.map.status == ContentStoreItemStatus.paused) {
                       return const Icon(Icons.pause);
                     }
                     return const SizedBox.shrink();
@@ -139,8 +129,7 @@ class _MapsItemState extends State<MapsItem> {
   // Method that returns the image of a map
   Uint8List _getMapImage(ContentStoreItem map) {
     final countryCodes = map.countryCodes;
-    final countryImage = MapDetails.getCountryFlag(
-        countryCode: countryCodes[0], size: const Size(100, 100));
+    final countryImage = MapDetails.getCountryFlag(countryCode: countryCodes[0], size: const Size(100, 100));
     return countryImage;
   }
 
@@ -158,8 +147,7 @@ class _MapsItemState extends State<MapsItem> {
   void _downloadMap() {
     // Download the map.
     widget.map.asyncDownload(_onMapDownloadFinished,
-        onProgressCallback: _onMapDownloadProgressUpdated,
-        allowChargedNetworks: true);
+        onProgressCallback: _onMapDownloadProgressUpdated, allowChargedNetworks: true);
   }
 
   void _onMapDownloadProgressUpdated(int progress) {

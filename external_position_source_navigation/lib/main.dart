@@ -52,13 +52,12 @@ class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
 
   late NavigationInstruction currentInstruction;
+  late DataSource _dataSource;
 
   bool _areRoutesBuilt = false;
   bool _isNavigationActive = false;
 
   bool _hasDataSource = false;
-
-  final DataSource _dataSource = DataSource([DataType.position]);
 
   // We use the handler to cancel the route calculation.
   TaskHandler? _routingHandler;
@@ -76,8 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("ExternalPositionNavigation",
-            style: TextStyle(color: Colors.white)),
+        title: const Text("ExternalPositionNavigation", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           if (!_isNavigationActive && _areRoutesBuilt)
@@ -136,10 +134,8 @@ class _MyHomePageState extends State<MyHomePage> {
             bottom: MediaQuery.of(context).padding.bottom + 10,
             left: 0,
             child: NavigationBottomPanel(
-              remainingDistance:
-                  currentInstruction.getFormattedRemainingDistance(),
-              remainingDuration:
-                  currentInstruction.getFormattedRemainingDuration(),
+              remainingDistance: currentInstruction.getFormattedRemainingDistance(),
+              remainingDuration: currentInstruction.getFormattedRemainingDuration(),
               eta: currentInstruction.getFormattedETA(),
             ),
           ),
@@ -152,16 +148,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMapCreated(GemMapController controller) {
     // Save controller for further usage.
     _mapController = controller;
+
+    _dataSource = DataSource.createExternalDataSource([DataType.position]);
   }
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure
-    final departureLandmark =
-        Landmark.withLatLng(latitude: 34.915646, longitude: -110.147933);
+    final departureLandmark = Landmark.withLatLng(latitude: 34.915646, longitude: -110.147933);
 
     // Define the destination.
-    final destinationLandmark =
-        Landmark.withLatLng(latitude: 34.933105, longitude: -110.131363);
+    final destinationLandmark = Landmark.withLatLng(latitude: 34.933105, longitude: -110.131363);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
@@ -170,17 +166,15 @@ class _MyHomePageState extends State<MyHomePage> {
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
-    _routingHandler = RoutingService.calculateRoute(
-        [departureLandmark, destinationLandmark], routePreferences,
-        (err, routes) {
+    _routingHandler =
+        RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (err, routes) {
       // If the route calculation is finished, we don't have a progress listener anymore.
       _routingHandler = null;
 
       ScaffoldMessenger.of(context).clearSnackBars();
 
       if (err == GemError.routeTooLong) {
-        print(
-            'The destination is too far from your current location. Change the coordinates of the destination.');
+        print('The destination is too far from your current location. Change the coordinates of the destination.');
         return;
       }
 
@@ -190,9 +184,8 @@ class _MyHomePageState extends State<MyHomePage> {
         final routesMap = _mapController.preferences.routes;
 
         // Display the routes on map.
-        for (final route in routes!) {
-          routesMap.add(route, route == routes.first,
-              label: route.getMapLabel());
+        for (final route in routes) {
+          routesMap.add(route, route == routes.first, label: route.getMapLabel());
         }
 
         // Center the camera on routes.
@@ -207,11 +200,29 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _startNavigation() async {
     final routes = _mapController.preferences.routes;
 
-    _navigationHandler = NavigationService.startNavigation(routes.mainRoute,
-        (type, instruction) {
-      if (type == NavigationEventType.destinationReached ||
-          type == NavigationEventType.error) {
-        // If the navigation has ended or if and error occured while navigating, remove routes, stop data source.
+    _navigationHandler = NavigationService.startNavigation(
+      routes.mainRoute,
+      null,
+      onNavigationInstruction: (instruction, events) {
+        setState(() {
+          _isNavigationActive = true;
+        });
+        currentInstruction = instruction;
+      },
+      onError: (error) {
+        PositionService.instance.removeDataSource();
+        _dataSource.stop();
+        setState(() {
+          _isNavigationActive = false;
+
+          _cancelRoute();
+        });
+        if (error != GemError.cancel) {
+          _stopNavigation();
+        }
+        return;
+      },
+      onDestinationReached: (landmark) {
         PositionService.instance.removeDataSource();
         _dataSource.stop();
         setState(() {
@@ -221,14 +232,8 @@ class _MyHomePageState extends State<MyHomePage> {
         });
         _stopNavigation();
         return;
-      }
-      _isNavigationActive = true;
-
-      if (instruction != null) {
-        setState(() => currentInstruction = instruction);
-      }
-    });
-
+      },
+    );
     // Set the camera to follow position.
     _mapController.startFollowingPosition();
 
@@ -242,9 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Coordinates prevCoordinates = route.getCoordinateOnRoute(0);
 
     // Parse route distance
-    for (int currentDistance = 1;
-        currentDistance <= distance;
-        currentDistance += 1) {
+    for (int currentDistance = 1; currentDistance <= distance; currentDistance += 1) {
       if (!_hasDataSource) return;
 
       // Stop navigation if distance has been parsed
@@ -329,8 +332,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished or if current location is not available.
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(
       content: Text(message),
       duration: duration,
@@ -384,10 +386,7 @@ class FollowPositionButton extends StatelessWidget {
             Icon(Icons.navigation),
             Text(
               'Recenter',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
+              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
             )
           ],
         ),

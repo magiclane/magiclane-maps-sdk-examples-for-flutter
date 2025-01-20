@@ -6,6 +6,8 @@
 // Information and shall use it only in accordance with the terms of the
 // license agreement you entered into with Magic Lane.
 
+import 'dart:math';
+
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 
@@ -79,13 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
     final x = MediaQuery.of(context).size.width / 2;
     final y = MediaQuery.of(context).size.height / 2;
     final mapCoords =
-        _mapController.transformScreenToWgs(XyType(x: x.toInt(), y: y.toInt()));
+        _mapController.transformScreenToWgs(Point<int>(x.toInt(), y.toInt()));
 
 // Navigating to search screen. The result will be the selected search result(Landmark)
     final result = await Navigator.of(context).push(MaterialPageRoute<dynamic>(
       builder: (context) => SearchPage(
         controller: _mapController,
-        coordinates: mapCoords!,
+        coordinates: mapCoords,
       ),
     ));
 

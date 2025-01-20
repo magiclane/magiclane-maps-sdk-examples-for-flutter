@@ -54,11 +54,16 @@ extension RouteExtension on Route {
     final totalWalkingDistance = firstSegment.timeDistance.totalDistanceM +
         lastSegment.timeDistance.totalDistanceM;
 
-    // Format departure and arrival times.
-    final formattedDepartureTime =
-        '${departureTime.hour}:${departureTime.minute.toString().padLeft(2, '0')}';
-    final formattedArrivalTime =
-        '${arrivalTime.hour}:${arrivalTime.minute.toString().padLeft(2, '0')}';
+    String formattedDepartureTime = "";
+    String formattedArrivalTime = "";
+
+    if (departureTime != null && arrivalTime != null) {
+      // Format departure and arrival times.
+      formattedDepartureTime =
+          '${departureTime.hour}:${departureTime.minute.toString().padLeft(2, '0')}';
+      formattedArrivalTime =
+          '${arrivalTime.hour}:${arrivalTime.minute.toString().padLeft(2, '0')}';
+    }
 
     // Build the label string with the route's details.
     return '${convertDuration(totalDuration)}\n' // Total duration

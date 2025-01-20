@@ -77,8 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           IconButton(
-              onPressed: () => _onMapButtonTap(context),
-              icon: const Icon(Icons.map_outlined, color: Colors.white))
+              onPressed: () => _onMapButtonTap(context), icon: const Icon(Icons.map_outlined, color: Colors.white))
         ],
       ),
       body: GemMap(
@@ -90,15 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onMapCreated(GemMapController controller) async {
     _mapController = controller;
-    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(
-        ServiceGroupType.contentService, true);
+    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(ServiceGroupType.contentService, true);
     getStyles();
   }
 
   // Method to load the styles
   void getStyles() {
-    ContentStore.asyncGetStoreContentList(ContentType.viewStyleLowRes,
-        (err, items, isCached) {
+    ContentStore.asyncGetStoreContentList(ContentType.viewStyleLowRes, (err, items, isCached) {
       if (err == GemError.success && items != null) {
         for (final item in items) {
           _stylesList.add(item);
@@ -123,21 +120,20 @@ class _MyHomePageState extends State<MyHomePage> {
         });
         return;
       }
-      // Download was succesful
+      // Download was successful
       completer.complete(true);
       setState(() {
         _isDownloadingStyle = false;
       });
     }, onProgressCallback: (progress) {
-      // Gets called everytime download progresses with a value between [0, 100]
+      // Gets called every time download progresses with a value between [0, 100]
       print('progress: $progress');
     }, allowChargedNetworks: true);
     return await completer.future;
   }
 
   // Method to show message in case the styles are still loading
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(
       content: Text(message),
       duration: duration,
@@ -154,9 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    final indexOfNextStyle = (_indexOfCurrentStyle >= _stylesList.length - 1)
-        ? 0
-        : _indexOfCurrentStyle + 1;
+    final indexOfNextStyle = (_indexOfCurrentStyle >= _stylesList.length - 1) ? 0 : _indexOfCurrentStyle + 1;
     ContentStoreItem currentStyle = _stylesList[indexOfNextStyle];
 
     if (currentStyle.isCompleted == false) {

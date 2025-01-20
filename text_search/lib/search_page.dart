@@ -87,7 +87,7 @@ class _SearchPageState extends State<SearchPage> {
     SearchService.search(text, coordinates, preferences: preferences,
         (err, results) async {
       // If there is an error or there aren't any results, the method will return an empty list.
-      if (err != GemError.success || results == null) {
+      if (err != GemError.success) {
         completer.complete([]);
         return;
       }

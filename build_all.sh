@@ -75,6 +75,7 @@ BUILD_ANDROID=false
 BUILD_IOS=false
 BUILD_WEB=false
 ANALYZE=false
+UPGRADE=false
 
 MY_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -96,6 +97,8 @@ Options:
 
     [OPTIONAL] --analyze
                     Analyze dart code for all examples
+    [OPTIONAL] --upgrade
+                    Upgrade the current package's dependencies to latest versions
 \033[0m\n"
 }
 
@@ -105,6 +108,7 @@ LONGOPTS_LIST=(
     "ios"
     "web"
     "analyze"
+    "upgrade"
 )
 
 if ! PARSED_OPTIONS=$(getopt \
@@ -137,6 +141,9 @@ while true; do
             ;;
         --analyze)
             ANALYZE=true
+            ;;
+        --upgrade)
+            UPGRADE=true
             ;;
         --)
             shift
@@ -202,7 +209,9 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
 
     flutter pub outdated
 
-    flutter pub upgrade --major-versions
+	if ${UPGRADE}; then
+		flutter pub upgrade
+	fi
 
     if ${BUILD_IOS}; then
         if is_mac; then

@@ -150,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
         (err, results) {
       // If there is an error, the method will return a null list.
       if (err != GemError.success && err != GemError.reducedResult ||
-          results!.isEmpty) {
+          results.isEmpty) {
         completer.complete(null);
         return;
       }

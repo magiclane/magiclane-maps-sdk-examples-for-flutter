@@ -368,7 +368,7 @@ class _RangesPanelState extends State<RangesPanel> {
               RouteRenderSettings(fillColor: randomColor);
 
           // Display the range on map.
-          routesMap.add(routes!.first, true, routeRenderSettings: settings);
+          routesMap.add(routes.first, true, routeRenderSettings: settings);
 
           // Center the camera on range.
           _centerOnRouteRange(routes.first);

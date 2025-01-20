@@ -6,6 +6,8 @@
 // Information and shall use it only in accordance with the terms of the
 // license agreement you entered into with Magic Lane.
 
+import 'dart:math';
+
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/landmark_store.dart';
 import 'package:gem_kit/map.dart';
@@ -134,8 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
 
       final coordinates =
-          _mapController.transformScreenToWgs(XyType(x: pos.x, y: pos.y));
-      if (coordinates == null) return;
+          _mapController.transformScreenToWgs(Point<int>(pos.x, pos.y));
 
       // If no landmark was found, we create one.
       final lmk = Landmark.withCoordinates(coordinates);

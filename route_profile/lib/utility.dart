@@ -26,7 +26,7 @@ String convertDistance(double meters) {
   }
 }
 
-// Get the color of the section based on its typpe
+// Get the color of the section based on its type
 Color getColorBasedOnType(Enum type) {
   if (type is SurfaceType) return _getSurfaceTypeColor(type);
   if (type is RoadType) return _getRoadTypeColor(type);

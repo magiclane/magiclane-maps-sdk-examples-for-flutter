@@ -1,9 +1,9 @@
 class Section {
   final Enum type;
-  int lenght;
+  int length;
   double percent;
 
   Section({required this.type})
-      : lenght = 0,
+      : length = 0,
         percent = 0;
 }

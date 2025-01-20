@@ -197,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
         final routesMap = _mapController.preferences.routes;
 
         // Display the routes on map.
-        for (final route in routes!) {
+        for (final route in routes) {
           routesMap.add(route, route == routes.first,
               label: route.getMapLabel());
         }
@@ -214,23 +214,28 @@ class _MyHomePageState extends State<MyHomePage> {
   void _startNavigation() {
     final routes = _mapController.preferences.routes;
 
-    _navigationHandler = NavigationService.startNavigation(routes.mainRoute,
-        (type, instruction) async {
-      if (type == NavigationEventType.destinationReached ||
-          type == NavigationEventType.error) {
-        // If the navigation has ended or if and error occured while navigating, remove routes.
+    _navigationHandler = NavigationService.startSimulation(
+      routes.mainRoute,
+      null,
+      onNavigationInstruction: (instruction, events) {
+        setState(() {
+          _isNavigationActive = true;
+        });
+        currentInstruction = instruction;
+      },
+      onError: (error) {
+        // If the navigation has ended or if and error occurred while navigating, remove routes.
         setState(() {
           _isNavigationActive = false;
           _cancelRoute();
         });
-        return;
-      }
-      _isNavigationActive = true;
 
-      if (instruction != null) {
-        setState(() => currentInstruction = instruction);
-      }
-    });
+        if (error != GemError.cancel) {
+          _stopNavigation();
+        }
+        return;
+      },
+    );
 
     // Set the camera to follow position.
     _mapController.startFollowingPosition();

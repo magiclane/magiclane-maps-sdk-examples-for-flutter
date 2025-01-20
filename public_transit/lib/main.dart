@@ -13,8 +13,7 @@ import 'package:gem_kit/routing.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:public_transit/utility.dart';
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
-
+const projectApiToken = String.fromEnvironment("GEM_TOKEN");
 void main() {
   runApp(const MyApp());
 }
@@ -58,8 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title:
-            const Text('Public Transit', style: TextStyle(color: Colors.white)),
+        title: const Text('Public Transit', style: TextStyle(color: Colors.white)),
         actions: [
           // Routes are not built.
           if (_routingHandler == null && _ptSegments == null)
@@ -127,16 +125,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark =
-        Landmark.withLatLng(latitude: 51.505929, longitude: -0.097579);
+    final departureLandmark = Landmark.withLatLng(latitude: 51.505929, longitude: -0.097579);
 
     // Define the destination.
-    final destinationLandmark =
-        Landmark.withLatLng(latitude: 51.507616, longitude: -0.105036);
+    final destinationLandmark = Landmark.withLatLng(latitude: 51.507616, longitude: -0.105036);
 
     // Define the route preferences with public transport mode.
-    final routePreferences =
-        RoutePreferences(transportMode: RouteTransportMode.public);
+    final routePreferences = RoutePreferences(transportMode: RouteTransportMode.public);
 
     _showSnackBar(context, message: "The route is being calculated.");
 
@@ -144,9 +139,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
 
-    _routingHandler = RoutingService.calculateRoute(
-        [departureLandmark, destinationLandmark], routePreferences,
-        (err, routes) {
+    _routingHandler =
+        RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (err, routes) {
       // If the route calculation is finished, we don't have a progress listener anymore.
       _routingHandler = null;
       ScaffoldMessenger.of(context).clearSnackBars();
@@ -157,9 +151,8 @@ class _MyHomePageState extends State<MyHomePage> {
         final routesMap = _mapController.preferences.routes;
 
         // Display the routes on map.
-        for (final route in routes!) {
-          routesMap.add(route, route == routes.first,
-              label: route == routes.first ? route.getMapLabel() : null);
+        for (final route in routes) {
+          routesMap.add(route, route == routes.first, label: route == routes.first ? route.getMapLabel() : null);
         }
 
         // Center the camera on routes.
@@ -167,8 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Convert normal route to PTRoute
         final ptRoute = routes.first.toPTRoute();
         // Convert each segment to PTRouteSegment
-        final ptSegments =
-            ptRoute!.segments.map((seg) => seg.toPTRouteSegment()).toList();
+        final ptSegments = ptRoute!.segments.map((seg) => seg.toPTRouteSegment()).toList();
 
         setState(() {
           _ptSegments = ptSegments;
@@ -217,8 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(
       content: Text(message),
       duration: duration,
@@ -253,8 +244,7 @@ class TransitSegment extends StatelessWidget {
                   Icons.directions_bus_outlined,
                   size: 35.0,
                 ),
-                if (segment.hasWheelchairSupport)
-                  const Icon(Icons.accessible_forward),
+                if (segment.hasWheelchairSupport) const Icon(Icons.accessible_forward),
                 Container(color: Colors.green, child: Text(segment.shortName)),
               ],
             ),

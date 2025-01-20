@@ -77,9 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: GemMap(
-        onMapCreated: _onMapCreated,
-        appAuthorization: projectApiToken,
-      ),
+          onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
     );
   }
 
@@ -93,8 +91,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Based on view type, set the view angle
     if (_isInPerspectiveView) {
+      _mapPreferences.buildingsVisibility =
+          BuildingsVisibility.threeDimensional;
       _mapPreferences.tiltAngle = _3dViewAngle;
     } else {
+      _mapPreferences.buildingsVisibility = BuildingsVisibility.twoDimensional;
       _mapPreferences.tiltAngle = _2dViewAngle;
     }
   }

@@ -71,8 +71,8 @@ class LineAreaChart extends StatefulWidget {
     for (var climbSection in climbSections) {
       final Color highligthedColor = getGradeColor(climbSection).withAlpha(255);
       highlightedColoredIntervals.add((
-        climbSection.startDistanceM!.toDouble(),
-        climbSection.endDistanceM!.toDouble(),
+        climbSection.startDistanceM.toDouble(),
+        climbSection.endDistanceM.toDouble(),
         highligthedColor
       ));
     }
@@ -797,7 +797,7 @@ class _ChartGestureDetector extends StatelessWidget {
           const scaleV = 5;
 
           // Higher than 1 -> the gesture has higher chance of being registered as DRAG TWO FINGERS
-          // Closer to 1 -> the gesture has higher chance of being registred as SCALE
+          // Closer to 1 -> the gesture has higher chance of being registered as SCALE
           const scaleH = 1.30;
 
           // Ignore extreme vertical gestures

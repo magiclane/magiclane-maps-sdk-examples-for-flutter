@@ -61,19 +61,19 @@ class ClimbDetails extends StatelessWidget {
                 TableRow(
                     decoration: BoxDecoration(color: getGradeColor(section)),
                     children: [
-                      Text(_getGradeString(section.grade!)),
+                      Text(_getGradeString(section.grade)),
                       Text(
-                        '${convertDistance(section.startDistanceM!.toDouble())} / ${convertDistance(section.endDistanceM!.toDouble())}\n${convertDistance(_getSectionStartElevation(section))} / ${convertDistance(_getSectionEndElevation(section))}',
+                        '${convertDistance(section.startDistanceM.toDouble())} / ${convertDistance(section.endDistanceM.toDouble())}\n${convertDistance(_getSectionStartElevation(section))} / ${convertDistance(_getSectionEndElevation(section))}',
                         maxLines: 2,
                       ),
                       Text(
                         convertDistance(
-                            (section.endDistanceM! - section.startDistanceM!)
+                            (section.endDistanceM - section.startDistanceM)
                                 .toDouble()),
                         maxLines: 2,
                       ),
                       Text(
-                        "${section.slope!.toStringAsFixed(2)}%",
+                        "${section.slope.toStringAsFixed(2)}%",
                         maxLines: 2,
                       )
                     ]),
@@ -85,12 +85,11 @@ class ClimbDetails extends StatelessWidget {
   }
 
   double _getSectionStartElevation(ClimbSection section) {
-    return route.terrainProfile!.getElevation(section.startDistanceM ?? 0);
+    return route.terrainProfile!.getElevation(section.startDistanceM);
   }
 
   double _getSectionEndElevation(ClimbSection section) {
-    return route.terrainProfile!
-        .getElevation(section.endDistanceM ?? route.totalDistance());
+    return route.terrainProfile!.getElevation(section.endDistanceM);
   }
 
   String _getGradeString(Grade grade) {

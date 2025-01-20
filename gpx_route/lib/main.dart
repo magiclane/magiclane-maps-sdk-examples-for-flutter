@@ -135,8 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       final imageBytes = await rootBundle.load('assets/recorded_route.gpx');
       final buffer = imageBytes.buffer;
-      final pathData = buffer.asUint8List(
-          imageBytes.offsetInBytes, imageBytes.lengthInBytes);
+      final pathData = buffer.asUint8List(imageBytes.offsetInBytes, imageBytes.lengthInBytes);
 
       // Process GPX data using your existing method
       final gemPath = Path.create(data: pathData, format: PathFileFormat.gpx);
@@ -163,8 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print("GPX Landmarklist size: ${landmarkList.length}");
 
     // Define the route preferences.
-    final routePreferences =
-        RoutePreferences(transportMode: RouteTransportMode.bicycle);
+    final routePreferences = RoutePreferences(transportMode: RouteTransportMode.bicycle);
 
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
@@ -181,10 +179,9 @@ class _MyHomePageState extends State<MyHomePage> {
           final routesMap = _mapController.preferences.routes;
 
           // Display the routes on map.
-          for (final route in routes!) {
+          for (final route in routes) {
             // The first route is the main route
-            routesMap.add(route, route == routes.first,
-                label: route.getMapLabel());
+            routesMap.add(route, route == routes.first, label: route.getMapLabel());
           }
 
           // Center the camera on routes.
@@ -206,8 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final routes = _mapController.preferences.routes;
 
     // Start navigation one the main route.
-    _navigationHandler = NavigationService.startSimulation(routes.mainRoute,
-        (eventType, instruction) {
+    _navigationHandler = NavigationService.startSimulation(routes.mainRoute, (eventType, instruction) {
       // Navigation instruction callback.
     }, speedMultiplier: 2);
 
@@ -233,8 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(
       content: Text(message),
       duration: duration,
@@ -247,10 +242,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
-        getTimeDistance().restrictedDistanceM;
-    final totalDuration =
-        getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
+    final totalDistance = getTimeDistance().unrestrictedDistanceM + getTimeDistance().restrictedDistanceM;
+    final totalDuration = getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
 
     return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
   }

@@ -26,8 +26,7 @@ const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
 void main() {
   GemKit.initialize(appAuthorization: projectApiToken).then((value) {
-    SdkSettings.setAllowConnection(true,
-        onWorldwideRoadMapSupportStatusCallback: (status) {
+    SdkSettings.setAllowConnection(true, onWorldwideRoadMapSupportStatusCallback: (status) {
       print("UpdatePersistence: onWorldwideRoadMapSupportStatus $status");
       if (status != Status.upToDate) {
         UpdatePersistence.instance.isOldData = true;
@@ -91,9 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ))
         ],
       ),
-      body: GemMap(
-        onMapCreated: onMapCreated,
-      ),
+      body: GemMap(onMapCreated: onMapCreated, appAuthorization: projectApiToken),
       floatingActionButton: showButton
           ? FloatingActionButton(
               onPressed: loadMaps,
@@ -112,8 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<bool> loadAsset(
-      String assetName, String destinationDirectoryPath) async {
+  Future<bool> loadAsset(String assetName, String destinationDirectoryPath) async {
     final destinationFilePath = path.join(destinationDirectoryPath, assetName);
 
     File file = File(destinationFilePath);
@@ -124,9 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final asset = await rootBundle.load('assets/$assetName');
     final buffer = asset.buffer;
-    await file.writeAsBytes(
-        buffer.asUint8List(asset.offsetInBytes, asset.lengthInBytes),
-        flush: true);
+    await file.writeAsBytes(buffer.asUint8List(asset.offsetInBytes, asset.lengthInBytes), flush: true);
     print("Wrote file ${file.path}");
     return true;
   }
@@ -166,8 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final directory = Directory(directoryPath);
 
     if (!directory.existsSync()) {
-      print(
-          '\x1B[31mWARNING: Directory $directoryPath not found. Test might fail.\x1B[0m');
+      print('\x1B[31mWARNING: Directory $directoryPath not found. Test might fail.\x1B[0m');
     }
 
     for (final file in directory.listSync()) {
@@ -177,8 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
           print('INFO DELETE ASSETS: deleting file ${file.path}');
           file.deleteSync();
         } catch (e) {
-          print(
-              '\x1B[31mWARNING: Deleting file ${file.path} failed. Test might fail. Reason:\n${e.toString()}\x1B[0m');
+          print('\x1B[31mWARNING: Deleting file ${file.path} failed. Test might fail. Reason:\n${e.toString()}\x1B[0m');
         }
       }
     }

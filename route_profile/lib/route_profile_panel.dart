@@ -217,14 +217,14 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
     Map<SurfaceType, Section> map = <SurfaceType, Section>{};
 
     for (int index = 0; index < surfaceSections.length; index++) {
-      final type = surfaceSections[index].type!;
+      final type = surfaceSections[index].type;
 
       // Calculate the start and end distances for the current section.
       final isLast = index == surfaceSections.length - 1;
-      final startDistance = surfaceSections[index].startDistanceM ?? 0;
+      final startDistance = surfaceSections[index].startDistanceM;
       final endDistance = isLast
           ? widget.route.totalDistance()
-          : (surfaceSections[index + 1].startDistanceM ?? 0);
+          : (surfaceSections[index + 1].startDistanceM);
       final length = endDistance - startDistance;
 
       if (!map.containsKey(type)) {
@@ -232,8 +232,8 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       }
 
       // Calculate the total length of the current section type.
-      map[type]!.lenght += length;
-      map[type]!.percent = map[type]!.lenght / widget.route.totalDistance();
+      map[type]!.length += length;
+      map[type]!.percent = map[type]!.length / widget.route.totalDistance();
     }
     sections.addAll(map.values);
     return sections;
@@ -249,10 +249,10 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       if (type != sections[index].type) continue;
 
       final isLast = index == sections.length - 1;
-      final startDistance = sections[index].startDistanceM ?? 0;
+      final startDistance = sections[index].startDistanceM;
       final endDistance = isLast
           ? widget.route.totalDistance()
-          : (sections[index + 1].startDistanceM ?? 0);
+          : (sections[index + 1].startDistanceM);
 
       final path = widget.route.getPath(startDistance, endDistance);
       paths.add(path!);
@@ -268,14 +268,14 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
     Map<RoadType, Section> map = <RoadType, Section>{};
 
     for (int index = 0; index < roadTypeSections.length; index++) {
-      final type = roadTypeSections[index].type!;
+      final type = roadTypeSections[index].type;
 
       // Calculate the start and end distances for the current section.
       final isLast = index == roadTypeSections.length - 1;
-      final startDistance = roadTypeSections[index].startDistanceM ?? 0;
+      final startDistance = roadTypeSections[index].startDistanceM;
       final endDistance = isLast
           ? widget.route.totalDistance()
-          : (roadTypeSections[index + 1].startDistanceM ?? 0);
+          : (roadTypeSections[index + 1].startDistanceM);
       final length = endDistance - startDistance;
 
       if (!map.containsKey(type)) {
@@ -283,8 +283,8 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       }
 
       // Calculate the total length of the current section type.
-      map[type]!.lenght += length;
-      map[type]!.percent = map[type]!.lenght / widget.route.totalDistance();
+      map[type]!.length += length;
+      map[type]!.percent = map[type]!.length / widget.route.totalDistance();
     }
     sections.addAll(map.values);
     return sections;
@@ -300,10 +300,10 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       if (type != sections[index].type) continue;
 
       final isLast = index == sections.length - 1;
-      final startDistance = sections[index].startDistanceM ?? 0;
+      final startDistance = sections[index].startDistanceM;
       final endDistance = isLast
           ? widget.route.totalDistance()
-          : (sections[index + 1].startDistanceM ?? 0);
+          : (sections[index + 1].startDistanceM);
 
       final path = widget.route.getPath(startDistance, endDistance);
       paths.add(path!);
@@ -320,14 +320,14 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
     Map<Steepness, Section> map = <Steepness, Section>{};
 
     for (int index = 0; index < steepnessSections.length; index++) {
-      final type = Steepness.values[steepnessSections[index].categ ?? 0];
+      final type = Steepness.values[steepnessSections[index].categ];
 
       // Calculate the start and end distances for the current section.
       final isLast = index == steepnessSections.length - 1;
-      final startDistance = steepnessSections[index].startDistanceM ?? 0;
+      final startDistance = steepnessSections[index].startDistanceM;
       final endDistance = isLast
           ? widget.route.totalDistance()
-          : (steepnessSections[index + 1].startDistanceM ?? 0);
+          : (steepnessSections[index + 1].startDistanceM);
       final length = endDistance - startDistance;
 
       if (!map.containsKey(type)) {
@@ -335,8 +335,8 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       }
 
       // Calculate the total length of the current section type.
-      map[type]!.lenght += length;
-      map[type]!.percent = map[type]!.lenght / widget.route.totalDistance();
+      map[type]!.length += length;
+      map[type]!.percent = map[type]!.length / widget.route.totalDistance();
     }
     sections.addAll(map.values);
 
