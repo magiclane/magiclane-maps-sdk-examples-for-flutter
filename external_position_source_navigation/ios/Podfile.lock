@@ -2,7 +2,9 @@ PODS:
   - Flutter (1.0.0)
   - flutter_tts (0.0.1):
     - Flutter
-  - gem_kit (2.11.0):
+  - gem_kit (2.12.0):
+    - Flutter
+  - integration_test (0.0.1):
     - Flutter
   - permission_handler_apple (9.3.0):
     - Flutter
@@ -11,6 +13,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
   - gem_kit (from `.symlinks/plugins/gem_kit/ios`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
 
 EXTERNAL SOURCES:
@@ -20,13 +23,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_tts/ios"
   gem_kit:
     :path: ".symlinks/plugins/gem_kit/ios"
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
-  gem_kit: 69ae9dc91c4fe129f17d35a547a32e6261d44fa5
+  gem_kit: 8d9162351d6288cbaa89bf60b33be132304d2117
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
 
 PODFILE CHECKSUM: cb1c06d737ae26cd0fe466b1231221d7cead16bb

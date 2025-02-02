@@ -51,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Hello Map', style: TextStyle(color: Colors.white)),
       ),
       body: const GemMap(
+        key: ValueKey("GemMap"),
         appAuthorization: projectApiToken,
       ),
     );

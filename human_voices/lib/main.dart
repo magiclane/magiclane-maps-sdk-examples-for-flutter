@@ -105,7 +105,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Stack(children: [
-        GemMap(onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
+        GemMap(
+          key: ValueKey("GemMap"),
+          onMapCreated: _onMapCreated,
+          appAuthorization: projectApiToken,
+        ),
         if (_isSimulationActive)
           Positioned(
             top: 10,

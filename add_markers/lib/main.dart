@@ -56,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Add Markers', style: TextStyle(color: Colors.white)),
       ),
       body: GemMap(
+        key: ValueKey("GemMap"),
         onMapCreated: _onMapCreated,
         appAuthorization: projectApiToken,
       ),

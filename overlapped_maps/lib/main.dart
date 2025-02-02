@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // Stack maps
       body: Stack(children: [
         const GemMap(
+          key: ValueKey("GemMap"),
           appAuthorization: projectApiToken,
         ),
         SizedBox(

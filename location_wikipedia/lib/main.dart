@@ -61,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: const GemMap(
+        key: ValueKey("GemMap"),
         appAuthorization: projectApiToken,
       ),
     );

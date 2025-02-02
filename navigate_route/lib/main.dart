@@ -113,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(children: [
         GemMap(
+          key: ValueKey("GemMap"),
           onMapCreated: _onMapCreated,
           appAuthorization: projectApiToken,
         ),

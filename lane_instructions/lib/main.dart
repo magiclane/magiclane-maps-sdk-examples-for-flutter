@@ -64,7 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Lane Instructions", style: TextStyle(color: Colors.white)),
+        title: const Text("Lane Instructions",
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           if (!_isSimulationActive && _areRoutesBuilt)
@@ -92,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(children: [
         GemMap(
+          key: ValueKey("GemMap"),
           onMapCreated: _onMapCreated,
           appAuthorization: projectApiToken,
         ),
@@ -99,14 +101,17 @@ class _MyHomePageState extends State<MyHomePage> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 40),
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).padding.bottom + 40),
               child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   // Call getLaneImage on instruction
                   child: Image.memory(currentInstruction.getLaneImage(
                       size: Size(100, 50),
                       renderSettings: LaneImageRenderSettings(
-                          backgroundColor: Colors.white, activeColor: Colors.green, inactiveColor: Colors.black)))),
+                          backgroundColor: Colors.white,
+                          activeColor: Colors.green,
+                          inactiveColor: Colors.black)))),
             ),
           ),
       ]),
@@ -121,10 +126,12 @@ class _MyHomePageState extends State<MyHomePage> {
 // Custom method for calling calculate route and displaying the results.
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark = Landmark.withLatLng(latitude: 45.649572, longitude: 25.628333);
+    final departureLandmark =
+        Landmark.withLatLng(latitude: 45.649572, longitude: 25.628333);
 
     // Define the destination.
-    final destinationLandmark = Landmark.withLatLng(latitude: 44.4379187, longitude: 26.0122374);
+    final destinationLandmark =
+        Landmark.withLatLng(latitude: 44.4379187, longitude: 26.0122374);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
@@ -133,8 +140,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
-    _routingHandler =
-        RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (err, routes) async {
+    _routingHandler = RoutingService.calculateRoute(
+        [departureLandmark, destinationLandmark], routePreferences,
+        (err, routes) async {
       // If the route calculation is finished, we don't have a progress listener anymore.
       _routingHandler = null;
 
@@ -147,7 +155,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // Display the routes on map.
         for (final route in routes) {
-          routesMap.add(route, route == routes.first, label: route.getMapLabel());
+          routesMap.add(route, route == routes.first,
+              label: route.getMapLabel());
         }
 
         // Center the camera on routes.
@@ -165,8 +174,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _mapController.preferences.routes.clearAllButMainRoute();
 
-    _navigationHandler =
-        NavigationService.startSimulation(routes.mainRoute, null, onNavigationInstruction: (instruction, events) {
+    _navigationHandler = NavigationService.startSimulation(
+        routes.mainRoute, null, onNavigationInstruction: (instruction, events) {
       setState(() {
         _isSimulationActive = true;
       });
@@ -216,7 +225,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished,
-  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(
       content: Text(message),
       duration: duration,
@@ -259,7 +269,10 @@ class FollowPositionButton extends StatelessWidget {
             Icon(Icons.navigation),
             Text(
               'Recenter',
-              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
             )
           ],
         ),

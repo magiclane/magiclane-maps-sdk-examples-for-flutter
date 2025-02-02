@@ -15,7 +15,7 @@ import 'package:flutter/material.dart' hide Route;
 import 'elevation_chart.dart';
 import 'route_profile_panel.dart';
 
-const projectApiToken = String.fromEnvironment("GEM_TOKEN");
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
 void main() {
   runApp(const MyApp());
@@ -62,7 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Route Profile', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('Route Profile', style: TextStyle(color: Colors.white)),
         actions: [
           // Routes are not built.
           if (_routingHandler == null && _focusedRoute == null)
@@ -96,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(
         children: [
           GemMap(
+            key: ValueKey("GemMap"),
             onMapCreated: _onMapCreated,
             appAuthorization: projectApiToken,
           ),
@@ -124,15 +126,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark = Landmark.withLatLng(latitude: 46.59344, longitude: 7.91069);
+    final departureLandmark =
+        Landmark.withLatLng(latitude: 46.59344, longitude: 7.91069);
 
     // Define the destination.
-    final destinationLandmark = Landmark.withLatLng(latitude: 46.55945, longitude: 7.89293);
+    final destinationLandmark =
+        Landmark.withLatLng(latitude: 46.55945, longitude: 7.89293);
 
     // Define the route preferences.
     // Terrain profile has to be enabled for this example to work.
     final routePreferences = RoutePreferences(
-        buildTerrainProfile: const BuildTerrainProfile(enable: true), transportMode: RouteTransportMode.pedestrian);
+        buildTerrainProfile: const BuildTerrainProfile(enable: true),
+        transportMode: RouteTransportMode.pedestrian);
 
     _showSnackBar(context, message: "The route is being calculated.");
 
@@ -140,8 +145,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
 
-    _routingHandler =
-        RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (err, routes) {
+    _routingHandler = RoutingService.calculateRoute(
+        [departureLandmark, destinationLandmark], routePreferences,
+        (err, routes) {
       // If the route calculation is finished, we don't have a progress listener anymore.
       _routingHandler = null;
       ScaffoldMessenger.of(context).clearSnackBars();
@@ -153,7 +159,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // Display the routes on map.
         for (final route in routes) {
-          routesMap.add(route, route == routes.first, label: route.getMapLabel());
+          routesMap.add(route, route == routes.first,
+              label: route.getMapLabel());
         }
 
         // Center the camera on routes.
@@ -227,8 +234,11 @@ class _MyHomePageState extends State<MyHomePage> {
         routes: route,
         screenRect: RectType(
           x: 0,
-          y: (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio).toInt(),
-          width: (MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio).toInt(),
+          y: (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
+              .toInt(),
+          width: (MediaQuery.of(context).size.width *
+                  MediaQuery.of(context).devicePixelRatio)
+              .toInt(),
           height: ((MediaQuery.of(context).size.height / 2 -
                       appbarHeight -
                       2 * padding * MediaQuery.of(context).devicePixelRatio) *
@@ -238,7 +248,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(
       content: Text(message),
       duration: duration,
@@ -251,8 +262,10 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM + getTimeDistance().restrictedDistanceM;
-    final totalDuration = getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+        getTimeDistance().restrictedDistanceM;
+    final totalDuration =
+        getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
 
     return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
   }

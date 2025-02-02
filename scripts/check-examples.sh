@@ -108,29 +108,74 @@ MY_DIR="$(cd "$(dirname "${0}")" && pwd)"
 # Find paths that contain an app module
 EXAMPLE_PROJECTS=( $(find "${MY_DIR}/.." -maxdepth 2 -type d -exec [ -d {}/plugins ] \; -print -prune) )
 
-for i in "${!EXAMPLE_PROJECTS[@]}"; do
-    msg "Check '${EXAMPLE_PROJECTS[${i}]}'..."
+function check_mismatch() {
+	local RC=0
 
-    EXAMPLE_I="$(basename ${EXAMPLE_PROJECTS[${i}]})"
-    for j in "${!EXAMPLE_PROJECTS[@]}"; do
-        if [ ${i} -eq ${j} ]; then
-            continue
-        fi
+	for i in "${!EXAMPLE_PROJECTS[@]}"; do
+		msg "Check '${EXAMPLE_PROJECTS[${i}]}' for mismatches..."
 
-        EXAMPLE_J="$(basename ${EXAMPLE_PROJECTS[${j}]})"
-        if grep -irl "${EXAMPLE_J}" ${EXAMPLE_PROJECTS[${i}]}; then
-            msg "Found mismatch string: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
-            find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -prune \) -exec sed -i "s/${EXAMPLE_J}/${EXAMPLE_I}/g" {} +
-        fi
-        EXAMPLE_J_NO_UNDERSCORE=${EXAMPLE_J//_}
-        if grep -irl --exclude "*.dart" --exclude-dir "*/gem_kit" "${EXAMPLE_J_NO_UNDERSCORE}" ${EXAMPLE_PROJECTS[${i}]}; then
-            msg "Found mismatch string: '${EXAMPLE_J_NO_UNDERSCORE}' in '${EXAMPLE_I}'"
-            find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/${EXAMPLE_J_NO_UNDERSCORE}/${EXAMPLE_I//_}/gI" {} +
-        fi
-        MISMATCH_DIRS=( $(find "${EXAMPLE_PROJECTS[${i}]}" -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" 2>/dev/null) )
-		if [ ${#MISMATCH_DIRS[@]} -gt 0 ]; then
-			msg "Found mismatch folder: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
-			find ${EXAMPLE_PROJECTS[${i}]} -depth -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" -execdir rename -v "s/${EXAMPLE_J}/${EXAMPLE_I}/" '{}' +
-		fi
-    done
-done
+		EXAMPLE_I="$(basename ${EXAMPLE_PROJECTS[${i}]})"
+		for j in "${!EXAMPLE_PROJECTS[@]}"; do
+			if [ ${i} -eq ${j} ]; then
+				continue
+			fi
+
+			EXAMPLE_J="$(basename ${EXAMPLE_PROJECTS[${j}]})"
+			if grep -irl "${EXAMPLE_J}" ${EXAMPLE_PROJECTS[${i}]}; then
+				msg "Found mismatch string: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
+				RC=1
+				find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -prune \) -exec sed -i "s/${EXAMPLE_J}/${EXAMPLE_I}/g" {} +
+			fi
+			EXAMPLE_J_NO_UNDERSCORE=${EXAMPLE_J//_}
+			if grep -irl --exclude "*.dart" --exclude-dir "*/gem_kit" "${EXAMPLE_J_NO_UNDERSCORE}" ${EXAMPLE_PROJECTS[${i}]}; then
+				msg "Found mismatch string: '${EXAMPLE_J_NO_UNDERSCORE}' in '${EXAMPLE_I}'"
+				RC=1
+				find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/${EXAMPLE_J_NO_UNDERSCORE}/${EXAMPLE_I//_}/gI" {} +
+			fi
+			MISMATCH_DIRS=( $(find "${EXAMPLE_PROJECTS[${i}]}" -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" 2>/dev/null) )
+			if [ ${#MISMATCH_DIRS[@]} -gt 0 ]; then
+				msg "Found mismatch folder: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
+				RC=1
+				find ${EXAMPLE_PROJECTS[${i}]} -depth -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" -execdir rename -v "s/${EXAMPLE_J}/${EXAMPLE_I}/" '{}' +
+			fi
+		done
+	done
+
+	return ${RC}
+}
+
+function check_secrets() {
+	local RC=0
+
+	for i in "${!EXAMPLE_PROJECTS[@]}"; do
+		msg "Check '${EXAMPLE_PROJECTS[${i}]}' for secrets..."
+
+		MAIN_FILES=()
+		mapfile -t MAIN_FILES < <(find "${EXAMPLE_PROJECTS[${i}]}" -type f -name "main.dart")
+		((${#MAIN_FILES[@]} > 0)) || return 0
+
+		for file in "${MAIN_FILES[@]}"; do
+			if ! grep -q "const projectApiToken = String.fromEnvironment('GEM_TOKEN');" "${file}"; then 
+				error_msg "main.dart in ${EXAMPLE_PROJECTS[${i}]} contains secrets (projectApiToken)"
+				RC=1
+			fi
+			if ! grep -q "appAuthorization: projectApiToken" "${file}"; then 
+				error_msg "main.dart in ${EXAMPLE_PROJECTS[${i}]} contains secrets (appAuthorization)"
+				RC=1
+			fi
+		done
+	done
+
+	if [ ${RC} -eq 1 ]; then
+		msg "Secrets found. Please check"
+	fi
+
+	return ${RC}
+}
+
+RC=0
+
+check_mismatch || RC=1
+check_secrets || RC=1
+
+exit ${RC}

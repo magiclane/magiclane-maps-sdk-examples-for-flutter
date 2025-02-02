@@ -88,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ]),
                   margin: const EdgeInsets.all(5),
                   child: const GemMap(
+                    key: ValueKey("GemMap"),
                     appAuthorization: projectApiToken,
                   ));
             }));

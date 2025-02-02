@@ -90,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: GemMap(
+                key: ValueKey("GemMap"),
                 onMapCreated: _onMap1Created,
                 appAuthorization: projectApiToken,
               ),

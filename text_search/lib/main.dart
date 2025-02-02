@@ -16,7 +16,7 @@ import 'search_page.dart';
 
 import 'package:flutter/material.dart';
 
-const projectApiToken = String.fromEnvironment("GEM_TOKEN");
+const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
 void main() {
   runApp(const MyApp());
@@ -69,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: GemMap(
+        key: ValueKey("GemMap"),
         onMapCreated: onMapCreated,
         appAuthorization: projectApiToken,
       ),
@@ -80,7 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Taking the coordinates at the center of the screen as reference coordinates for search.
     final x = MediaQuery.of(context).size.width / 2;
     final y = MediaQuery.of(context).size.height / 2;
-    final mapCoords = _mapController.transformScreenToWgs(Point<int>(x.toInt(), y.toInt()));
+    final mapCoords =
+        _mapController.transformScreenToWgs(Point<int>(x.toInt(), y.toInt()));
 
 // Navigating to search screen. The result will be the selected search result(Landmark)
     final result = await Navigator.of(context).push(MaterialPageRoute<dynamic>(
@@ -98,7 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
       historyStore.addLandmark(result);
 
       // Activating the highlight
-      _mapController.activateHighlight([result], renderSettings: HighlightRenderSettings());
+      _mapController.activateHighlight([result],
+          renderSettings: HighlightRenderSettings());
 
       // Centering the map on the desired coordinates
       _mapController.centerOnCoordinates(result.coordinates);

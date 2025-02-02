@@ -56,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(alignment: AlignmentDirectional.bottomCenter, children: [
         GemMap(
+          key: ValueKey("GemMap"),
           onMapCreated: _onMapCreated,
           appAuthorization: projectApiToken,
         ),

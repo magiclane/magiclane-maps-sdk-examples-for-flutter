@@ -75,7 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("ExternalPositionNavigation", style: TextStyle(color: Colors.white)),
+        title: const Text("ExternalPositionNavigation",
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           if (!_isNavigationActive && _areRoutesBuilt)
@@ -110,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(children: [
         GemMap(
+          key: ValueKey("GemMap"),
           onMapCreated: _onMapCreated,
           appAuthorization: projectApiToken,
         ),
@@ -134,8 +136,10 @@ class _MyHomePageState extends State<MyHomePage> {
             bottom: MediaQuery.of(context).padding.bottom + 10,
             left: 0,
             child: NavigationBottomPanel(
-              remainingDistance: currentInstruction.getFormattedRemainingDistance(),
-              remainingDuration: currentInstruction.getFormattedRemainingDuration(),
+              remainingDistance:
+                  currentInstruction.getFormattedRemainingDistance(),
+              remainingDuration:
+                  currentInstruction.getFormattedRemainingDuration(),
               eta: currentInstruction.getFormattedETA(),
             ),
           ),
@@ -154,10 +158,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure
-    final departureLandmark = Landmark.withLatLng(latitude: 34.915646, longitude: -110.147933);
+    final departureLandmark =
+        Landmark.withLatLng(latitude: 34.915646, longitude: -110.147933);
 
     // Define the destination.
-    final destinationLandmark = Landmark.withLatLng(latitude: 34.933105, longitude: -110.131363);
+    final destinationLandmark =
+        Landmark.withLatLng(latitude: 34.933105, longitude: -110.131363);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
@@ -166,15 +172,17 @@ class _MyHomePageState extends State<MyHomePage> {
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
-    _routingHandler =
-        RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (err, routes) {
+    _routingHandler = RoutingService.calculateRoute(
+        [departureLandmark, destinationLandmark], routePreferences,
+        (err, routes) {
       // If the route calculation is finished, we don't have a progress listener anymore.
       _routingHandler = null;
 
       ScaffoldMessenger.of(context).clearSnackBars();
 
       if (err == GemError.routeTooLong) {
-        print('The destination is too far from your current location. Change the coordinates of the destination.');
+        print(
+            'The destination is too far from your current location. Change the coordinates of the destination.');
         return;
       }
 
@@ -185,7 +193,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // Display the routes on map.
         for (final route in routes) {
-          routesMap.add(route, route == routes.first, label: route.getMapLabel());
+          routesMap.add(route, route == routes.first,
+              label: route.getMapLabel());
         }
 
         // Center the camera on routes.
@@ -247,7 +256,9 @@ class _MyHomePageState extends State<MyHomePage> {
     Coordinates prevCoordinates = route.getCoordinateOnRoute(0);
 
     // Parse route distance
-    for (int currentDistance = 1; currentDistance <= distance; currentDistance += 1) {
+    for (int currentDistance = 1;
+        currentDistance <= distance;
+        currentDistance += 1) {
       if (!_hasDataSource) return;
 
       // Stop navigation if distance has been parsed
@@ -262,14 +273,14 @@ class _MyHomePageState extends State<MyHomePage> {
       await Future<void>.delayed(Duration(milliseconds: 25));
 
       // Add each coordinate from route to data source immediately
-      _dataSource.pushData(
-          positionData: ExternalPositionData(
+      _dataSource.pushData(SenseDataFactory.positionFromExternalData(
+          ExternalPositionData(
               timestamp: DateTime.now().toUtc().millisecondsSinceEpoch,
               latitude: currentCoordinates.latitude,
               longitude: currentCoordinates.longitude,
               altitude: 0,
               heading: _getHeading(prevCoordinates, currentCoordinates),
-              speed: 0));
+              speed: 0)));
       prevCoordinates = currentCoordinates;
     }
   }
@@ -311,14 +322,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
       _dataSource.start();
 
-      _dataSource.pushData(
-          positionData: ExternalPositionData(
+      _dataSource.pushData(SenseDataFactory.positionFromExternalData(
+          ExternalPositionData(
               timestamp: DateTime.now().toUtc().millisecondsSinceEpoch,
               latitude: 38.029467,
               longitude: -117.884985,
               altitude: 0,
               heading: 0,
-              speed: 0));
+              speed: 0)));
       setState(() {
         _hasDataSource = true;
       });
@@ -332,7 +343,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished or if current location is not available.
-  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(
       content: Text(message),
       duration: duration,
@@ -386,7 +398,10 @@ class FollowPositionButton extends StatelessWidget {
             Icon(Icons.navigation),
             Text(
               'Recenter',
-              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
             )
           ],
         ),
