@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -61,10 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          "Map Compass",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Map Compass", style: TextStyle(color: Colors.white)),
       ),
       body: Stack(
         children: [
@@ -91,15 +85,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: SizedBox(
                       width: 40,
                       height: 40,
-                      child: Image.memory(
-                        compassImage!,
-                        gaplessPlayback: true,
-                      ),
+                      child:
+                          compassImage != null
+                              ? Image.memory(
+                                compassImage!,
+                                gaplessPlayback: true,
+                              )
+                              : SizedBox(),
                     ),
                   ),
                 ),
               ),
-            )
+            ),
         ],
       ),
     );
@@ -109,17 +106,20 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMapCreated(GemMapController controller) {
     mapController = controller;
     // Register the map angle update callback.
-    mapController.registerOnMapAngleUpdateCallback(
-        (angle) => setState(() => compassAngle = angle));
+    mapController.registerMapAngleUpdateCallback(
+      (angle) => setState(() => compassAngle = angle),
+    );
     setState(() {
       compassImage = _compassImage();
     });
   }
 
-  Uint8List _compassImage() {
+  Uint8List? _compassImage() {
     // We will use the SDK image for compass but any widget can be used to represent the compass.
     final image = SdkSettings.getImageById(
-        id: EngineMisc.compassEnableSensorOFF.id, size: const Size(100, 100));
+      id: EngineMisc.compassEnableSensorOFF.id,
+      size: const Size(100, 100),
+    );
     return image;
   }
 }

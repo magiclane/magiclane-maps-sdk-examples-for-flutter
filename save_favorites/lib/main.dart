@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'dart:math';
 
@@ -69,29 +66,30 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Favourites', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-              onPressed: () => _onFavouritesButtonPressed(context),
-              icon: const Icon(
-                Icons.favorite,
-                color: Colors.white,
-              ))
+            onPressed: () => _onFavouritesButtonPressed(context),
+            icon: const Icon(Icons.favorite, color: Colors.white),
+          ),
         ],
       ),
-      body: Stack(children: [
-        GemMap(
-          key: ValueKey("GemMap"),
-          onMapCreated: _onMapCreated,
-          appAuthorization: projectApiToken,
-        ),
-        if (_focusedLandmark != null)
-          Positioned(
+      body: Stack(
+        children: [
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
+          ),
+          if (_focusedLandmark != null)
+            Positioned(
               bottom: 10,
               child: LandmarkPanel(
                 onCancelTap: _onCancelLandmarkPanelTap,
                 onFavoritesTap: _onFavoritesLandmarkPanelTap,
                 isFavoriteLandmark: _isLandmarkFavorite,
                 landmark: _focusedLandmark!,
-              ))
-      ]),
+              ),
+            ),
+        ],
+      ),
       resizeToAvoidBottomInset: false,
     );
   }
@@ -102,12 +100,14 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController = controller;
 
     // Retrieves the LandmarkStore with the given name.
-    _favoritesStore =
-        LandmarkStoreService.getLandmarkStoreByName(favoritesStoreName);
+    _favoritesStore = LandmarkStoreService.getLandmarkStoreByName(
+      favoritesStoreName,
+    );
 
     // If there is no LandmarkStore with this name, then create it.
-    _favoritesStore ??=
-        LandmarkStoreService.createLandmarkStore(favoritesStoreName);
+    _favoritesStore ??= LandmarkStoreService.createLandmarkStore(
+      favoritesStoreName,
+    );
 
     // Listen for map landmark selection events.
     await _registerLandmarkTapCallback();
@@ -136,8 +136,9 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      final coordinates =
-          _mapController.transformScreenToWgs(Point<int>(pos.x, pos.y));
+      final coordinates = _mapController.transformScreenToWgs(
+        Point<int>(pos.x, pos.y),
+      );
 
       // If no landmark was found, we create one.
       final lmk = Landmark.withCoordinates(coordinates);
@@ -168,14 +169,17 @@ class _MyHomePageState extends State<MyHomePage> {
     final favoritesList = _favoritesStore!.getLandmarks();
 
     // Navigating to favorites screen then the result will be the selected item in the list.
-    final result = await Navigator.of(context).push(MaterialPageRoute<dynamic>(
-      builder: (context) => FavoritesPage(landmarkList: favoritesList),
-    ));
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute<dynamic>(
+        builder: (context) => FavoritesPage(landmarkList: favoritesList),
+      ),
+    );
 
     if (result is Landmark) {
       // Highlight the landmark on the map.
-      _mapController.activateHighlight([result],
-          renderSettings: HighlightRenderSettings());
+      _mapController.activateHighlight([
+        result,
+      ], renderSettings: HighlightRenderSettings());
 
       // Centering the camera on landmark's coordinates.
       _mapController.centerOnCoordinates(result.coordinates);

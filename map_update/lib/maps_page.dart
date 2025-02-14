@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
@@ -54,10 +51,7 @@ class _MapsPageState extends State<MapsPage> {
         foregroundColor: Colors.white,
         title: Row(
           children: [
-            const Text(
-              "Maps",
-              style: TextStyle(color: Colors.white),
-            ),
+            const Text("Maps", style: TextStyle(color: Colors.white)),
             const SizedBox(width: 10),
             if (updateProgress != null)
               Expanded(child: ProgressBar(value: updateProgress!)),
@@ -67,81 +61,74 @@ class _MapsPageState extends State<MapsPage> {
         actions: [
           updateProgress != null
               ? GestureDetector(
-                  onTap: () {
-                    updatePersistence.cancel();
-                  },
-                  child: const Text("Cancel Update"),
-                )
+                onTap: () {
+                  updatePersistence.cancel();
+                },
+                child: const Text("Cancel Update"),
+              )
               : IconButton(
-                  onPressed: () {
-                    showUpdateDialog();
-                  },
-                  icon: const Icon(Icons.download),
-                )
+                onPressed: () {
+                  showUpdateDialog();
+                },
+                icon: const Icon(Icons.download),
+              ),
         ],
         backgroundColor: Colors.deepPurple[900],
       ),
       body: FutureBuilder<List<ContentStoreItem>?>(
-          future: _getMaps(),
-          builder: (context, snapshot) {
-            //The CustomScrollView is required in order to render the online map list items lazily
+        future: _getMaps(),
+        builder: (context, snapshot) {
+          //The CustomScrollView is required in order to render the online map list items lazily
 
-            return CustomScrollView(
-              slivers: [
-                const SliverToBoxAdapter(child: Text("Local: ")),
-                SliverList.separated(
-                  separatorBuilder: (context, index) => const Divider(
-                    indent: 50,
-                    height: 0,
+          return CustomScrollView(
+            slivers: [
+              const SliverToBoxAdapter(child: Text("Local: ")),
+              SliverList.separated(
+                separatorBuilder:
+                    (context, index) => const Divider(indent: 50, height: 0),
+                itemCount: localMaps.length,
+                itemBuilder: (context, index) {
+                  final map = localMaps.elementAt(index);
+                  return MapsDownloadedItem(
+                    map: map,
+                    deleteMap: (map) => _deleteMap(map),
+                  );
+                },
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 30)),
+              const SliverToBoxAdapter(child: Text("All: ")),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (snapshot.data == null)
+                const SliverToBoxAdapter(
+                  child: Center(
+                    child: Text('Error while trying to fetch maps.'),
                   ),
-                  itemCount: localMaps.length,
+                )
+              else
+                SliverList.separated(
+                  itemCount: snapshot.data!.length,
+                  separatorBuilder:
+                      (context, index) => const Divider(indent: 50, height: 0),
                   itemBuilder: (context, index) {
-                    final map = localMaps.elementAt(index);
-                    return MapsDownloadedItem(
+                    final map = snapshot.data!.elementAt(index);
+                    return MapsItem(
                       map: map,
                       deleteMap: (map) => _deleteMap(map),
+                      onDownloadStateChanged: (p0) {
+                        if (!mounted) return;
+                        //Update page after map download
+                        setState(() {});
+                      },
                     );
                   },
                 ),
-                const SliverToBoxAdapter(child: SizedBox(height: 30)),
-                const SliverToBoxAdapter(child: Text("All: ")),
-                if (snapshot.connectionState == ConnectionState.waiting)
-                  const SliverToBoxAdapter(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
-                else if (snapshot.data == null)
-                  const SliverToBoxAdapter(
-                    child: Center(
-                      child: Text('Error while trying to fetch maps.'),
-                    ),
-                  )
-                else
-                  SliverList.separated(
-                    itemCount: snapshot.data!.length,
-                    separatorBuilder: (context, index) => const Divider(
-                      indent: 50,
-                      height: 0,
-                    ),
-                    itemBuilder: (context, index) {
-                      final map = snapshot.data!.elementAt(index);
-                      return MapsItem(
-                        map: map,
-                        deleteMap: (map) => _deleteMap(map),
-                        onDownloadStateChanged: (p0) {
-                          if (!mounted) return;
-                          //Update page after map download
-                          setState(
-                            () {},
-                          );
-                        },
-                      );
-                    },
-                  ),
-              ],
-            );
-          }),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -156,8 +143,11 @@ class _MapsPageState extends State<MapsPage> {
   Future<List<ContentStoreItem>> _getMaps() async {
     Completer<List<ContentStoreItem>> mapsList =
         Completer<List<ContentStoreItem>>();
-    ContentStore.asyncGetStoreContentList(ContentType.roadMap,
-        (err, items, isCached) {
+    ContentStore.asyncGetStoreContentList(ContentType.roadMap, (
+      err,
+      items,
+      isCached,
+    ) {
       if (err == GemError.success && items != null) {
         mapsList.complete(items);
       }
@@ -184,8 +174,9 @@ class _MapsPageState extends State<MapsPage> {
     final id = updatePersistence.checkForUpdate();
 
     if (id != GemError.success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error checking for updates $id")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error checking for updates $id")));
     }
   }
 
@@ -200,9 +191,7 @@ class _MapsPageState extends State<MapsPage> {
             children: [
               AlertDialog(
                 title: const Text("No updates available"),
-                content: const Column(
-                  children: [Text("You are up to date.")],
-                ),
+                content: const Column(children: [Text("You are up to date.")]),
                 actions: [
                   CupertinoDialogAction(
                     child: const Text("Ok"),
@@ -233,8 +222,9 @@ class _MapsPageState extends State<MapsPage> {
                 children: [
                   const Text("New world map available."),
                   Text(
-                      "Size: ${(computeUpdateSize() / (1024.0 * 1024.0)).toStringAsFixed(2)} MB"),
-                  const Text("Do you wish to update?")
+                    "Size: ${(computeUpdateSize() / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
+                  ),
+                  const Text("Do you wish to update?"),
                 ],
               ),
               actions: [
@@ -256,7 +246,8 @@ class _MapsPageState extends State<MapsPage> {
 
                     if (statusId != GemError.success) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Error updating $statusId")));
+                        SnackBar(content: Text("Error updating $statusId")),
+                      );
                     }
 
                     Navigator.pop(context);
@@ -310,15 +301,9 @@ class _MapsPageState extends State<MapsPage> {
               AlertDialog(
                 title: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Update finished"),
-                  ],
+                  children: [Text("Update finished")],
                 ),
-                content: const Column(
-                  children: [
-                    Text("The update is done."),
-                  ],
-                ),
+                content: const Column(children: [Text("The update is done.")]),
                 actions: [
                   CupertinoDialogAction(
                     child: const Text("Ok"),
@@ -350,7 +335,7 @@ class ProgressBar extends StatelessWidget {
           value: value.toDouble() * 0.01,
           color: Colors.white,
           backgroundColor: Colors.grey,
-        )
+        ),
       ],
     );
   }

@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: non_constant_identifier_names
 
@@ -63,17 +60,20 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Perspective Map',
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Perspective Map',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
-              onPressed: _onChangePersectiveButtonPressed,
-              icon: Icon(
-                _isInPerspectiveView
-                    ? CupertinoIcons.view_2d
-                    : CupertinoIcons.view_3d,
-                color: Colors.white,
-              ))
+            onPressed: _onChangePersectiveButtonPressed,
+            icon: Icon(
+              _isInPerspectiveView
+                  ? CupertinoIcons.view_2d
+                  : CupertinoIcons.view_3d,
+              color: Colors.white,
+            ),
+          ),
         ],
       ),
       body: GemMap(

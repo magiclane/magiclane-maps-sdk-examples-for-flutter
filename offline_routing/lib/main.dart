@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
@@ -82,10 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (_isDownloaded == false && _downloadProgress == 0)
             IconButton(
               onPressed: () => _setOfflineMap(),
-              icon: const Icon(
-                Icons.download,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.download, color: Colors.white),
             ),
           // Routes are not built.
           if (_routingHandler == null &&
@@ -93,28 +87,19 @@ class _MyHomePageState extends State<MyHomePage> {
               _isDownloaded == true)
             IconButton(
               onPressed: () => _onBuildRouteButtonPressed(context),
-              icon: const Icon(
-                Icons.route,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.route, color: Colors.white),
             ),
           // Routes calculating is in progress.
           if (_routingHandler != null)
             IconButton(
               onPressed: () => _onCancelRouteButtonPressed(),
-              icon: const Icon(
-                Icons.stop,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.stop, color: Colors.white),
             ),
           // Routes calculating is finished.
           if (_areRoutesBuilt == true)
             IconButton(
               onPressed: () => _onClearRoutesButtonPressed(),
-              icon: const Icon(
-                Icons.clear,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.clear, color: Colors.white),
             ),
         ],
       ),
@@ -131,17 +116,23 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController = controller;
 
     SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(
-        ServiceGroupType.contentService, true);
+      ServiceGroupType.contentService,
+      true,
+    );
   }
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark =
-        Landmark.withLatLng(latitude: 42.49720, longitude: 1.50498);
+    final departureLandmark = Landmark.withLatLng(
+      latitude: 42.49720,
+      longitude: 1.50498,
+    );
 
     // Define the destination.
-    final destinationLandmark =
-        Landmark.withLatLng(latitude: 42.51003, longitude: 1.53400);
+    final destinationLandmark = Landmark.withLatLng(
+      latitude: 42.51003,
+      longitude: 1.53400,
+    );
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
@@ -153,30 +144,35 @@ class _MyHomePageState extends State<MyHomePage> {
     // err is an error enum, results is a list of routes.
 
     _routingHandler = RoutingService.calculateRoute(
-        [departureLandmark, destinationLandmark], routePreferences,
-        (err, routes) {
-      // If the route calculation is finished, we don't have a progress listener anymore.
-      _routingHandler = null;
-      ScaffoldMessenger.of(context).clearSnackBars();
+      [departureLandmark, destinationLandmark],
+      routePreferences,
+      (err, routes) {
+        // If the route calculation is finished, we don't have a progress listener anymore.
+        _routingHandler = null;
+        ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there aren't any errors, we display the routes.
-      if (err == GemError.success) {
-        // Get the routes collection from map preferences.
-        final routesMap = _mapController.preferences.routes;
+        // If there aren't any errors, we display the routes.
+        if (err == GemError.success) {
+          // Get the routes collection from map preferences.
+          final routesMap = _mapController.preferences.routes;
 
-        // Display the routes on map.
-        for (final route in routes) {
-          routesMap.add(route, route == routes.first,
-              label: route.getMapLabel());
+          // Display the routes on map.
+          for (final route in routes) {
+            routesMap.add(
+              route,
+              route == routes.first,
+              label: route.getMapLabel(),
+            );
+          }
+
+          // Center the camera on routes.
+          _mapController.centerOnRoutes(routes: routes);
+          setState(() {
+            _areRoutesBuilt = true;
+          });
         }
-
-        // Center the camera on routes.
-        _mapController.centerOnRoutes(routes: routes);
-        setState(() {
-          _areRoutesBuilt = true;
-        });
-      }
-    });
+      },
+    );
 
     setState(() {});
   }
@@ -206,8 +202,11 @@ class _MyHomePageState extends State<MyHomePage> {
     Completer<List<ContentStoreItem>> mapsList =
         Completer<List<ContentStoreItem>>();
 
-    ContentStore.asyncGetStoreContentList(ContentType.roadMap,
-        (err, items, isCached) {
+    ContentStore.asyncGetStoreContentList(ContentType.roadMap, (
+      err,
+      items,
+      isCached,
+    ) {
       if (err == GemError.success && items != null) {
         mapsList.complete(items);
       }
@@ -239,9 +238,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _downloadMap(ContentStoreItem map) {
     // Download the map.
-    map.asyncDownload(_onMapDownloadFinished,
-        onProgressCallback: _onMapDownloadProgressUpdated,
-        allowChargedNetworks: true);
+    map.asyncDownload(
+      _onMapDownloadFinished,
+      onProgressCallback: _onMapDownloadProgressUpdated,
+      allowChargedNetworks: true,
+    );
   }
 
   void _onMapDownloadProgressUpdated(int progress) {
@@ -259,12 +260,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: duration,
-    );
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
+    final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -273,7 +274,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+    final totalDistance =
+        getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;

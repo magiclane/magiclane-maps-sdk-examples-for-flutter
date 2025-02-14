@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 
@@ -27,18 +24,18 @@ class _RouteInstructionsState extends State<RouteInstructionsPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        title: const Text("Route Instructions",
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Route Instructions",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.deepPurple[900],
         foregroundColor: Colors.white,
       ),
       body: ListView.separated(
         padding: EdgeInsets.zero,
         itemCount: widget.instructionList.length,
-        separatorBuilder: (context, index) => const Divider(
-          indent: 50,
-          height: 0,
-        ),
+        separatorBuilder:
+            (context, index) => const Divider(indent: 50, height: 0),
         itemBuilder: (contex, index) {
           final instruction = widget.instructionList.elementAt(index);
           return InstructionsItem(instruction: instruction);
@@ -63,30 +60,48 @@ class _InstructionsItemState extends State<InstructionsItem> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         width: 50,
-        child: Image.memory(widget.instruction.turnDetails
-            .getAbstractGeometryImage(
-                renderSettings: AbstractGeometryImageRenderSettings(),
-                size: Size(100, 100))),
+        child:
+            widget.instruction.turnDetails.getAbstractGeometryImage(
+                      renderSettings: AbstractGeometryImageRenderSettings(),
+                      size: Size(100, 100),
+                    ) !=
+                    null
+                ? Image.memory(
+                  widget.instruction.turnDetails.getAbstractGeometryImage(
+                    renderSettings: AbstractGeometryImageRenderSettings(),
+                    size: Size(100, 100),
+                  )!,
+                )
+                : SizedBox(),
       ),
       title: Text(
         widget.instruction.turnInstruction,
         overflow: TextOverflow.fade,
         style: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
         maxLines: 2,
       ),
       subtitle: Text(
         widget.instruction.followRoadInstruction,
         overflow: TextOverflow.fade,
         style: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
         maxLines: 2,
       ),
       trailing: Text(
         widget.instruction.getFormattedDistanceUntilInstruction(),
         overflow: TextOverflow.fade,
         style: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
       ),
     );
   }

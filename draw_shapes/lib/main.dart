@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -54,23 +51,17 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Draw Shapes', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-              onPressed: _onPolylineButtonPressed,
-              icon: const Icon(
-                Icons.adjust,
-                color: Colors.white,
-              )),
+            onPressed: _onPolylineButtonPressed,
+            icon: const Icon(Icons.adjust, color: Colors.white),
+          ),
           IconButton(
-              onPressed: _onPolygonButtonPressed,
-              icon: const Icon(
-                Icons.change_history,
-                color: Colors.white,
-              )),
+            onPressed: _onPolygonButtonPressed,
+            icon: const Icon(Icons.change_history, color: Colors.white),
+          ),
           IconButton(
-              onPressed: _onPointsButtonPressed,
-              icon: const Icon(
-                Icons.more_horiz,
-                color: Colors.white,
-              ))
+            onPressed: _onPointsButtonPressed,
+            icon: const Icon(Icons.more_horiz, color: Colors.white),
+          ),
         ],
       ),
       body: GemMap(
@@ -91,7 +82,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onPolylineButtonPressed() {
     // Create a marker collection
     final markerCollection = MarkerCollection(
-        markerType: MarkerType.polyline, name: 'Polyline marker collection');
+      markerType: MarkerType.polyline,
+      name: 'Polyline marker collection',
+    );
 
     // Set coordinates of marker
     final marker = Marker();
@@ -108,7 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onPolygonButtonPressed() {
     // Create a marker collection
     final markerCollection = MarkerCollection(
-        markerType: MarkerType.polygon, name: 'Polygon marker collection');
+      markerType: MarkerType.polygon,
+      name: 'Polygon marker collection',
+    );
 
     // Set coordinates of marker
     final marker = Marker();
@@ -126,7 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onPointsButtonPressed() {
     // Create a marker collection
     final markerCollection = MarkerCollection(
-        markerType: MarkerType.point, name: 'Points marker collection');
+      markerType: MarkerType.point,
+      name: 'Points marker collection',
+    );
 
     // Set coordinates of marker
     final marker = Marker();
@@ -148,8 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController.preferences.markers.clear();
 
     // Show the current marker on map and center on it
-    _mapController.preferences.markers
-        .add(markerCollection, settings: settings);
+    _mapController.preferences.markers.add(
+      markerCollection,
+      settings: settings,
+    );
     _mapController.centerOnArea(markerCollection.area);
   }
 }

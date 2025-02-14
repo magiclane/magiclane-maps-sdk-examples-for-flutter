@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
@@ -24,12 +21,14 @@ class ForecastHourlyPage extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
-                itemCount: locationForecasts.first.forecast.length,
-                itemBuilder: (context, index) {
-                  return WeatherForecastHourlyItem(
-                      condition: locationForecasts.first.forecast[index]);
-                }),
-          )
+              itemCount: locationForecasts.first.forecast.length,
+              itemBuilder: (context, index) {
+                return WeatherForecastHourlyItem(
+                  condition: locationForecasts.first.forecast[index],
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -46,9 +45,10 @@ class WeatherForecastHourlyItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // Extracting the image and temperature information from the condition.
     final conditionImage = condition.image;
-    final tempHigh = condition.params
-        .where((element) => element.type == "Temperature")
-        .first;
+    final tempHigh =
+        condition.params
+            .where((element) => element.type == "Temperature")
+            .first;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -59,18 +59,22 @@ class WeatherForecastHourlyItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(condition.getFormattedHour()),
-              Text(condition.getFormattedDate())
+              Text(condition.getFormattedDate()),
             ],
           ),
           FutureBuilder(
-              future: ImageHandler.decodeImageData(conditionImage,
-                  width: 30, height: 30), // Decodes the image data.
-              builder: (context, snapshot) {
-                if (snapshot.data != null) {
-                  return RawImage(image: snapshot.data!);
-                }
-                return Container();
-              }),
+            future: ImageHandler.decodeImageData(
+              conditionImage,
+              width: 30,
+              height: 30,
+            ), // Decodes the image data.
+            builder: (context, snapshot) {
+              if (snapshot.data != null) {
+                return RawImage(image: snapshot.data!);
+              }
+              return Container();
+            },
+          ),
           Text("${tempHigh.value} ${tempHigh.unit}"),
         ],
       ),

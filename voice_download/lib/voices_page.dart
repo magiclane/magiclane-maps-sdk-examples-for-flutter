@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
@@ -36,35 +33,29 @@ class _VoicesPageState extends State<VoicesPage> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
         foregroundColor: Colors.white,
-        title: const Text(
-          "Voices List",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Voices List", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple[900],
       ),
       body: FutureBuilder<List<ContentStoreItem>>(
-          future: _getVoices(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData || snapshot.data == null) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return Scrollbar(
-              child: ListView.separated(
-                padding: EdgeInsets.zero,
-                itemCount: snapshot.data!.length,
-                separatorBuilder: (context, index) => const Divider(
-                  indent: 50,
-                  height: 0,
-                ),
-                itemBuilder: (context, index) {
-                  final voice = snapshot.data!.elementAt(index);
-                  return VoicesItem(voice: voice);
-                },
-              ),
-            );
-          }),
+        future: _getVoices(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return Scrollbar(
+            child: ListView.separated(
+              padding: EdgeInsets.zero,
+              itemCount: snapshot.data!.length,
+              separatorBuilder:
+                  (context, index) => const Divider(indent: 50, height: 0),
+              itemBuilder: (context, index) {
+                final voice = snapshot.data!.elementAt(index);
+                return VoicesItem(voice: voice);
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -72,8 +63,11 @@ class _VoicesPageState extends State<VoicesPage> {
   Future<List<ContentStoreItem>> _getVoices() {
     Completer<List<ContentStoreItem>> voicesList =
         Completer<List<ContentStoreItem>>();
-    ContentStore.asyncGetStoreContentList(ContentType.humanVoice,
-        (err, items, isCached) {
+    ContentStore.asyncGetStoreContentList(ContentType.humanVoice, (
+      err,
+      items,
+      isCached,
+    ) {
       if (err == GemError.success && items != null) {
         voicesList.complete(items);
       }

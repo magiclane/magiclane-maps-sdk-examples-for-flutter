@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'dart:async';
 
@@ -38,43 +35,41 @@ class _LocationWikipediaPageState extends State<LocationWikipediaPage> {
         backgroundColor: Colors.deepPurple[900],
       ),
       body: FutureBuilder(
-          future: _getLocationWikipedia(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData || snapshot.data == null) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Text(
-                  snapshot.data!.$1,
-                  style: TextStyle(
-                      overflow: TextOverflow.fade,
-                      fontSize: 25.0,
-                      fontWeight: FontWeight.bold),
+        future: _getLocationWikipedia(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                snapshot.data!.$1,
+                style: TextStyle(
+                  overflow: TextOverflow.fade,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
                 ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Text(
-                      snapshot.data!.$2,
-                    ),
-                  ),
-                )
-              ],
-            );
-          }),
+              ),
+              Expanded(
+                child: SingleChildScrollView(child: Text(snapshot.data!.$2)),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
   Future<(String, String)> _getLocationWikipedia() async {
     final searchCompleter = Completer<List<Landmark>>();
     SearchService.search(
-        "Statue of Liberty", Coordinates(latitude: 0.0, longitude: 0.0),
-        (err, lmks) {
-      searchCompleter.complete(lmks);
-    });
+      "Statue of Liberty",
+      Coordinates(latitude: 0.0, longitude: 0.0),
+      (err, lmks) {
+        searchCompleter.complete(lmks);
+      },
+    );
 
     final lmk = (await searchCompleter.future).first;
 

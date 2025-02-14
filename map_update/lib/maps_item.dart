@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -23,11 +20,12 @@ class MapsItem extends StatefulWidget {
   final void Function(bool) onDownloadStateChanged;
   final void Function(ContentStoreItem) deleteMap;
 
-  const MapsItem(
-      {super.key,
-      required this.map,
-      required this.onDownloadStateChanged,
-      required this.deleteMap});
+  const MapsItem({
+    super.key,
+    required this.map,
+    required this.onDownloadStateChanged,
+    required this.deleteMap,
+  });
 
   @override
   State<MapsItem> createState() => _MapsItemState();
@@ -49,12 +47,14 @@ class _MapsItemState extends State<MapsItem> {
       final errCode = widget.map.pauseDownload();
       if (errCode != GemError.success) {
         print(
-            "Download pause for item ${widget.map.id} failed with code $errCode");
+          "Download pause for item ${widget.map.id} failed with code $errCode",
+        );
         return;
       }
 
-      Future<dynamic>.delayed(const Duration(milliseconds: 500))
-          .then((value) => _onTileTap());
+      Future<dynamic>.delayed(
+        const Duration(milliseconds: 500),
+      ).then((value) => _onTileTap());
     }
   }
 
@@ -80,50 +80,49 @@ class _MapsItemState extends State<MapsItem> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               width: 50,
-              child: Image.memory(
-                _getMapImage(widget.map),
-                gaplessPlayback: true,
-              ),
+              child:
+                  _getMapImage(widget.map) != null
+                      ? Image.memory(
+                        _getMapImage(widget.map)!,
+                        gaplessPlayback: true,
+                      )
+                      : SizedBox(),
             ),
             title: Text(
               widget.map.name,
               style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Text(
               "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              ),
+              style: const TextStyle(color: Colors.black, fontSize: 16),
             ),
             trailing: SizedBox.square(
-                dimension: 50,
-                child: Builder(
-                  builder: (context) {
-                    if (_isDownloaded == true) {
-                      return const Icon(
-                        Icons.download_done,
-                        color: Colors.green,
-                      );
-                    } else if (_isDownloadingOrWaiting()) {
-                      return SizedBox(
-                        height: 10,
-                        child: CircularProgressIndicator(
-                          value: _downloadProgress / 100,
-                          color: Colors.blue,
-                          backgroundColor: Colors.grey.shade300,
-                        ),
-                      );
-                    } else if (widget.map.status ==
-                        ContentStoreItemStatus.paused) {
-                      return const Icon(Icons.pause);
-                    }
-                    return const SizedBox.shrink();
-                  },
-                )),
+              dimension: 50,
+              child: Builder(
+                builder: (context) {
+                  if (_isDownloaded == true) {
+                    return const Icon(Icons.download_done, color: Colors.green);
+                  } else if (_isDownloadingOrWaiting()) {
+                    return SizedBox(
+                      height: 10,
+                      child: CircularProgressIndicator(
+                        value: _downloadProgress / 100,
+                        color: Colors.blue,
+                        backgroundColor: Colors.grey.shade300,
+                      ),
+                    );
+                  } else if (widget.map.status ==
+                      ContentStoreItemStatus.paused) {
+                    return const Icon(Icons.pause);
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
           ),
         ),
         if (_downloadProgress != 0 && !_isDownloaded)
@@ -137,10 +136,12 @@ class _MapsItemState extends State<MapsItem> {
   }
 
   // Method that returns the image of a map
-  Uint8List _getMapImage(ContentStoreItem map) {
+  Uint8List? _getMapImage(ContentStoreItem map) {
     final countryCodes = map.countryCodes;
     final countryImage = MapDetails.getCountryFlag(
-        countryCode: countryCodes[0], size: const Size(100, 100));
+      countryCode: countryCodes[0],
+      size: const Size(100, 100),
+    );
     return countryImage;
   }
 
@@ -157,9 +158,11 @@ class _MapsItemState extends State<MapsItem> {
 
   void _downloadMap() {
     // Download the map.
-    widget.map.asyncDownload(_onMapDownloadFinished,
-        onProgressCallback: _onMapDownloadProgressUpdated,
-        allowChargedNetworks: true);
+    widget.map.asyncDownload(
+      _onMapDownloadFinished,
+      onProgressCallback: _onMapDownloadProgressUpdated,
+      allowChargedNetworks: true,
+    );
   }
 
   void _onMapDownloadProgressUpdated(int progress) {

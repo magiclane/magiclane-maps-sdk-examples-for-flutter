@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'dart:async';
 import 'dart:math';
@@ -73,7 +70,7 @@ class LineAreaChart extends StatefulWidget {
       highlightedColoredIntervals.add((
         climbSection.startDistanceM.toDouble(),
         climbSection.endDistanceM.toDouble(),
-        highligthedColor
+        highligthedColor,
       ));
     }
 
@@ -82,10 +79,13 @@ class LineAreaChart extends StatefulWidget {
       final intervalEnd = interval.$2;
       final intervalColor = interval.$3;
 
-      final affectedSpots = spots
-          .where((element) =>
-              element.x >= intervalStart && element.x <= intervalEnd)
-          .toList();
+      final affectedSpots =
+          spots
+              .where(
+                (element) =>
+                    element.x >= intervalStart && element.x <= intervalEnd,
+              )
+              .toList();
       highlightedIntervals.add((affectedSpots, intervalColor));
     }
   }
@@ -148,7 +148,9 @@ class _LineAreaChartState extends State<LineAreaChart> {
 
     viewportController.changeViewport(_currentLeftX, _currentRightX);
     titleBarController.horizontalAxisViewportChanged(
-        _currentLeftX, _currentRightX);
+      _currentLeftX,
+      _currentRightX,
+    );
     titleBarController.verticalAxisViewportChanged(widget.minY, widget.maxY);
   }
 
@@ -181,7 +183,9 @@ class _LineAreaChartState extends State<LineAreaChart> {
 
     viewportController.changeViewport(_currentLeftX, _currentRightX);
     titleBarController.horizontalAxisViewportChanged(
-        _currentLeftX, _currentRightX);
+      _currentLeftX,
+      _currentRightX,
+    );
     tooltipController.triggerRebuild();
 
     if (widget.onViewPortChanged == null) return;
@@ -198,9 +202,11 @@ class _LineAreaChartState extends State<LineAreaChart> {
 
     const lerpCoefficient = 0.01;
 
-    final newLeftXInterpolated = _currentLeftX * (1 - lerpCoefficient) +
+    final newLeftXInterpolated =
+        _currentLeftX * (1 - lerpCoefficient) +
         leftXWhenXInMiddle * lerpCoefficient;
-    final newRightXInterpolated = _currentRightX * (1 - lerpCoefficient) +
+    final newRightXInterpolated =
+        _currentRightX * (1 - lerpCoefficient) +
         rightXWhenXInMiddle * lerpCoefficient;
 
     _updatePresentedDomainLimits(newLeftXInterpolated, newRightXInterpolated);
@@ -249,10 +255,13 @@ class _LineAreaChartState extends State<LineAreaChart> {
                       onDragWithOneFinger: (percentageOfChartWidth) {
                         if (DateTime.now().millisecondsSinceEpoch -
                                 _timestampLastTwoFingersGesture <
-                            50) return;
+                            50) {
+                          return;
+                        }
 
-                        final highlightedDistance =
-                            _getXAtWidthPercentage(percentageOfChartWidth);
+                        final highlightedDistance = _getXAtWidthPercentage(
+                          percentageOfChartWidth,
+                        );
                         _setCurrentHighlight(highlightedDistance);
 
                         _timestampLastTwoFingersGesture =
@@ -265,8 +274,12 @@ class _LineAreaChartState extends State<LineAreaChart> {
                         final newMinX = _currentLeftX + deltaXOffset;
                         final newMaxX = _currentRightX + deltaXOffset;
 
-                        if (newMinX < widget.minX) return;
-                        if (newMaxX > widget.maxX) return;
+                        if (newMinX < widget.minX) {
+                          return;
+                        }
+                        if (newMaxX > widget.maxX) {
+                          return;
+                        }
 
                         _updatePresentedDomainLimits(newMinX, newMaxX);
 
@@ -275,8 +288,9 @@ class _LineAreaChartState extends State<LineAreaChart> {
                       },
                       onScale: (percentageOfChartWidth, horizontalScale) {
                         // Move towards scale's point of origin
-                        final startScaleXOrigin =
-                            _getXAtWidthPercentage(percentageOfChartWidth);
+                        final startScaleXOrigin = _getXAtWidthPercentage(
+                          percentageOfChartWidth,
+                        );
 
                         if (DateTime.now().millisecondsSinceEpoch -
                                 _timestampLastScaleGesture >
@@ -286,15 +300,16 @@ class _LineAreaChartState extends State<LineAreaChart> {
                           const newPositionWeight = 0.01;
                           _scaleOriginXMovingAverage =
                               newPositionWeight * startScaleXOrigin +
-                                  (1 - newPositionWeight) *
-                                      _scaleOriginXMovingAverage;
+                              (1 - newPositionWeight) *
+                                  _scaleOriginXMovingAverage;
                         }
                         _moveMiddleTowardsX(_scaleOriginXMovingAverage);
 
                         // Scale
                         horizontalScale = 1 / horizontalScale;
                         const lerpCoefficient = 0.01;
-                        horizontalScale = horizontalScale * lerpCoefficient +
+                        horizontalScale =
+                            horizontalScale * lerpCoefficient +
                             (1 - lerpCoefficient);
 
                         final newLength =
@@ -316,37 +331,42 @@ class _LineAreaChartState extends State<LineAreaChart> {
                             DateTime.now().millisecondsSinceEpoch;
                       },
                       child: AbsorbPointer(
-                        child:
-                            LayoutBuilder(builder: (context, widgetConstrains) {
-                          return Stack(
-                            clipBehavior: Clip.none,
-                            fit: StackFit.expand,
-                            children: [
-                              _Chart(
-                                minY: widget.minY,
-                                maxY: widget.maxY,
-                                minX: widget.minX,
-                                maxX: widget.maxX,
-                                spots: widget.spots,
-                                highlightedIntervals:
-                                    widget.highlightedIntervals,
-                                viewportController: viewportController,
-                              ),
-                              _ChartTooptip(
-                                xOffset: _getTooltipXOffset,
-                                yOffset: _getTooltipYOffset,
-                                indicatorColor: widget.indicatorColor ??
-                                    Theme.of(context).colorScheme.secondary,
-                                maxWidgetWidth: widgetConstrains.maxWidth,
-                                maxWidgetHeight: widgetConstrains.maxHeight,
-                                controller: tooltipController,
-                                textColor: widget.indicatorColor == null
-                                    ? Theme.of(context).colorScheme.onSecondary
-                                    : Colors.black,
-                              )
-                            ],
-                          );
-                        }),
+                        child: LayoutBuilder(
+                          builder: (context, widgetConstrains) {
+                            return Stack(
+                              clipBehavior: Clip.none,
+                              fit: StackFit.expand,
+                              children: [
+                                _Chart(
+                                  minY: widget.minY,
+                                  maxY: widget.maxY,
+                                  minX: widget.minX,
+                                  maxX: widget.maxX,
+                                  spots: widget.spots,
+                                  highlightedIntervals:
+                                      widget.highlightedIntervals,
+                                  viewportController: viewportController,
+                                ),
+                                _ChartTooptip(
+                                  xOffset: _getTooltipXOffset,
+                                  yOffset: _getTooltipYOffset,
+                                  indicatorColor:
+                                      widget.indicatorColor ??
+                                      Theme.of(context).colorScheme.secondary,
+                                  maxWidgetWidth: widgetConstrains.maxWidth,
+                                  maxWidgetHeight: widgetConstrains.maxHeight,
+                                  controller: tooltipController,
+                                  textColor:
+                                      widget.indicatorColor == null
+                                          ? Theme.of(
+                                            context,
+                                          ).colorScheme.onSecondary
+                                          : Colors.black,
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -361,7 +381,7 @@ class _LineAreaChartState extends State<LineAreaChart> {
               barHeight: LineAreaChart.bottomLabelBarHeight,
               leftOffset: LineAreaChart.leftLabelBarWidth,
               controller: titleBarController,
-            )
+            ),
           ],
         ),
       ),
@@ -416,7 +436,8 @@ class _ChartTooptipState extends State<_ChartTooptip> {
   }
 
   void _rebindControler() {
-    widget.controller.setHighlight = (spot) => setState(() {
+    widget.controller.setHighlight =
+        (spot) => setState(() {
           highlight = spot;
         });
 
@@ -458,11 +479,8 @@ class _ChartTooptipState extends State<_ChartTooptip> {
             ),
             Text(
               "▼",
-              style: TextStyle(
-                color: widget.indicatorColor,
-                height: 0.6,
-              ),
-            )
+              style: TextStyle(color: widget.indicatorColor, height: 0.6),
+            ),
           ],
         ),
       ),
@@ -546,23 +564,24 @@ class _ChartState extends State<_Chart> {
             isCurved: false,
             barWidth: 4,
             color: const Color(0xFF3a77ff),
-            dotData: const FlDotData(
-              show: false,
-            ),
+            dotData: const FlDotData(show: false),
             belowBarData: BarAreaData(
-                show: true, color: const Color.fromARGB(200, 157, 200, 250)),
+              show: true,
+              color: const Color.fromARGB(200, 157, 200, 250),
+            ),
           ),
           for (final interval in widget.highlightedIntervals)
             LineChartBarData(
-                spots: interval.$1,
-                isCurved: true,
-                barWidth: 5,
-                color: interval.$2,
-                dotData: const FlDotData(
-                  show: false,
-                ),
-                belowBarData:
-                    BarAreaData(show: true, color: const Color(0xFF1F8AFE)))
+              spots: interval.$1,
+              isCurved: true,
+              barWidth: 5,
+              color: interval.$2,
+              dotData: const FlDotData(show: false),
+              belowBarData: BarAreaData(
+                show: true,
+                color: const Color(0xFF1F8AFE),
+              ),
+            ),
         ],
         // Background grid
         gridData: const FlGridData(
@@ -769,7 +788,10 @@ class _ChartGestureDetector extends StatelessWidget {
   final void Function(double percentageOfChartWidth) onDragWithOneFinger;
   final void Function(double deltaXOffset) onDragWithTwoFingers;
   final void Function(
-      double percentageOfChartWidthStart, double horizontalScale) onScale;
+    double percentageOfChartWidthStart,
+    double horizontalScale,
+  )
+  onScale;
   final Widget child;
   final bool hasGestures;
 
@@ -782,49 +804,61 @@ class _ChartGestureDetector extends StatelessWidget {
   });
 
   double getPercentageOfChartWidthFromXOffset(
-      double xOffset, double widgetWidth) {
+    double xOffset,
+    double widgetWidth,
+  ) {
     return xOffset / widgetWidth;
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constrains) {
-      return GestureDetector(
-        onScaleUpdate: (details) {
-          if (!hasGestures) return;
-          // Higher than 1 -> gestures with high vertical range are more likely to be recognized
-          // Closer to 1 -> gestures with high vertical range are less likely to be recognized
-          const scaleV = 5;
+    return LayoutBuilder(
+      builder: (context, constrains) {
+        return GestureDetector(
+          onScaleUpdate: (details) {
+            if (!hasGestures) {
+              return;
+            }
+            // Higher than 1 -> gestures with high vertical range are more likely to be recognized
+            // Closer to 1 -> gestures with high vertical range are less likely to be recognized
+            const scaleV = 5;
 
-          // Higher than 1 -> the gesture has higher chance of being registered as DRAG TWO FINGERS
-          // Closer to 1 -> the gesture has higher chance of being registered as SCALE
-          const scaleH = 1.30;
+            // Higher than 1 -> the gesture has higher chance of being registered as DRAG TWO FINGERS
+            // Closer to 1 -> the gesture has higher chance of being registered as SCALE
+            const scaleH = 1.30;
 
-          // Ignore extreme vertical gestures
-          if (details.verticalScale < 1 / scaleV ||
-              details.verticalScale > scaleV) return;
+            // Ignore extreme vertical gestures
+            if (details.verticalScale < 1 / scaleV ||
+                details.verticalScale > scaleV) {
+              return;
+            }
 
-          if (details.scale < 1 / scaleH || details.scale > scaleH) {
-            // SCALE
-            final horizontalScale = details.horizontalScale;
-            final startLocalFocalPointX = details.localFocalPoint.dx;
-            final startPercentageX = getPercentageOfChartWidthFromXOffset(
-                startLocalFocalPointX, constrains.maxWidth);
+            if (details.scale < 1 / scaleH || details.scale > scaleH) {
+              // SCALE
+              final horizontalScale = details.horizontalScale;
+              final startLocalFocalPointX = details.localFocalPoint.dx;
+              final startPercentageX = getPercentageOfChartWidthFromXOffset(
+                startLocalFocalPointX,
+                constrains.maxWidth,
+              );
 
-            onScale(startPercentageX, horizontalScale);
-          } else if (details.pointerCount == 1) {
-            // DRAG ONE FINGER
-            final percentageOfWidgetX = getPercentageOfChartWidthFromXOffset(
-                details.localFocalPoint.dx, constrains.maxWidth);
-            if (percentageOfWidgetX < 0 || percentageOfWidgetX > 1) return;
-            onDragWithOneFinger(percentageOfWidgetX);
-          } else if (details.pointerCount == 2) {
-            // DRAG TWO FINGERS
-            onDragWithTwoFingers(-details.focalPointDelta.dx);
-          }
-        },
-        child: child,
-      );
-    });
+              onScale(startPercentageX, horizontalScale);
+            } else if (details.pointerCount == 1) {
+              // DRAG ONE FINGER
+              final percentageOfWidgetX = getPercentageOfChartWidthFromXOffset(
+                details.localFocalPoint.dx,
+                constrains.maxWidth,
+              );
+              if (percentageOfWidgetX < 0 || percentageOfWidgetX > 1) return;
+              onDragWithOneFinger(percentageOfWidgetX);
+            } else if (details.pointerCount == 2) {
+              // DRAG TWO FINGERS
+              onDragWithTwoFingers(-details.focalPointDelta.dx);
+            }
+          },
+          child: child,
+        );
+      },
+    );
   }
 }

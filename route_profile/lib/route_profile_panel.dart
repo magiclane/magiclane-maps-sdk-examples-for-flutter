@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'dart:math';
 
@@ -36,15 +33,16 @@ class RouteProfilePanel extends StatefulWidget {
     4.0,
     7.0,
     10.0,
-    16.0
+    16.0,
   ];
 
-  RouteProfilePanel(
-      {super.key,
-      required this.route,
-      required this.mapController,
-      required this.chartController,
-      required this.centerOnRoute});
+  RouteProfilePanel({
+    super.key,
+    required this.route,
+    required this.mapController,
+    required this.chartController,
+    required this.centerOnRoute,
+  });
 
   @override
   State<RouteProfilePanel> createState() => _RouteProfilePanelState();
@@ -70,12 +68,14 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
                     controller: widget.chartController,
                     points: getElevationSamples(),
                     climbSections: widget.route.terrainProfile!.climbSections,
-                    onSelect: (distance) =>
-                        _presentLandmarkAtDistance(distance.floor()),
+                    onSelect:
+                        (distance) =>
+                            _presentLandmarkAtDistance(distance.floor()),
                     onViewPortChanged: (leftX, rightX) {
-                      final path = widget.route
-                          .getPath(leftX.floor(), rightX.floor())!
-                          .area;
+                      final path =
+                          widget.route
+                              .getPath(leftX.floor(), rightX.floor())!
+                              .area;
                       _centerOnArea(path);
                     },
                   ),
@@ -88,8 +88,9 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
                         widget.centerOnRoute();
                         if (widget.chartController.setCurrentHighlight !=
                             null) {
-                          widget.chartController
-                              .setCurrentHighlight!(0.toDouble());
+                          widget.chartController.setCurrentHighlight!(
+                            0.toDouble(),
+                          );
                         }
                       },
                       icon: const Icon(Icons.location_on, color: Colors.green),
@@ -102,7 +103,8 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
                         if (widget.chartController.setCurrentHighlight !=
                             null) {
                           widget.chartController.setCurrentHighlight!(
-                              widget.route.totalDistance().toDouble());
+                            widget.route.totalDistance().toDouble(),
+                          );
                         }
                       },
                       icon: const Icon(Icons.location_on, color: Colors.red),
@@ -114,9 +116,10 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
                         widget.centerOnRoute();
                         if (widget.chartController.setCurrentHighlight !=
                             null) {
-                          widget.chartController.setCurrentHighlight!(widget
-                              .route.terrainProfile!.minElevationDistance
-                              .toDouble());
+                          widget.chartController.setCurrentHighlight!(
+                            widget.route.terrainProfile!.minElevationDistance
+                                .toDouble(),
+                          );
                         }
                       },
                       icon: const Icon(Icons.arrow_downward),
@@ -128,44 +131,44 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
                         widget.centerOnRoute();
                         if (widget.chartController.setCurrentHighlight !=
                             null) {
-                          widget.chartController.setCurrentHighlight!(widget
-                              .route.terrainProfile!.maxElevationDistance
-                              .toDouble());
+                          widget.chartController.setCurrentHighlight!(
+                            widget.route.terrainProfile!.maxElevationDistance
+                                .toDouble(),
+                          );
                         }
                       },
                       icon: const Icon(Icons.arrow_upward),
                       title:
                           '${widget.route.terrainProfile!.maxElevation.toStringAsFixed(0)} m',
-                    )
+                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
-                ClimbDetails(
-                  route: widget.route,
-                ),
+                ClimbDetails(route: widget.route),
                 const SizedBox(height: 10),
                 SliderItem(
                   title: 'Surfaces',
                   sections: _getSurfaceSections(),
                   route: widget.route,
-                  onSelectionChanged: (type) =>
-                      _presentSurfacePaths(type as SurfaceType),
+                  onSelectionChanged:
+                      (type) => _presentSurfacePaths(type as SurfaceType),
                 ),
                 const SizedBox(height: 10),
                 SliderItem(
                   title: 'Road Types',
                   sections: _getRoadSections(),
                   route: widget.route,
-                  onSelectionChanged: (type) =>
-                      _presentRoadPaths(type as RoadType),
+                  onSelectionChanged:
+                      (type) => _presentRoadPaths(type as RoadType),
                 ),
                 const SizedBox(height: 10),
                 SliderItem(
                   title: 'Steepness',
                   sections: _getSteepnessSections(),
                   route: widget.route,
-                  onSelectionChanged: (steepness) =>
-                      _presentSteepnessPaths(steepness as Steepness),
+                  onSelectionChanged:
+                      (steepness) =>
+                          _presentSteepnessPaths(steepness as Steepness),
                 ),
               ],
             ),
@@ -184,8 +187,11 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
     countSamples = min(countSamples, maxSamples);
     countSamples = max(countSamples, minSamples);
 
-    final samples = widget.route.terrainProfile!
-        .getElevationSamples(countSamples, 0, widget.route.totalDistance());
+    final samples = widget.route.terrainProfile!.getElevationSamples(
+      countSamples,
+      0,
+      widget.route.totalDistance(),
+    );
 
     // Calculate the distance from the start of the route to every sample.
     double currentDistance = 0;
@@ -222,9 +228,10 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       // Calculate the start and end distances for the current section.
       final isLast = index == surfaceSections.length - 1;
       final startDistance = surfaceSections[index].startDistanceM;
-      final endDistance = isLast
-          ? widget.route.totalDistance()
-          : (surfaceSections[index + 1].startDistanceM);
+      final endDistance =
+          isLast
+              ? widget.route.totalDistance()
+              : (surfaceSections[index + 1].startDistanceM);
       final length = endDistance - startDistance;
 
       if (!map.containsKey(type)) {
@@ -250,9 +257,10 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
 
       final isLast = index == sections.length - 1;
       final startDistance = sections[index].startDistanceM;
-      final endDistance = isLast
-          ? widget.route.totalDistance()
-          : (sections[index + 1].startDistanceM);
+      final endDistance =
+          isLast
+              ? widget.route.totalDistance()
+              : (sections[index + 1].startDistanceM);
 
       final path = widget.route.getPath(startDistance, endDistance);
       paths.add(path!);
@@ -273,9 +281,10 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       // Calculate the start and end distances for the current section.
       final isLast = index == roadTypeSections.length - 1;
       final startDistance = roadTypeSections[index].startDistanceM;
-      final endDistance = isLast
-          ? widget.route.totalDistance()
-          : (roadTypeSections[index + 1].startDistanceM);
+      final endDistance =
+          isLast
+              ? widget.route.totalDistance()
+              : (roadTypeSections[index + 1].startDistanceM);
       final length = endDistance - startDistance;
 
       if (!map.containsKey(type)) {
@@ -301,9 +310,10 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
 
       final isLast = index == sections.length - 1;
       final startDistance = sections[index].startDistanceM;
-      final endDistance = isLast
-          ? widget.route.totalDistance()
-          : (sections[index + 1].startDistanceM);
+      final endDistance =
+          isLast
+              ? widget.route.totalDistance()
+              : (sections[index + 1].startDistanceM);
 
       final path = widget.route.getPath(startDistance, endDistance);
       paths.add(path!);
@@ -313,8 +323,9 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
 
   // Divide the route in steepness sections.
   List<Section> _getSteepnessSections() {
-    final steepnessSections = widget.route.terrainProfile!
-        .getSteepSections(widget.steepnessCategories);
+    final steepnessSections = widget.route.terrainProfile!.getSteepSections(
+      widget.steepnessCategories,
+    );
 
     List<Section> sections = [];
     Map<Steepness, Section> map = <Steepness, Section>{};
@@ -325,9 +336,10 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       // Calculate the start and end distances for the current section.
       final isLast = index == steepnessSections.length - 1;
       final startDistance = steepnessSections[index].startDistanceM;
-      final endDistance = isLast
-          ? widget.route.totalDistance()
-          : (steepnessSections[index + 1].startDistanceM);
+      final endDistance =
+          isLast
+              ? widget.route.totalDistance()
+              : (steepnessSections[index + 1].startDistanceM);
       final length = endDistance - startDistance;
 
       if (!map.containsKey(type)) {
@@ -341,16 +353,19 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
     sections.addAll(map.values);
 
     // Sort them from descent to ascent.
-    sections.sort(((a, b) =>
-        Steepness.values.indexOf(a.type as Steepness) -
-        Steepness.values.indexOf(b.type as Steepness)));
+    sections.sort(
+      ((a, b) =>
+          Steepness.values.indexOf(a.type as Steepness) -
+          Steepness.values.indexOf(b.type as Steepness)),
+    );
     return sections;
   }
 
   // Find all paths of a given steepness and highlight them on the map.
   void _presentSteepnessPaths(Steepness steepenss) {
-    List<dynamic> sections = widget.route.terrainProfile!
-        .getSteepSections(widget.steepnessCategories);
+    List<dynamic> sections = widget.route.terrainProfile!.getSteepSections(
+      widget.steepnessCategories,
+    );
 
     final List<Path> paths = [];
     for (int index = 0; index < sections.length; index++) {
@@ -358,12 +373,15 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
 
       final isLast = index == sections.length - 1;
       final startDistance = sections[index].startDistanceM ?? 0;
-      final endDistance = isLast
-          ? widget.route.totalDistance()
-          : (sections[index + 1].startDistanceM ?? 0);
+      final endDistance =
+          isLast
+              ? widget.route.totalDistance()
+              : (sections[index + 1].startDistanceM ?? 0);
 
-      final path =
-          widget.route.getPath(startDistance as int, endDistance as int);
+      final path = widget.route.getPath(
+        startDistance as int,
+        endDistance as int,
+      );
       paths.add(path!);
     }
     _presentPaths(paths);
@@ -401,11 +419,12 @@ class LandmarkButton extends StatelessWidget {
   final VoidCallback onTap;
   final Icon icon;
   final String title;
-  const LandmarkButton(
-      {super.key,
-      required this.onTap,
-      required this.icon,
-      required this.title});
+  const LandmarkButton({
+    super.key,
+    required this.onTap,
+    required this.icon,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -417,7 +436,9 @@ class LandmarkButton extends StatelessWidget {
             height: 65,
             width: 65,
             decoration: const BoxDecoration(
-                color: Colors.white, shape: BoxShape.circle),
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
             child: icon,
           ),
         ),

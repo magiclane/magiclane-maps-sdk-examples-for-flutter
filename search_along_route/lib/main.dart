@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -65,8 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text("Search Along Route",
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Search Along Route",
+          style: TextStyle(color: Colors.white),
+        ),
         leading: Row(
           children: [
             if (_areRoutesBuilt)
@@ -85,18 +84,12 @@ class _MyHomePageState extends State<MyHomePage> {
           if (_isSimulationActive)
             IconButton(
               onPressed: _stopSimulation,
-              icon: const Icon(
-                Icons.stop,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.stop, color: Colors.white),
             ),
           if (!_areRoutesBuilt)
             IconButton(
               onPressed: () => _onBuildRouteButtonPressed(),
-              icon: const Icon(
-                Icons.route,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.route, color: Colors.white),
             ),
         ],
       ),
@@ -115,43 +108,52 @@ class _MyHomePageState extends State<MyHomePage> {
   // Compute & show route.
   Future<void> _onBuildRouteButtonPressed() async {
     // Define the departure.
-    final departureLandmark =
-        Landmark.withLatLng(latitude: 37.77903, longitude: -122.41991);
+    final departureLandmark = Landmark.withLatLng(
+      latitude: 37.77903,
+      longitude: -122.41991,
+    );
 
     // Define the destination.
-    final destinationLandmark =
-        Landmark.withLatLng(latitude: 37.33619, longitude: -121.89058);
+    final destinationLandmark = Landmark.withLatLng(
+      latitude: 37.33619,
+      longitude: -121.89058,
+    );
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
     _showSnackBar(context, message: 'The route is calculating.');
 
     _routingHandler = RoutingService.calculateRoute(
-        [departureLandmark, destinationLandmark], routePreferences,
-        (err, routes) async {
-      // If the route calculation is finished, we don't have a progress listener anymore.
-      _routingHandler = null;
+      [departureLandmark, destinationLandmark],
+      routePreferences,
+      (err, routes) async {
+        // If the route calculation is finished, we don't have a progress listener anymore.
+        _routingHandler = null;
 
-      ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there aren't any errors, we display the routes.
-      if (err == GemError.success) {
-        // Get the routes collection from map preferences.
-        final routesMap = _mapController.preferences.routes;
+        // If there aren't any errors, we display the routes.
+        if (err == GemError.success) {
+          // Get the routes collection from map preferences.
+          final routesMap = _mapController.preferences.routes;
 
-        // Display the routes on map.
-        for (final route in routes) {
-          routesMap.add(route, route == routes.first,
-              label: route.getMapLabel());
+          // Display the routes on map.
+          for (final route in routes) {
+            routesMap.add(
+              route,
+              route == routes.first,
+              label: route.getMapLabel(),
+            );
+          }
+
+          _mapController.centerOnRoute(routes.first);
         }
 
-        _mapController.centerOnRoute(routes.first);
-      }
-
-      setState(() {
-        _areRoutesBuilt = true;
-      });
-    });
+        setState(() {
+          _areRoutesBuilt = true;
+        });
+      },
+    );
   }
 
   // Start simulated navigation.
@@ -163,22 +165,26 @@ class _MyHomePageState extends State<MyHomePage> {
     final routes = _mapController.preferences.routes;
 
     _navigationHandler = NavigationService.startSimulation(
-        routes.mainRoute, null, onNavigationInstruction: (instruction, events) {
-      setState(() {
-        _isSimulationActive = true;
-      });
-    }, onError: (error) {
-      // If the navigation has ended or if and error occurred while navigating, remove routes.
-      setState(() {
-        _isSimulationActive = false;
-        _cancelRoute();
-      });
+      routes.mainRoute,
+      null,
+      onNavigationInstruction: (instruction, events) {
+        setState(() {
+          _isSimulationActive = true;
+        });
+      },
+      onError: (error) {
+        // If the navigation has ended or if and error occurred while navigating, remove routes.
+        setState(() {
+          _isSimulationActive = false;
+          _cancelRoute();
+        });
 
-      if (error != GemError.cancel) {
-        _stopSimulation();
-      }
-      return;
-    });
+        if (error != GemError.cancel) {
+          _stopSimulation();
+        }
+        return;
+      },
+    );
 
     // Set the camera to follow position.
     _mapController.startFollowingPosition();
@@ -241,12 +247,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: duration,
-    );
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
+    final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -255,7 +261,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+    final totalDistance =
+        getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;

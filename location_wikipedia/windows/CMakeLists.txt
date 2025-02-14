@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
 project(location_wikipedia LANGUAGES CXX)

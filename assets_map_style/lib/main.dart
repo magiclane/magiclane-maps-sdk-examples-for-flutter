@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:flutter/services.dart';
 import 'package:gem_kit/core.dart';
@@ -64,8 +61,9 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           if (!_isStyleLoaded)
             IconButton(
-                onPressed: () => _applyStyle(),
-                icon: Icon(Icons.map, color: Colors.white)),
+              onPressed: () => _applyStyle(),
+              icon: Icon(Icons.map, color: Colors.white),
+            ),
         ],
       ),
       body: GemMap(
@@ -88,8 +86,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final styleData = await _loadStyle();
 
-    _mapController.preferences
-        .setMapStyleByBuffer(styleData, smoothTransition: true);
+    _mapController.preferences.setMapStyleByBuffer(
+      styleData,
+      smoothTransition: true,
+    );
 
     setState(() {
       _isStyleLoaded = true;
@@ -99,8 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
     }
 
-    _mapController.centerOnCoordinates(Coordinates(latitude: 45, longitude: 20),
-        zoomLevel: 25);
+    _mapController.centerOnCoordinates(
+      Coordinates(latitude: 45, longitude: 20),
+      zoomLevel: 25,
+    );
   }
 
   // Method to load style and return it as bytes
@@ -115,12 +117,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case the styles are still loading
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: duration,
-    );
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
+    final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }

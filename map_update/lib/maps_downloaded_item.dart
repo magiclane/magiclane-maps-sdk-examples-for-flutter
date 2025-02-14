@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
@@ -18,8 +15,11 @@ class MapsDownloadedItem extends StatefulWidget {
   final ContentStoreItem map;
   final void Function(ContentStoreItem) deleteMap;
 
-  const MapsDownloadedItem(
-      {super.key, required this.map, required this.deleteMap});
+  const MapsDownloadedItem({
+    super.key,
+    required this.map,
+    required this.deleteMap,
+  });
 
   @override
   State<MapsDownloadedItem> createState() => _MapsDownloadedItemState();
@@ -41,56 +41,62 @@ class _MapsDownloadedItemState extends State<MapsDownloadedItem> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               width: 50,
-              child: Image.memory(_getMapImage(widget.map)),
+              child:
+                  _getMapImage(widget.map) != null
+                      ? Image.memory(
+                        _getMapImage(widget.map)!,
+                        gaplessPlayback: true,
+                      )
+                      : SizedBox(),
             ),
             title: Text(
               widget.map.name,
               style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(color: Colors.black, fontSize: 16),
                 ),
                 Text(
-                    "Current Version: ${_clientVersion.major}.${_clientVersion.minor}"),
+                  "Current Version: ${_clientVersion.major}.${_clientVersion.minor}",
+                ),
                 if (_updateVersion.major != 0 && _updateVersion.minor != 0)
                   Text(
-                      "New version available: ${_updateVersion.major}.${_updateVersion.minor}")
+                    "New version available: ${_updateVersion.major}.${_updateVersion.minor}",
+                  )
                 else
                   const Text("Version up to date"),
               ],
             ),
-            trailing: (isOld)
-                ? const Icon(
-                    Icons.warning,
-                    color: Colors.orange,
-                  )
-                : null,
+            trailing:
+                (isOld)
+                    ? const Icon(Icons.warning, color: Colors.orange)
+                    : null,
           ),
         ),
         IconButton(
           onPressed: () => widget.deleteMap(widget.map),
           padding: EdgeInsets.zero,
           icon: const Icon(Icons.delete),
-        )
+        ),
       ],
     );
   }
 
   // Method that returns the image of a map
-  Uint8List _getMapImage(ContentStoreItem map) {
+  Uint8List? _getMapImage(ContentStoreItem map) {
     final countryCodes = map.countryCodes;
     final countryImage = MapDetails.getCountryFlag(
-        countryCode: countryCodes[0], size: const Size(100, 100));
+      countryCode: countryCodes[0],
+      size: const Size(100, 100),
+    );
     return countryImage;
   }
 }

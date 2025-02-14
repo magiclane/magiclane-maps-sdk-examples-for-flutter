@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/routing.dart';
 
@@ -41,7 +38,8 @@ Future<Uint8List?> imageToUint8List(Image? image) async {
 // Define an extension for route for calculating the route label which will be displayed on map
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+    final totalDistance =
+        getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
@@ -53,7 +51,8 @@ extension RouteExtension on Route {
 // Define an extension for route instruction to calculate distance and duration
 extension RouteInstructionExtension on RouteInstruction {
   String getFormattedDistanceUntilInstruction() {
-    final rawDistance = traveledTimeDistance.restrictedDistanceM +
+    final rawDistance =
+        traveledTimeDistance.restrictedDistanceM +
         traveledTimeDistance.unrestrictedDistanceM;
     return convertDistance(rawDistance);
   }

@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -26,13 +23,15 @@ const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
 void main() {
   GemKit.initialize(appAuthorization: projectApiToken).then((value) {
-    SdkSettings.setAllowConnection(true,
-        onWorldwideRoadMapSupportStatusCallback: (status) {
-      print("UpdatePersistence: onWorldwideRoadMapSupportStatus $status");
-      if (status != Status.upToDate) {
-        UpdatePersistence.instance.isOldData = true;
-      }
-    });
+    SdkSettings.setAllowConnection(
+      true,
+      onWorldwideRoadMapSupportStatusCallback: (status) {
+        print("UpdatePersistence: onWorldwideRoadMapSupportStatus $status");
+        if (status != Status.upToDate) {
+          UpdatePersistence.instance.isOldData = true;
+        }
+      },
+    );
     SdkSettings.appAuthorization = projectApiToken;
   });
 
@@ -78,17 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Map Update',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Map Update', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-              onPressed: () => _onMapButtonTap(context),
-              icon: const Icon(
-                Icons.map_outlined,
-                color: Colors.white,
-              ))
+            onPressed: () => _onMapButtonTap(context),
+            icon: const Icon(Icons.map_outlined, color: Colors.white),
+          ),
         ],
       ),
       body: GemMap(
@@ -96,26 +90,31 @@ class _MyHomePageState extends State<MyHomePage> {
         onMapCreated: onMapCreated,
         appAuthorization: projectApiToken,
       ),
-      floatingActionButton: showButton
-          ? FloatingActionButton(
-              onPressed: loadMaps,
-              child: const Icon(Icons.file_copy),
-            )
-          : null,
+      floatingActionButton:
+          showButton
+              ? FloatingActionButton(
+                onPressed: loadMaps,
+                child: const Icon(Icons.file_copy),
+              )
+              : null,
     );
   }
 
   // Method to navigate to the Maps Page.
   void _onMapButtonTap(BuildContext context) async {
     if (mapId != null) {
-      Navigator.of(context).push(MaterialPageRoute<dynamic>(
-        builder: (context) => MapsPage(mapId: mapId!),
-      ));
+      Navigator.of(context).push(
+        MaterialPageRoute<dynamic>(
+          builder: (context) => MapsPage(mapId: mapId!),
+        ),
+      );
     }
   }
 
   Future<bool> loadAsset(
-      String assetName, String destinationDirectoryPath) async {
+    String assetName,
+    String destinationDirectoryPath,
+  ) async {
     final destinationFilePath = path.join(destinationDirectoryPath, assetName);
 
     File file = File(destinationFilePath);
@@ -127,8 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final asset = await rootBundle.load('assets/$assetName');
     final buffer = asset.buffer;
     await file.writeAsBytes(
-        buffer.asUint8List(asset.offsetInBytes, asset.lengthInBytes),
-        flush: true);
+      buffer.asUint8List(asset.offsetInBytes, asset.lengthInBytes),
+      flush: true,
+    );
     print("Wrote file ${file.path}");
     return true;
   }
@@ -169,7 +169,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (!directory.existsSync()) {
       print(
-          '\x1B[31mWARNING: Directory $directoryPath not found. Test might fail.\x1B[0m');
+        '\x1B[31mWARNING: Directory $directoryPath not found. Test might fail.\x1B[0m',
+      );
     }
 
     for (final file in directory.listSync()) {
@@ -180,7 +181,8 @@ class _MyHomePageState extends State<MyHomePage> {
           file.deleteSync();
         } catch (e) {
           print(
-              '\x1B[31mWARNING: Deleting file ${file.path} failed. Test might fail. Reason:\n${e.toString()}\x1B[0m');
+            '\x1B[31mWARNING: Deleting file ${file.path} failed. Test might fail. Reason:\n${e.toString()}\x1B[0m',
+          );
         }
       }
     }

@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -51,32 +48,29 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                 children: [
                   Expanded(
                     child: InkWell(
-                      child: Center(
-                        child: Text("Now"),
-                      ),
-                      onTap: () => setState(() {
-                        _weatherTab = WeatherTab.now;
-                      }),
+                      child: Center(child: Text("Now")),
+                      onTap:
+                          () => setState(() {
+                            _weatherTab = WeatherTab.now;
+                          }),
                     ),
                   ),
                   Expanded(
                     child: InkWell(
-                      child: Center(
-                        child: Text("Hourly"),
-                      ),
-                      onTap: () => setState(() {
-                        _weatherTab = WeatherTab.hourly;
-                      }),
+                      child: Center(child: Text("Hourly")),
+                      onTap:
+                          () => setState(() {
+                            _weatherTab = WeatherTab.hourly;
+                          }),
                     ),
                   ),
                   Expanded(
                     child: InkWell(
-                      child: Center(
-                        child: Text("Daily"),
-                      ),
-                      onTap: () => setState(() {
-                        _weatherTab = WeatherTab.daily;
-                      }),
+                      child: Center(child: Text("Daily")),
+                      onTap:
+                          () => setState(() {
+                            _weatherTab = WeatherTab.daily;
+                          }),
                     ),
                   ),
                 ],
@@ -97,10 +91,13 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                         }
                         if (!snapshot.hasData)
                           return Center(
-                              child: Text("Error loading current forecast."));
+                            child: Text("Error loading current forecast."),
+                          );
 
                         return ForecastNowPage(
-                            condition: snapshot.data!, landmarkName: "Paris");
+                          condition: snapshot.data!,
+                          landmarkName: "Paris",
+                        );
                       },
                     );
                   } else if (_weatherTab == WeatherTab.hourly) {
@@ -113,10 +110,12 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                         }
                         if (!snapshot.hasData)
                           return Center(
-                              child: Text("Error loading hourly forecast."));
+                            child: Text("Error loading hourly forecast."),
+                          );
 
                         return ForecastHourlyPage(
-                            locationForecasts: snapshot.data!);
+                          locationForecasts: snapshot.data!,
+                        );
                       },
                     );
                   } else if (_weatherTab == WeatherTab.daily) {
@@ -130,10 +129,12 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
 
                         if (!snapshot.hasData)
                           return Center(
-                              child: Text("Error loading daily forecast."));
+                            child: Text("Error loading daily forecast."),
+                          );
 
                         return ForecastDailyPage(
-                            locationForecasts: snapshot.data!);
+                          locationForecasts: snapshot.data!,
+                        );
                       },
                     );
                   }
@@ -148,15 +149,18 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
   }
 
   Future<LocationForecast> _getCurrentForecast() async {
-    final locationCoordinates =
-        Coordinates(latitude: 48.864716, longitude: 2.349014);
+    final locationCoordinates = Coordinates(
+      latitude: 48.864716,
+      longitude: 2.349014,
+    );
     final weatherCurrentCompleter = Completer<List<LocationForecast>?>();
 
     WeatherService.getCurrent(
-        coords: [locationCoordinates],
-        onCompleteCallback: (err, result) async {
-          weatherCurrentCompleter.complete(result);
-        });
+      coords: [locationCoordinates],
+      onCompleteCallback: (err, result) async {
+        weatherCurrentCompleter.complete(result);
+      },
+    );
 
     final currentForecast = await weatherCurrentCompleter.future;
 
@@ -164,16 +168,19 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
   }
 
   Future<List<LocationForecast>> _getHourlyForecast() async {
-    final locationCoordinates =
-        Coordinates(latitude: 48.864716, longitude: 2.349014);
+    final locationCoordinates = Coordinates(
+      latitude: 48.864716,
+      longitude: 2.349014,
+    );
     final weatherHourlyCompleter = Completer<List<LocationForecast>?>();
 
     WeatherService.getHourlyForecast(
-        hours: 24,
-        coords: [locationCoordinates],
-        onCompleteCallback: (err, result) async {
-          weatherHourlyCompleter.complete(result);
-        });
+      hours: 24,
+      coords: [locationCoordinates],
+      onCompleteCallback: (err, result) async {
+        weatherHourlyCompleter.complete(result);
+      },
+    );
 
     final currentForecast = await weatherHourlyCompleter.future;
 
@@ -181,16 +188,19 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
   }
 
   Future<List<LocationForecast>> _getDailyForecast() async {
-    final locationCoordinates =
-        Coordinates(latitude: 48.864716, longitude: 2.349014);
+    final locationCoordinates = Coordinates(
+      latitude: 48.864716,
+      longitude: 2.349014,
+    );
     final weatherDailyCompleter = Completer<List<LocationForecast>?>();
 
     WeatherService.getDailyForecast(
-        days: 10,
-        coords: [locationCoordinates],
-        onCompleteCallback: (err, result) async {
-          weatherDailyCompleter.complete(result);
-        });
+      days: 10,
+      coords: [locationCoordinates],
+      onCompleteCallback: (err, result) async {
+        weatherDailyCompleter.complete(result);
+      },
+    );
 
     final currentForecast = await weatherDailyCompleter.future;
 

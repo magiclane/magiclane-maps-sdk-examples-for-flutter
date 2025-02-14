@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -57,11 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         actions: [
           IconButton(
-              onPressed: () => _onVoicesButtonTap(context),
-              icon: const Icon(
-                Icons.record_voice_over,
-                color: Colors.white,
-              ))
+            onPressed: () => _onVoicesButtonTap(context),
+            icon: const Icon(Icons.record_voice_over, color: Colors.white),
+          ),
         ],
       ),
       body: GemMap(
@@ -74,13 +69,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onMapCreated(GemMapController controller) async {
     SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(
-        ServiceGroupType.contentService, true);
+      ServiceGroupType.contentService,
+      true,
+    );
   }
 
   // Method to navigate to the Voices Page.
   void _onVoicesButtonTap(BuildContext context) async {
-    Navigator.of(context).push(MaterialPageRoute<dynamic>(
-      builder: (context) => const VoicesPage(),
-    ));
+    Navigator.of(context).push(
+      MaterialPageRoute<dynamic>(builder: (context) => const VoicesPage()),
+    );
   }
 }

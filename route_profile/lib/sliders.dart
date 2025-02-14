@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'dart:async';
 
@@ -25,12 +22,13 @@ class SliderItem extends StatefulWidget {
   final List<Section> sections;
   final void Function(Enum) onSelectionChanged;
 
-  const SliderItem(
-      {super.key,
-      required this.route,
-      required this.onSelectionChanged,
-      required this.sections,
-      required this.title});
+  const SliderItem({
+    super.key,
+    required this.route,
+    required this.onSelectionChanged,
+    required this.sections,
+    required this.title,
+  });
 
   @override
   State<SliderItem> createState() => _SliderItemState();
@@ -64,11 +62,12 @@ class SlidingSection extends StatefulWidget {
   final int distance;
   final void Function(Section) onSelectionChanged;
 
-  const SlidingSection(
-      {super.key,
-      required this.sections,
-      required this.distance,
-      required this.onSelectionChanged});
+  const SlidingSection({
+    super.key,
+    required this.sections,
+    required this.distance,
+    required this.onSelectionChanged,
+  });
 
   @override
   State<SlidingSection> createState() => _SlidingSectionState();
@@ -100,7 +99,7 @@ class _SlidingSectionState extends State<SlidingSection> {
                 children: List.generate(widget.sections.length, (index) {
                   final sectionWidth =
                       (MediaQuery.of(context).size.width - 40) *
-                          widget.sections[index].percent;
+                      widget.sections[index].percent;
                   return Container(
                     width: sectionWidth,
                     color: getColorBasedOnType(widget.sections[index].type),
@@ -123,21 +122,21 @@ class _SlidingSectionState extends State<SlidingSection> {
                 handlerWidth: 5,
                 handlerHeight: 40,
                 handler: FlutterSliderHandler(
-                    decoration: const BoxDecoration(),
-                    child: Container(
-                      color: Colors.red,
-                    )),
+                  decoration: const BoxDecoration(),
+                  child: Container(color: Colors.red),
+                ),
                 trackBar: const FlutterSliderTrackBar(
                   activeTrackBar: BoxDecoration(color: Colors.transparent),
                   inactiveTrackBar: BoxDecoration(color: Colors.transparent),
                   activeTrackBarHeight: 5,
                 ),
               ),
-            )
+            ),
           ],
         ),
         Text(
-            '${_selectedSection.type.name}: ${convertDistance(_selectedSection.percent * widget.distance)} (${(_selectedSection.percent * 100).toStringAsFixed(1)}%)'),
+          '${_selectedSection.type.name}: ${convertDistance(_selectedSection.percent * widget.distance)} (${(_selectedSection.percent * 100).toStringAsFixed(1)}%)',
+        ),
       ],
     );
   }

@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -59,60 +56,57 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title:
-            const Text('Truck Profile', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Truck Profile',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           // Routes are not built.
           if (_routingHandler == null && _routes == null)
             IconButton(
               onPressed: () => _onBuildRouteButtonPressed(context),
-              icon: const Icon(
-                Icons.route,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.route, color: Colors.white),
             ),
           // Routes calculating is in progress.
           if (_routingHandler != null)
             IconButton(
               onPressed: () => _onCancelRouteButtonPressed(),
-              icon: const Icon(
-                Icons.stop,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.stop, color: Colors.white),
             ),
           // Routes calculating is finished.
           if (_routes != null)
             IconButton(
               onPressed: () => _onClearRoutesButtonPressed(),
-              icon: const Icon(
-                Icons.clear,
-                color: Colors.white,
+              icon: const Icon(Icons.clear, color: Colors.white),
+            ),
+        ],
+      ),
+      body: Stack(
+        alignment: AlignmentDirectional.bottomStart,
+        children: [
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
+          ),
+          if (_routes == null)
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple[900],
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed:
+                      () => showTruckProfileDialog(context, _truckProfile),
+                  icon: Icon(Icons.settings),
+                  color: Colors.white,
+                ),
               ),
             ),
         ],
       ),
-      body: Stack(alignment: AlignmentDirectional.bottomStart, children: [
-        GemMap(
-          key: ValueKey("GemMap"),
-          onMapCreated: _onMapCreated,
-          appAuthorization: projectApiToken,
-        ),
-        if (_routes == null)
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.deepPurple[900],
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () => showTruckProfileDialog(context, _truckProfile),
-                icon: Icon(Icons.settings),
-                color: Colors.white,
-              ),
-            ),
-          )
-      ]),
     );
   }
 
@@ -127,12 +121,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark =
-        Landmark.withLatLng(latitude: 48.87126, longitude: 2.33787);
+    final departureLandmark = Landmark.withLatLng(
+      latitude: 48.87126,
+      longitude: 2.33787,
+    );
 
     // Define the destination.
-    final destinationLandmark =
-        Landmark.withLatLng(latitude: 51.4739, longitude: -0.0302);
+    final destinationLandmark = Landmark.withLatLng(
+      latitude: 51.4739,
+      longitude: -0.0302,
+    );
 
     // Define the route preferences with current truck profile.
     final routePreferences = RoutePreferences(truckProfile: _truckProfile);
@@ -144,30 +142,35 @@ class _MyHomePageState extends State<MyHomePage> {
     // err is an error enum, results is a list of routes.
 
     _routingHandler = RoutingService.calculateRoute(
-        [departureLandmark, destinationLandmark], routePreferences,
-        (err, routes) {
-      // If the route calculation is finished, we don't have a progress listener anymore.
-      _routingHandler = null;
-      ScaffoldMessenger.of(context).clearSnackBars();
+      [departureLandmark, destinationLandmark],
+      routePreferences,
+      (err, routes) {
+        // If the route calculation is finished, we don't have a progress listener anymore.
+        _routingHandler = null;
+        ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there aren't any errors, we display the routes.
-      if (err == GemError.success) {
-        // Get the routes collection from map preferences.
-        final routesMap = _mapController.preferences.routes;
+        // If there aren't any errors, we display the routes.
+        if (err == GemError.success) {
+          // Get the routes collection from map preferences.
+          final routesMap = _mapController.preferences.routes;
 
-        // Display the routes on map.
-        for (final route in routes) {
-          routesMap.add(route, route == routes.first,
-              label: route.getMapLabel());
+          // Display the routes on map.
+          for (final route in routes) {
+            routesMap.add(
+              route,
+              route == routes.first,
+              label: route.getMapLabel(),
+            );
+          }
+
+          // Center the camera on routes.
+          _mapController.centerOnRoutes(routes: routes);
+          setState(() {
+            _routes = routes;
+          });
         }
-
-        // Center the camera on routes.
-        _mapController.centerOnRoutes(routes: routes);
-        setState(() {
-          _routes = routes;
-        });
-      }
-    });
+      },
+    );
 
     setState(() {});
   }
@@ -210,12 +213,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: duration,
-    );
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
+    final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -224,7 +227,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+    final totalDistance =
+        getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;

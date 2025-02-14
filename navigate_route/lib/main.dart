@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -77,8 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text("Navigate Route", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Navigate Route",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           if (!_isNavigationActive && _areRoutesBuilt)
@@ -89,63 +88,58 @@ class _MyHomePageState extends State<MyHomePage> {
           if (_isNavigationActive)
             IconButton(
               onPressed: _stopNavigation,
-              icon: const Icon(
-                Icons.stop,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.stop, color: Colors.white),
             ),
           if (!_areRoutesBuilt)
             IconButton(
               onPressed: () => _onBuildRouteButtonPressed(context),
-              icon: const Icon(
-                Icons.route,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.route, color: Colors.white),
             ),
           if (!_isNavigationActive)
             IconButton(
-                onPressed: _onFollowPositionButtonPressed,
-                icon: const Icon(
-                  Icons.location_searching_sharp,
-                  color: Colors.white,
-                ))
+              onPressed: _onFollowPositionButtonPressed,
+              icon: const Icon(
+                Icons.location_searching_sharp,
+                color: Colors.white,
+              ),
+            ),
         ],
       ),
-      body: Stack(children: [
-        GemMap(
-          key: ValueKey("GemMap"),
-          onMapCreated: _onMapCreated,
-          appAuthorization: projectApiToken,
-        ),
-        if (_isNavigationActive)
-          Positioned(
-            top: 10,
-            left: 10,
-            child: Column(children: [
-              NavigationInstructionPanel(
-                instruction: currentInstruction,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              FollowPositionButton(
-                onTap: () => _mapController.startFollowingPosition(),
-              ),
-            ]),
+      body: Stack(
+        children: [
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
           ),
-        if (_isNavigationActive)
-          Positioned(
-            bottom: MediaQuery.of(context).padding.bottom + 10,
-            left: 0,
-            child: NavigationBottomPanel(
-              remainingDistance:
-                  currentInstruction.getFormattedRemainingDistance(),
-              remainingDuration:
-                  currentInstruction.getFormattedRemainingDuration(),
-              eta: currentInstruction.getFormattedETA(),
+          if (_isNavigationActive)
+            Positioned(
+              top: 10,
+              left: 10,
+              child: Column(
+                children: [
+                  NavigationInstructionPanel(instruction: currentInstruction),
+                  const SizedBox(height: 10),
+                  FollowPositionButton(
+                    onTap: () => _mapController.startFollowingPosition(),
+                  ),
+                ],
+              ),
             ),
-          ),
-      ]),
+          if (_isNavigationActive)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 10,
+              left: 0,
+              child: NavigationBottomPanel(
+                remainingDistance:
+                    currentInstruction.getFormattedRemainingDistance(),
+                remainingDuration:
+                    currentInstruction.getFormattedRemainingDuration(),
+                eta: currentInstruction.getFormattedETA(),
+              ),
+            ),
+        ],
+      ),
       resizeToAvoidBottomInset: false,
     );
   }
@@ -158,9 +152,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     if (_currentLocation == null) {
-      _showSnackBar(context,
-          message: 'Current location is needed to compute the route.',
-          duration: const Duration(seconds: 3));
+      _showSnackBar(
+        context,
+        message: 'Current location is needed to compute the route.',
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
 
@@ -168,8 +164,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final departureLandmark = Landmark.withCoordinates(_currentLocation!);
 
     // Define the destination.
-    final destinationLandmark =
-        Landmark.withLatLng(latitude: 52.51614, longitude: 13.37748);
+    final destinationLandmark = Landmark.withLatLng(
+      latitude: 52.51614,
+      longitude: 13.37748,
+    );
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
@@ -179,37 +177,43 @@ class _MyHomePageState extends State<MyHomePage> {
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
     _routingHandler = RoutingService.calculateRoute(
-        [departureLandmark, destinationLandmark], routePreferences,
-        (err, routes) {
-      // If the route calculation is finished, we don't have a progress listener anymore.
-      _routingHandler = null;
+      [departureLandmark, destinationLandmark],
+      routePreferences,
+      (err, routes) {
+        // If the route calculation is finished, we don't have a progress listener anymore.
+        _routingHandler = null;
 
-      ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).clearSnackBars();
 
-      if (err == GemError.routeTooLong) {
-        print(
-            'The destination is too far from your current location. Change the coordinates of the destination.');
-        return;
-      }
-
-      // If there aren't any errors, we display the routes.
-      if (err == GemError.success) {
-        // Get the routes collection from map preferences.
-        final routesMap = _mapController.preferences.routes;
-
-        // Display the routes on map.
-        for (final route in routes) {
-          routesMap.add(route, route == routes.first,
-              label: route.getMapLabel());
+        if (err == GemError.routeTooLong) {
+          print(
+            'The destination is too far from your current location. Change the coordinates of the destination.',
+          );
+          return;
         }
 
-        // Center the camera on routes.
-        _mapController.centerOnRoutes(routes: routes);
-        setState(() {
-          _areRoutesBuilt = true;
-        });
-      }
-    });
+        // If there aren't any errors, we display the routes.
+        if (err == GemError.success) {
+          // Get the routes collection from map preferences.
+          final routesMap = _mapController.preferences.routes;
+
+          // Display the routes on map.
+          for (final route in routes) {
+            routesMap.add(
+              route,
+              route == routes.first,
+              label: route.getMapLabel(),
+            );
+          }
+
+          // Center the camera on routes.
+          _mapController.centerOnRoutes(routes: routes);
+          setState(() {
+            _areRoutesBuilt = true;
+          });
+        }
+      },
+    );
   }
 
   void _startNavigation() {
@@ -303,22 +307,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished or if current location is not available.
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: duration,
-    );
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
+    final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 
 class FollowPositionButton extends StatelessWidget {
-  const FollowPositionButton({
-    super.key,
-    required this.onTap,
-  });
+  const FollowPositionButton({super.key, required this.onTap});
 
   final VoidCallback onTap;
 
@@ -334,7 +335,7 @@ class FollowPositionButton extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(20)),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
+              color: Colors.grey.withValues(alpha: 0.5),
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),
@@ -348,10 +349,11 @@ class FollowPositionButton extends StatelessWidget {
             Text(
               'Recenter',
               style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
-            )
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ),

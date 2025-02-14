@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'dart:async';
 
@@ -34,26 +31,24 @@ class _WhatIsNearbyPageState extends State<WhatIsNearbyPage> {
         backgroundColor: Colors.deepPurple[900],
       ),
       body: FutureBuilder(
-          future: _getNearbyLocations(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData || snapshot.data == null) {
-              return const Center(
-                child: CircularProgressIndicator(),
+        future: _getNearbyLocations(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return ListView.separated(
+            itemBuilder: (contex, index) {
+              return NearbyItem(
+                landmark: snapshot.data!.elementAt(index),
+                currentPosition: widget.position,
               );
-            }
-            return ListView.separated(
-                itemBuilder: (contex, index) {
-                  return NearbyItem(
-                    landmark: snapshot.data!.elementAt(index),
-                    currentPosition: widget.position,
-                  );
-                },
-                separatorBuilder: (context, index) => const Divider(
-                      indent: 0,
-                      height: 0,
-                    ),
-                itemCount: snapshot.data!.length);
-          }),
+            },
+            separatorBuilder:
+                (context, index) => const Divider(indent: 0, height: 0),
+            itemCount: snapshot.data!.length,
+          );
+        },
+      ),
     );
   }
 
@@ -62,15 +57,20 @@ class _WhatIsNearbyPageState extends State<WhatIsNearbyPage> {
     final preferences = SearchPreferences(searchAddresses: false);
     final genericCategories = GenericCategories.categories;
     for (final category in genericCategories) {
-      preferences.landmarks
-          .addStoreCategoryId(category.landmarkStoreId, category.id);
+      preferences.landmarks.addStoreCategoryId(
+        category.landmarkStoreId,
+        category.id,
+      );
     }
     final completer = Completer<List<Landmark>?>();
     // Perform search around position with current position and all categories
     SearchService.searchAroundPosition(
-        preferences: preferences, widget.position, (err, result) {
-      completer.complete(result);
-    });
+      preferences: preferences,
+      widget.position,
+      (err, result) {
+        completer.complete(result);
+      },
+    );
     return completer.future;
   }
 }
@@ -78,8 +78,11 @@ class _WhatIsNearbyPageState extends State<WhatIsNearbyPage> {
 class NearbyItem extends StatefulWidget {
   final Landmark landmark;
   final Coordinates currentPosition;
-  const NearbyItem(
-      {super.key, required this.landmark, required this.currentPosition});
+  const NearbyItem({
+    super.key,
+    required this.landmark,
+    required this.currentPosition,
+  });
 
   @override
   State<NearbyItem> createState() => _NearbyItemState();
@@ -93,16 +96,22 @@ class _NearbyItemState extends State<NearbyItem> {
         widget.landmark.categories.first.name,
         overflow: TextOverflow.fade,
         style: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
         maxLines: 2,
       ),
       trailing: Text(
-        _convertDistance(widget.landmark.coordinates
-            .distance(widget.currentPosition)
-            .toInt()),
+        _convertDistance(
+          widget.landmark.coordinates.distance(widget.currentPosition).toInt(),
+        ),
         overflow: TextOverflow.fade,
         style: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
       ),
     );
   }

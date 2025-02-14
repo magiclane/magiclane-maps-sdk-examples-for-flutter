@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/routing.dart';
 
@@ -31,7 +28,8 @@ String convertDuration(int seconds) {
 extension RouteExtension on Route {
   String getMapLabel() {
     // Get total distance and total duration from time distance.
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+    final totalDistance =
+        getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
@@ -51,7 +49,8 @@ extension RouteExtension on Route {
     final arrivalTime = lastSegment.arrivalTime;
 
     // Calculate total walking distance (first and last segments are typically walking).
-    final totalWalkingDistance = firstSegment.timeDistance.totalDistanceM +
+    final totalWalkingDistance =
+        firstSegment.timeDistance.totalDistanceM +
         lastSegment.timeDistance.totalDistanceM;
 
     String formattedDepartureTime = "";

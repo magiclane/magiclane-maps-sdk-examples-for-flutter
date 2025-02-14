@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -71,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMapCreated(GemMapController controller) async {
     _mapController = controller;
 
-    _mapController.registerOnMapAngleUpdateCallback((angle) {
+    _mapController.registerMapAngleUpdateCallback((angle) {
       print("Gesture: onMapAngleUpdate $angle");
     });
 
@@ -81,10 +78,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _mapController.registerMoveCallback((point1, point2) {
       print(
-          'Gesture: onMove from (${point1.x} ${point1.y}) to (${point2.x} ${point2.y})');
+        'Gesture: onMove from (${point1.x} ${point1.y}) to (${point2.x} ${point2.y})',
+      );
     });
 
-    _mapController.registerOnLongPressCallback((point) {
+    _mapController.registerLongPressCallback((point) {
       print('Gesture: onLongPress $point');
     });
   }

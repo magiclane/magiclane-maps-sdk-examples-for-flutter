@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -24,9 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-        title: 'Multi Map Routing',
-        debugShowCheckedModeBanner: false,
-        home: MyHomePage());
+      title: 'Multi Map Routing',
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(),
+    );
   }
 }
 
@@ -56,33 +54,30 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Multi Map Routing',
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Multi Map Routing',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
-            onPressed: _removeRoutes,
-            icon: const Icon(
-              Icons.close,
-              color: Colors.white,
-            )),
+          onPressed: _removeRoutes,
+          icon: const Icon(Icons.close, color: Colors.white),
+        ),
         actions: [
           IconButton(
-              onPressed: () => _onBuildRouteButtonPressed(true),
-              icon: const Icon(
-                Icons.route,
-                color: Colors.white,
-              )),
+            onPressed: () => _onBuildRouteButtonPressed(true),
+            icon: const Icon(Icons.route, color: Colors.white),
+          ),
           IconButton(
-              onPressed: () => _onBuildRouteButtonPressed(false),
-              icon: const Icon(
-                Icons.route,
-                color: Colors.white,
-              ))
+            onPressed: () => _onBuildRouteButtonPressed(false),
+            icon: const Icon(Icons.route, color: Colors.white),
+          ),
         ],
       ),
       body: Column(
         children: [
           SizedBox(
-            height: (MediaQuery.of(context).size.height -
+            height:
+                (MediaQuery.of(context).size.height -
                     kToolbarHeight -
                     MediaQuery.of(context).padding.bottom -
                     MediaQuery.of(context).padding.top) /
@@ -97,16 +92,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           SizedBox(
-            height: (MediaQuery.of(context).size.height -
+            height:
+                (MediaQuery.of(context).size.height -
                     kToolbarHeight -
                     MediaQuery.of(context).padding.bottom -
                     MediaQuery.of(context).padding.top) /
                 2,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GemMap(
-                onMapCreated: _onMap2Created,
-              ),
+              child: GemMap(onMapCreated: _onMap2Created),
             ),
           ),
         ],
@@ -114,12 +108,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: duration,
-    );
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
+    final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -130,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController1 = controller;
   }
 
-// The callback for when map 2  is ready to use.
+  // The callback for when map 2  is ready to use.
   void _onMap2Created(GemMapController controller) {
     // Save controller for further usage.
     _mapController2 = controller;
@@ -140,23 +134,31 @@ class _MyHomePageState extends State<MyHomePage> {
     final waypoints = <Landmark>[];
     if (isFirstMap) {
       // Define the departure.
-      final departure =
-          Landmark.withLatLng(latitude: 37.77903, longitude: -122.41991);
+      final departure = Landmark.withLatLng(
+        latitude: 37.77903,
+        longitude: -122.41991,
+      );
 
       // Define the destination.
-      final destination =
-          Landmark.withLatLng(latitude: 37.33619, longitude: -121.89058);
+      final destination = Landmark.withLatLng(
+        latitude: 37.33619,
+        longitude: -121.89058,
+      );
 
       waypoints.add(departure);
       waypoints.add(destination);
     } else {
       // Define the departure.
-      final departure =
-          Landmark.withLatLng(latitude: 51.50732, longitude: -0.12765);
+      final departure = Landmark.withLatLng(
+        latitude: 51.50732,
+        longitude: -0.12765,
+      );
 
       // Define the destination.
-      final destination =
-          Landmark.withLatLng(latitude: 51.27483, longitude: 0.52316);
+      final destination = Landmark.withLatLng(
+        latitude: 51.27483,
+        longitude: 0.52316,
+      );
 
       waypoints.add(departure);
       waypoints.add(destination);
@@ -165,29 +167,37 @@ class _MyHomePageState extends State<MyHomePage> {
     // Define the route preferences.
     final routePreferences = RoutePreferences();
 
-    _showSnackBar(context,
-        message: isFirstMap
-            ? 'The first route is calculating.'
-            : 'The second route is calculating.');
+    _showSnackBar(
+      context,
+      message:
+          isFirstMap
+              ? 'The first route is calculating.'
+              : 'The second route is calculating.',
+    );
 
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
     if (isFirstMap) {
       _routingHandler1 = RoutingService.calculateRoute(
-          waypoints,
-          routePreferences,
-          (err, routes) => _onRouteBuiltFinished(err, routes, true));
+        waypoints,
+        routePreferences,
+        (err, routes) => _onRouteBuiltFinished(err, routes, true),
+      );
     } else {
       _routingHandler2 = RoutingService.calculateRoute(
-          waypoints,
-          routePreferences,
-          (err, routes) => _onRouteBuiltFinished(err, routes, false));
+        waypoints,
+        routePreferences,
+        (err, routes) => _onRouteBuiltFinished(err, routes, false),
+      );
     }
   }
 
   void _onRouteBuiltFinished(
-      GemError err, List<Route>? routes, bool isFirstMap) {
+    GemError err,
+    List<Route>? routes,
+    bool isFirstMap,
+  ) {
     // If the route calculation is finished, we don't have a progress listener anymore.
     if (isFirstMap) {
       _routingHandler1 = null;
@@ -206,10 +216,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // If there aren't any errors, we display the routes.
     if (err == GemError.success) {
       // Get the routes collection from map preferences.
-      final routesMap = (isFirstMap
-              ? _mapController1.preferences
-              : _mapController2.preferences)
-          .routes;
+      final routesMap =
+          (isFirstMap
+                  ? _mapController1.preferences
+                  : _mapController2.preferences)
+              .routes;
 
       // Display the routes on map.
       for (final route in routes!) {
@@ -247,7 +258,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+    final totalDistance =
+        getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;

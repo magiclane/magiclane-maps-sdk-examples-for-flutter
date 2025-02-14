@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:flutter/material.dart';
 
@@ -28,7 +25,7 @@ class NavigationBottomPanel extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withValues(alpha: 0.5),
             spreadRadius: 5,
             blurRadius: 7,
             offset: const Offset(0, 3),
@@ -45,17 +42,26 @@ class NavigationBottomPanel extends StatelessWidget {
           Text(
             remainingDuration,
             style: const TextStyle(
-                color: Colors.black, fontSize: 24, fontWeight: FontWeight.w500),
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           Text(
             eta,
             style: const TextStyle(
-                color: Colors.black, fontSize: 24, fontWeight: FontWeight.w500),
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           Text(
             remainingDistance,
             style: const TextStyle(
-                color: Colors.black, fontSize: 24, fontWeight: FontWeight.w500),
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),

@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 
@@ -22,23 +19,23 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          foregroundColor: Colors.white,
-          automaticallyImplyLeading: true,
-          title: const Text("Favorites list"),
-          backgroundColor: Colors.deepPurple[900],
-        ),
-        body: ListView.separated(
-            padding: EdgeInsets.zero,
-            itemCount: widget.landmarkList.length,
-            separatorBuilder: (context, index) => const Divider(
-                  indent: 50,
-                  height: 0,
-                ),
-            itemBuilder: (context, index) {
-              final lmk = widget.landmarkList.elementAt(index);
-              return FavoritesItem(landmark: lmk);
-            }));
+      appBar: AppBar(
+        foregroundColor: Colors.white,
+        automaticallyImplyLeading: true,
+        title: const Text("Favorites list"),
+        backgroundColor: Colors.deepPurple[900],
+      ),
+      body: ListView.separated(
+        padding: EdgeInsets.zero,
+        itemCount: widget.landmarkList.length,
+        separatorBuilder:
+            (context, index) => const Divider(indent: 50, height: 0),
+        itemBuilder: (context, index) {
+          final lmk = widget.landmarkList.elementAt(index);
+          return FavoritesItem(landmark: lmk);
+        },
+      ),
+    );
   }
 }
 
@@ -60,22 +57,29 @@ class _FavoritesItemState extends State<FavoritesItem> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         width: 50,
-        child: Image.memory(
-          widget.landmark.getImage(),
-        ),
+        child:
+            widget.landmark.getImage() != null
+                ? Image.memory(widget.landmark.getImage()!)
+                : SizedBox(),
       ),
       title: Text(
         widget.landmark.name,
         overflow: TextOverflow.fade,
         style: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
         maxLines: 2,
       ),
       subtitle: Text(
         '${widget.landmark.coordinates.latitude.toString()}, ${widget.landmark.coordinates.longitude.toString()}',
         overflow: TextOverflow.fade,
         style: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
         maxLines: 2,
       ),
     );

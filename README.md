@@ -1,9 +1,5 @@
 # Magic Lane - Maps SDK for Flutter demo applications
 
-Copyright (C) 2019-2024, Magic Lane B.V.  
-All rights reserved.  
-Contact: info@magiclane.com
-
 This repository holds a series of example projects using the **Magic Lane - Maps SDK for Flutter**. More information about the API can be found on the [Documentation](https://developer.magiclane.com/documentation) page.
 
 This set of individual, use-case based projects is designed to be cloned by developers for their own use.
@@ -56,4 +52,6 @@ This set of individual, use-case based projects is designed to be cloned by deve
 
 ## License
 
-Unless otherwise noted in `LICENSE` files for specific files or directories, the [LICENSE](LICENSE) in the root applies to all content in this repository.
+Copyright (C) 1995-2025 Magic Lane International B.V.
+
+Contact Magic Lane at info@magiclane.com for commercial licensing options.

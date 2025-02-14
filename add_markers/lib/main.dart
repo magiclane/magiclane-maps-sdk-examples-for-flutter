@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'dart:math';
 import 'dart:typed_data';
@@ -76,8 +73,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final listPngs = await loadPngs();
 
     // Save the image for the group icon.
-    final ByteData imageData =
-        await rootBundle.load('assets/pois/GroupIcon.png');
+    final ByteData imageData = await rootBundle.load(
+      'assets/pois/GroupIcon.png',
+    );
     final Uint8List imageBytes = imageData.buffer.asUint8List();
 
     Random random = Random();
@@ -100,14 +98,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
       // Choose a random POI icon for the marker and set the label size.
       final renderSettings = MarkerRenderSettings(
-          image: GemImage(
-              image: listPngs[random.nextInt(listPngs.length)],
-              format: ImageFileFormat.png),
-          labelTextSize: 2.0);
+        image: GemImage(
+          image: listPngs[random.nextInt(listPngs.length)],
+          format: ImageFileFormat.png,
+        ),
+        labelTextSize: 2.0,
+      );
 
       // Create a MarkerWithRenderSettings object.
-      final markerWithRenderSettings =
-          MarkerWithRenderSettings(marker, renderSettings);
+      final markerWithRenderSettings = MarkerWithRenderSettings(
+        marker,
+        renderSettings,
+      );
 
       // Add the marker to the list of markers.
       markers.add(markerWithRenderSettings);
@@ -127,8 +129,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // To delete the list you can use this method: _mapController.preferences.markers.clear();
 
     // Add the markers and the settings on the map.
-    _mapController.preferences.markers
-        .addList(list: markers, settings: settings, name: "Markers");
+    _mapController.preferences.markers.addList(
+      list: markers,
+      settings: settings,
+      name: "Markers",
+    );
   }
 
   // Load all the images from assets and transform them to Uint8List.
@@ -136,8 +141,9 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Uint8List> pngs = [];
     for (int i = 83; i < 183; ++i) {
       try {
-        final ByteData imageData =
-            await rootBundle.load('assets/pois/poi$i.png');
+        final ByteData imageData = await rootBundle.load(
+          'assets/pois/poi$i.png',
+        );
         final Uint8List png = imageData.buffer.asUint8List();
         pngs.add(png);
       } catch (e) {

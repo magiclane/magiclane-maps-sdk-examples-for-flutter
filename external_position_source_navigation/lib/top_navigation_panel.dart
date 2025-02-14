@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+
 // Copyright (C) 2019-2024, Magic Lane B.V.
 // All rights reserved.
 //
@@ -25,43 +30,59 @@ class NavigationInstructionPanel extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.2,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-          color: Colors.black, borderRadius: BorderRadius.circular(15)),
-      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          width: 100,
-          child: Image.memory(instruction.nextTurnDetails
-              .getAbstractGeometryImage(
-                  renderSettings: AbstractGeometryImageRenderSettings(),
-                  size: Size(200, 200))),
-        ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width - 150,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                instruction.getFormattedDistanceToNextTurn(),
-                textAlign: TextAlign.left,
-                style: const TextStyle(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            width: 100,
+            child:
+                instruction.nextTurnDetails.getAbstractGeometryImage(
+                          renderSettings: AbstractGeometryImageRenderSettings(),
+                          size: const Size(200, 200),
+                        ) !=
+                        null
+                    ? Image.memory(
+                      instruction.nextTurnDetails.getAbstractGeometryImage(
+                        renderSettings: AbstractGeometryImageRenderSettings(),
+                        size: const Size(200, 200),
+                      )!,
+                    )
+                    : const SizedBox(), // Empty widget
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width - 150,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  instruction.getFormattedDistanceToNextTurn(),
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 25,
-                    fontWeight: FontWeight.w600),
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                instruction.nextStreetName,
-                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  instruction.nextStreetName,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
-                    fontWeight: FontWeight.w600),
-                overflow: TextOverflow.ellipsis,
-              )
-            ],
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }

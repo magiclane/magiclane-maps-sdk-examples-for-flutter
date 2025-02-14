@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -85,18 +82,12 @@ class _MyHomePageState extends State<MyHomePage> {
           if (_isSimulationActive)
             IconButton(
               onPressed: _stopSimulation,
-              icon: const Icon(
-                Icons.stop,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.stop, color: Colors.white),
             ),
           if (!_areRoutesBuilt)
             IconButton(
               onPressed: _importGPX,
-              icon: const Icon(
-                Icons.route,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.route, color: Colors.white),
             ),
         ],
       ),
@@ -137,7 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
       final imageBytes = await rootBundle.load('assets/recorded_route.gpx');
       final buffer = imageBytes.buffer;
       final pathData = buffer.asUint8List(
-          imageBytes.offsetInBytes, imageBytes.lengthInBytes);
+        imageBytes.offsetInBytes,
+        imageBytes.lengthInBytes,
+      );
 
       // Process GPX data using your existing method
       final gemPath = Path.create(data: pathData, format: PathFileFormat.gpx);
@@ -164,39 +157,42 @@ class _MyHomePageState extends State<MyHomePage> {
     print("GPX Landmarklist size: ${landmarkList.length}");
 
     // Define the route preferences.
-    final routePreferences =
-        RoutePreferences(transportMode: RouteTransportMode.bicycle);
+    final routePreferences = RoutePreferences(
+      transportMode: RouteTransportMode.bicycle,
+    );
 
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
-    RoutingService.calculateRoute(
-      landmarkList,
-      routePreferences,
-      (err, routes) {
-        ScaffoldMessenger.of(context).clearSnackBars();
+    RoutingService.calculateRoute(landmarkList, routePreferences, (
+      err,
+      routes,
+    ) {
+      ScaffoldMessenger.of(context).clearSnackBars();
 
-        // If there aren't any errors, we display the routes.
-        if (err == GemError.success) {
-          // Get the routes collection from map preferences.
-          final routesMap = _mapController.preferences.routes;
+      // If there aren't any errors, we display the routes.
+      if (err == GemError.success) {
+        // Get the routes collection from map preferences.
+        final routesMap = _mapController.preferences.routes;
 
-          // Display the routes on map.
-          for (final route in routes) {
-            // The first route is the main route
-            routesMap.add(route, route == routes.first,
-                label: route.getMapLabel());
-          }
-
-          // Center the camera on routes.
-          _mapController.centerOnRoutes(routes: routes);
-
-          setState(() {
-            _areRoutesBuilt = true;
-          });
+        // Display the routes on map.
+        for (final route in routes) {
+          // The first route is the main route
+          routesMap.add(
+            route,
+            route == routes.first,
+            label: route.getMapLabel(),
+          );
         }
-      },
-    );
+
+        // Center the camera on routes.
+        _mapController.centerOnRoutes(routes: routes);
+
+        setState(() {
+          _areRoutesBuilt = true;
+        });
+      }
+    });
     _isGpxDataLoaded = true;
   }
 
@@ -207,8 +203,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final routes = _mapController.preferences.routes;
 
     // Start navigation one the main route.
-    _navigationHandler = NavigationService.startSimulation(routes.mainRoute,
-        (eventType, instruction) {
+    _navigationHandler = NavigationService.startSimulation(routes.mainRoute, (
+      eventType,
+      instruction,
+    ) {
       // Navigation instruction callback.
     }, speedMultiplier: 2);
 
@@ -234,12 +232,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: duration,
-    );
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
+    final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -248,7 +246,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+    final totalDistance =
+        getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;

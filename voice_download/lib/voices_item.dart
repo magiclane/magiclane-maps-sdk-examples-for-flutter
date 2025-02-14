@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -44,12 +41,14 @@ class _VoicesItemState extends State<VoicesItem> {
       final errCode = widget.voice.pauseDownload();
       if (errCode != GemError.success) {
         print(
-            "Download pause for item ${widget.voice.id} failed with code $errCode");
+          "Download pause for item ${widget.voice.id} failed with code $errCode",
+        );
         return;
       }
 
-      Future<dynamic>.delayed(const Duration(milliseconds: 500))
-          .then((value) => _downloadVoice());
+      Future<dynamic>.delayed(
+        const Duration(milliseconds: 500),
+      ).then((value) => _downloadVoice());
     }
   }
 
@@ -74,47 +73,46 @@ class _VoicesItemState extends State<VoicesItem> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               width: 50,
-              child: Image.memory(_getCountryImage(widget.voice)),
+              child:
+                  _getCountryImage(widget.voice) != null
+                      ? Image.memory(_getCountryImage(widget.voice)!)
+                      : SizedBox(),
             ),
             title: Text(
               '${widget.voice.name} (${(widget.voice.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB)',
               style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Text(
               '${widget.voice.contentParameters[3].value as String} - ${widget.voice.contentParameters[1].value as String}',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              ),
+              style: const TextStyle(color: Colors.black, fontSize: 16),
             ),
             trailing: SizedBox.square(
-                dimension: 50,
-                child: Builder(
-                  builder: (context) {
-                    if (_isDownloaded == true) {
-                      return const Icon(
-                        Icons.download_done,
-                        color: Colors.green,
-                      );
-                    } else if (_isDownloadingOrWaiting()) {
-                      return SizedBox(
-                        height: 10,
-                        child: CircularProgressIndicator(
-                          value: _downloadProgress / 100,
-                          color: Colors.blue,
-                          backgroundColor: Colors.grey.shade300,
-                        ),
-                      );
-                    } else if (widget.voice.status ==
-                        ContentStoreItemStatus.paused) {
-                      return const Icon(Icons.pause);
-                    }
-                    return const SizedBox.shrink();
-                  },
-                )),
+              dimension: 50,
+              child: Builder(
+                builder: (context) {
+                  if (_isDownloaded == true) {
+                    return const Icon(Icons.download_done, color: Colors.green);
+                  } else if (_isDownloadingOrWaiting()) {
+                    return SizedBox(
+                      height: 10,
+                      child: CircularProgressIndicator(
+                        value: _downloadProgress / 100,
+                        color: Colors.blue,
+                        backgroundColor: Colors.grey.shade300,
+                      ),
+                    );
+                  } else if (widget.voice.status ==
+                      ContentStoreItemStatus.paused) {
+                    return const Icon(Icons.pause);
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
           ),
         ),
         if (_isDownloaded)
@@ -128,10 +126,12 @@ class _VoicesItemState extends State<VoicesItem> {
   }
 
   // Method that returns the image of the country
-  Uint8List _getCountryImage(ContentStoreItem voice) {
+  Uint8List? _getCountryImage(ContentStoreItem voice) {
     final countryCodes = voice.countryCodes;
     final countryImage = MapDetails.getCountryFlag(
-        countryCode: countryCodes[0], size: const Size(100, 100));
+      countryCode: countryCodes[0],
+      size: const Size(100, 100),
+    );
     return countryImage;
   }
 
@@ -148,9 +148,11 @@ class _VoicesItemState extends State<VoicesItem> {
 
   void _downloadVoice() {
     // Download the voice.
-    widget.voice.asyncDownload(_onVoiceDownloadFinished,
-        onProgressCallback: _onVoiceDownloadProgressUpdated,
-        allowChargedNetworks: true);
+    widget.voice.asyncDownload(
+      _onVoiceDownloadFinished,
+      onProgressCallback: _onVoiceDownloadProgressUpdated,
+      allowChargedNetworks: true,
+    );
   }
 
   void _pauseDownload() {

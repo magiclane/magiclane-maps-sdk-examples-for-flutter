@@ -1,9 +1,7 @@
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-//  RunnerUITests.m
-//  RunnerUITests
-//
-//  Created by user on 12.08.2024.
-//
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 #import <XCTest/XCTest.h>
 

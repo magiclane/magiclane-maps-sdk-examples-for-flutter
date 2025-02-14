@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -55,23 +52,28 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title:
-            const Text('Map Selection', style: TextStyle(color: Colors.white)),
-      ),
-      body: Stack(children: [
-        GemMap(
-          key: ValueKey("GemMap"),
-          onMapCreated: _onMapCreated,
-          appAuthorization: projectApiToken,
+        title: const Text(
+          'Map Selection',
+          style: TextStyle(color: Colors.white),
         ),
-        if (_focusedLandmark != null)
-          Align(
+      ),
+      body: Stack(
+        children: [
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
+          ),
+          if (_focusedLandmark != null)
+            Align(
               alignment: Alignment.bottomCenter,
               child: LandmarkPanel(
                 onCancelTap: _onCancelLandmarkPanelTap,
                 landmark: _focusedLandmark!,
-              ))
-      ]),
+              ),
+            ),
+        ],
+      ),
       resizeToAvoidBottomInset: false,
     );
   }

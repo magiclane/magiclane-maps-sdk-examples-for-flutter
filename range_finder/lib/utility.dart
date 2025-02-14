@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+
 // Utility function to convert the seconds duration into a suitable format.
 String convertDuration(int seconds) {
   int hours = seconds ~/ 3600; // Number of whole hours

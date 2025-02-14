@@ -1,0 +1,76 @@
+# SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+
+version = 1
+
+SPDX-PackageName = "Maps SDK Examples for Flutter"
+SPDX-PackageSupplier = "Magic Lane International B.V."
+SPDX-PackageDownloadLocation = "https://issuetracker.magiclane.com/magiclane/maps-sdk-examples-for-flutter"
+SPDX-PackageComment = "Example projects using the Magic Lane - Maps SDK Examples for Flutter"
+
+[[annotations]]
+path = [
+    "**/README.md",
+    "CODE_OF_CONDUCT.md",
+    "README.md",
+    ".git-blame-ignore-revs",
+    "**/.gitignore",
+    ".gitreview",
+    ".gitmodules",
+    "*.code-workspace",
+    "REUSE.toml"
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "1995-2025 Magic Lane International B.V. <info@magiclane.com>"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [
+    "**/.metadata",
+    "**/analysis_options.yaml",
+    "**/build.gradle",
+    "**/settings.gradle",
+    "**/local.properties",
+    "**/app/src/main/res/**",
+    "**.png",
+    "**.gpx",
+    "**.glb",
+    "**.cmap",
+    "**.map",
+    "**.style",
+    "**.json",
+    "**/.xcassets/**",
+    "**.xcodeproj/**",
+    "**.lproj/**",
+    "**.plist",
+    "**.xcconfig",
+    "**.xcworkspace/**",
+    "**.xcworkspacedata",
+    "**.entitlements",
+    "**.ico",
+    "**.manifest",
+    "**/Podfile*",
+    "**/pubspec*",
+    "**/Runner.rc",
+    "**/generated_plugins*",
+    "**/generated_plugin_registrant*",
+    "**/GeneratedPluginRegistrant*",
+    "**/index.html"
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "1995-2025 Magic Lane International B.V. <info@magiclane.com>"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [
+    "**/gradle/**",
+    "**/gradlew",
+    "**/gradlew.bat",
+    "**/gradle.properties"
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2015-2021 the original authors"
+SPDX-License-Identifier = "Apache-2.0"
+

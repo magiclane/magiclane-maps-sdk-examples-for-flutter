@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -23,9 +20,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-        title: 'Display Current Street Name',
-        debugShowCheckedModeBanner: false,
-        home: MyHomePage());
+      title: 'Display Current Street Name',
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(),
+    );
   }
 }
 
@@ -51,26 +49,32 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Display Cursor Street Name',
-            style: TextStyle(color: Colors.white)),
-      ),
-      body: Stack(alignment: AlignmentDirectional.bottomCenter, children: [
-        GemMap(
-          key: ValueKey("GemMap"),
-          onMapCreated: _onMapCreated,
-          appAuthorization: projectApiToken,
+        title: const Text(
+          'Display Cursor Street Name',
+          style: TextStyle(color: Colors.white),
         ),
-        if (_currentStreetName != "")
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 25.0),
-            child: Container(
+      ),
+      body: Stack(
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
+          ),
+          if (_currentStreetName != "")
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 25.0),
+              child: Container(
                 color: Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(_currentStreetName),
-                )),
-          ),
-      ]),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -80,7 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController = controller;
 
     _mapController.centerOnCoordinates(
-        Coordinates(latitude: 45.472358, longitude: 9.184945));
+      Coordinates(latitude: 45.472358, longitude: 9.184945),
+    );
 
     // Enable cursor to render on screen
     _mapController.preferences.enableCursor = true;

@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 
@@ -32,31 +29,35 @@ class LandmarkPanel extends StatelessWidget {
           height: 70,
           width: 70,
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Image.memory(
-            landmark.getImage(),
-          ),
+          child:
+              landmark.getImage() != null
+                  ? Image.memory(landmark.getImage()!)
+                  : SizedBox(),
         ),
         title: Text(
           landmark.name,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         subtitle: Text(
           landmark.categories.isNotEmpty ? landmark.categories.first.name : '',
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w800),
+            color: Colors.black,
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         trailing: IconButton(
           padding: EdgeInsets.zero,
           onPressed: onCancelTap,
-          icon: const Icon(
-            Icons.cancel,
-            size: 30,
-          ),
+          icon: const Icon(Icons.cancel, size: 30),
         ),
       ),
     );

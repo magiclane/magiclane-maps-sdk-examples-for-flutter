@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
@@ -27,10 +24,11 @@ class ForecastDailyPage extends StatelessWidget {
               itemCount: locationForecasts.first.forecast.length,
               itemBuilder: (context, index) {
                 return WeatherForecastDailyItem(
-                    condition: locationForecasts.first.forecast[index]);
+                  condition: locationForecasts.first.forecast[index],
+                );
               },
             ),
-          )
+          ),
         ],
       ),
     );
@@ -58,19 +56,19 @@ class WeatherForecastDailyItem extends StatelessWidget {
             ],
           ),
           FutureBuilder(
-              future: ImageHandler.decodeImageData(condition.image,
-                  width: 30, height: 30), // Decodes the image data.
-              builder: (context, snapshot) {
-                if (snapshot.data != null) {
-                  return RawImage(image: snapshot.data!);
-                }
-                return Container();
-              }),
-          Row(
-            children: [
-              Text(condition.getFormattedTemperature()),
-            ],
+            future: ImageHandler.decodeImageData(
+              condition.image,
+              width: 30,
+              height: 30,
+            ), // Decodes the image data.
+            builder: (context, snapshot) {
+              if (snapshot.data != null) {
+                return RawImage(image: snapshot.data!);
+              }
+              return Container();
+            },
           ),
+          Row(children: [Text(condition.getFormattedTemperature())]),
         ],
       ),
     );
@@ -85,7 +83,7 @@ class WeatherForecastDailyItem extends StatelessWidget {
       'Thursday',
       'Friday',
       'Saturday',
-      'Sunday'
+      'Sunday',
     ];
     return weekdays[weekday - 1];
   }

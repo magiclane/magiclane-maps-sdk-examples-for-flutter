@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
@@ -49,27 +46,24 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Weather Forecast',
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Weather Forecast',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
-              onPressed: () => _onWeatherForecastTap(context),
-              icon: Icon(
-                Icons.sunny,
-                color: Colors.white,
-              ))
+            onPressed: () => _onWeatherForecastTap(context),
+            icon: Icon(Icons.sunny, color: Colors.white),
+          ),
         ],
       ),
-      body: GemMap(
-        key: ValueKey("GemMap"),
-        appAuthorization: projectApiToken,
-      ),
+      body: GemMap(key: ValueKey("GemMap"), appAuthorization: projectApiToken),
     );
   }
 
   void _onWeatherForecastTap(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute<dynamic>(
-      builder: (context) => WeatherForecastPage(),
-    ));
+    Navigator.of(context).push(
+      MaterialPageRoute<dynamic>(builder: (context) => WeatherForecastPage()),
+    );
   }
 }

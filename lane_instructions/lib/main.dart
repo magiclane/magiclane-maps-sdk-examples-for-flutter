@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -64,8 +61,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Lane Instructions",
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Lane Instructions",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           if (!_isSimulationActive && _areRoutesBuilt)
@@ -76,45 +75,58 @@ class _MyHomePageState extends State<MyHomePage> {
           if (_isSimulationActive)
             IconButton(
               onPressed: _stopSimulation,
-              icon: const Icon(
-                Icons.stop,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.stop, color: Colors.white),
             ),
           if (!_areRoutesBuilt)
             IconButton(
               onPressed: () => _onBuildRouteButtonPressed(context),
-              icon: const Icon(
-                Icons.route,
-                color: Colors.white,
+              icon: const Icon(Icons.route, color: Colors.white),
+            ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
+          ),
+          if (_isSimulationActive)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).padding.bottom + 40,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  // Call getLaneImage on instruction
+                  child:
+                      currentInstruction.getLaneImage(
+                                size: Size(100, 50),
+                                renderSettings: LaneImageRenderSettings(
+                                  backgroundColor: Colors.white,
+                                  activeColor: Colors.green,
+                                  inactiveColor: Colors.black,
+                                ),
+                              ) !=
+                              null
+                          ? Image.memory(
+                            currentInstruction.getLaneImage(
+                              size: Size(100, 50),
+                              renderSettings: LaneImageRenderSettings(
+                                backgroundColor: Colors.white,
+                                activeColor: Colors.green,
+                                inactiveColor: Colors.black,
+                              ),
+                            )!,
+                          )
+                          : const SizedBox(),
+                ),
               ),
             ),
         ],
       ),
-      body: Stack(children: [
-        GemMap(
-          key: ValueKey("GemMap"),
-          onMapCreated: _onMapCreated,
-          appAuthorization: projectApiToken,
-        ),
-        if (_isSimulationActive)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).padding.bottom + 40),
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  // Call getLaneImage on instruction
-                  child: Image.memory(currentInstruction.getLaneImage(
-                      size: Size(100, 50),
-                      renderSettings: LaneImageRenderSettings(
-                          backgroundColor: Colors.white,
-                          activeColor: Colors.green,
-                          inactiveColor: Colors.black)))),
-            ),
-          ),
-      ]),
       resizeToAvoidBottomInset: false,
     );
   }
@@ -123,15 +135,19 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController = controller;
   }
 
-// Custom method for calling calculate route and displaying the results.
+  // Custom method for calling calculate route and displaying the results.
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark =
-        Landmark.withLatLng(latitude: 45.649572, longitude: 25.628333);
+    final departureLandmark = Landmark.withLatLng(
+      latitude: 45.649572,
+      longitude: 25.628333,
+    );
 
     // Define the destination.
-    final destinationLandmark =
-        Landmark.withLatLng(latitude: 44.4379187, longitude: 26.0122374);
+    final destinationLandmark = Landmark.withLatLng(
+      latitude: 44.4379187,
+      longitude: 26.0122374,
+    );
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
@@ -141,31 +157,36 @@ class _MyHomePageState extends State<MyHomePage> {
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
     _routingHandler = RoutingService.calculateRoute(
-        [departureLandmark, destinationLandmark], routePreferences,
-        (err, routes) async {
-      // If the route calculation is finished, we don't have a progress listener anymore.
-      _routingHandler = null;
+      [departureLandmark, destinationLandmark],
+      routePreferences,
+      (err, routes) async {
+        // If the route calculation is finished, we don't have a progress listener anymore.
+        _routingHandler = null;
 
-      ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there aren't any errors, we display the routes.
-      if (err == GemError.success) {
-        // Get the routes collection from map preferences.
-        final routesMap = _mapController.preferences.routes;
+        // If there aren't any errors, we display the routes.
+        if (err == GemError.success) {
+          // Get the routes collection from map preferences.
+          final routesMap = _mapController.preferences.routes;
 
-        // Display the routes on map.
-        for (final route in routes) {
-          routesMap.add(route, route == routes.first,
-              label: route.getMapLabel());
+          // Display the routes on map.
+          for (final route in routes) {
+            routesMap.add(
+              route,
+              route == routes.first,
+              label: route.getMapLabel(),
+            );
+          }
+
+          // Center the camera on routes.
+          _mapController.centerOnRoutes(routes: routes);
         }
-
-        // Center the camera on routes.
-        _mapController.centerOnRoutes(routes: routes);
-      }
-      setState(() {
-        _areRoutesBuilt = true;
-      });
-    });
+        setState(() {
+          _areRoutesBuilt = true;
+        });
+      },
+    );
   }
 
   // Method for starting the simulation and following the position,
@@ -175,29 +196,33 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController.preferences.routes.clearAllButMainRoute();
 
     _navigationHandler = NavigationService.startSimulation(
-        routes.mainRoute, null, onNavigationInstruction: (instruction, events) {
-      setState(() {
-        _isSimulationActive = true;
-      });
-      currentInstruction = instruction;
-    }, onError: (error) {
-      // If the navigation has ended or if and error occurred while navigating, remove routes.
-      setState(() {
-        _isSimulationActive = false;
-        _cancelRoute();
-      });
+      routes.mainRoute,
+      null,
+      onNavigationInstruction: (instruction, events) {
+        setState(() {
+          _isSimulationActive = true;
+        });
+        currentInstruction = instruction;
+      },
+      onError: (error) {
+        // If the navigation has ended or if and error occurred while navigating, remove routes.
+        setState(() {
+          _isSimulationActive = false;
+          _cancelRoute();
+        });
 
-      if (error != GemError.cancel) {
-        _stopSimulation();
-      }
-      return;
-    });
+        if (error != GemError.cancel) {
+          _stopSimulation();
+        }
+        return;
+      },
+    );
 
     // Set the camera to follow position.
     _mapController.startFollowingPosition();
   }
 
-// Method for removing the routes from display,
+  // Method for removing the routes from display,
   void _cancelRoute() {
     // Remove the routes from map.
     _mapController.preferences.routes.clear();
@@ -213,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-// Method to stop the simulation and remove the displayed routes,
+  // Method to stop the simulation and remove the displayed routes,
   void _stopSimulation() {
     // Cancel the navigation.
     NavigationService.cancelNavigation(_navigationHandler!);
@@ -225,22 +250,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished,
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: duration,
-    );
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
+    final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 
 class FollowPositionButton extends StatelessWidget {
-  const FollowPositionButton({
-    super.key,
-    required this.onTap,
-  });
+  const FollowPositionButton({super.key, required this.onTap});
 
   final VoidCallback onTap;
 
@@ -256,7 +278,7 @@ class FollowPositionButton extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(20)),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
+              color: Colors.grey.withValues(alpha: 0.5),
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),
@@ -270,10 +292,11 @@ class FollowPositionButton extends StatelessWidget {
             Text(
               'Recenter',
               style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
-            )
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ),

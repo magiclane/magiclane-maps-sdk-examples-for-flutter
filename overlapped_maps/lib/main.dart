@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
@@ -48,21 +45,25 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Overlapped Maps',
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Overlapped Maps',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       // Stack maps
-      body: Stack(children: [
-        const GemMap(
-          key: ValueKey("GemMap"),
-          appAuthorization: projectApiToken,
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.4,
-          width: MediaQuery.of(context).size.width * 0.4,
-          child: const GemMap(),
-        ),
-      ]),
+      body: Stack(
+        children: [
+          const GemMap(
+            key: ValueKey("GemMap"),
+            appAuthorization: projectApiToken,
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.4,
+            width: MediaQuery.of(context).size.width * 0.4,
+            child: const GemMap(),
+          ),
+        ],
+      ),
     );
   }
 }

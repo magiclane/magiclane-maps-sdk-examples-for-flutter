@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
@@ -18,8 +15,11 @@ class ForecastNowPage extends StatelessWidget {
   /// The name of the landmark or location for which the weather forecast is displayed.
   final String landmarkName;
 
-  const ForecastNowPage(
-      {super.key, required this.condition, required this.landmarkName});
+  const ForecastNowPage({
+    super.key,
+    required this.condition,
+    required this.landmarkName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +33,18 @@ class ForecastNowPage extends StatelessWidget {
               height: 80,
               width: 80,
               child: FutureBuilder(
-                  future: ImageHandler.decodeImageData(
-                      condition.forecast.first.image,
-                      width: 30,
-                      height:
-                          30), // Decodes the image data for the weather icon.
-                  builder: (context, snapshot) {
-                    if (snapshot.data != null) {
-                      return RawImage(image: snapshot.data!);
-                    }
-                    return Container();
-                  }),
+                future: ImageHandler.decodeImageData(
+                  condition.forecast.first.image,
+                  width: 30,
+                  height: 30,
+                ), // Decodes the image data for the weather icon.
+                builder: (context, snapshot) {
+                  if (snapshot.data != null) {
+                    return RawImage(image: snapshot.data!);
+                  }
+                  return Container();
+                },
+              ),
             ),
             Text(condition.forecast.first.description),
           ],
@@ -56,10 +57,7 @@ class ForecastNowPage extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    Text(
-                      landmarkName,
-                      style: TextStyle(fontSize: 20.0),
-                    ),
+                    Text(landmarkName, style: TextStyle(fontSize: 20.0)),
                     Text("Updated at ${condition.getFormattedHour()}"),
                   ],
                 ),
@@ -72,10 +70,11 @@ class ForecastNowPage extends StatelessWidget {
                         Text(param.name),
                         Row(
                           children: [
-                            Text(param.type == "Sunrise" ||
-                                    param.type == "Sunset"
-                                ? param.getFormattedHour()
-                                : param.value.toString()),
+                            Text(
+                              param.type == "Sunrise" || param.type == "Sunset"
+                                  ? param.getFormattedHour()
+                                  : param.value.toString(),
+                            ),
                             Text(param.unit),
                           ],
                         ),

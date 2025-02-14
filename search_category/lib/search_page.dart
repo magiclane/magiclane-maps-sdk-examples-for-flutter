@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // ignore_for_file: must_be_immutable
 
@@ -42,16 +39,18 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: _onLeadingPressed,
-            icon: const Icon(CupertinoIcons.arrow_left)),
+          onPressed: _onLeadingPressed,
+          icon: const Icon(CupertinoIcons.arrow_left),
+        ),
         title: const Text("Search Category"),
         backgroundColor: Colors.deepPurple[900],
         foregroundColor: Colors.white,
         actions: [
           if (landmarks.isEmpty)
             IconButton(
-                onPressed: () => _onSubmitted(_textController.text),
-                icon: const Icon(Icons.search))
+              onPressed: () => _onSubmitted(_textController.text),
+              icon: const Icon(Icons.search),
+            ),
         ],
       ),
       body: Column(
@@ -66,8 +65,10 @@ class _SearchPageState extends State<SearchPage> {
                   hintText: 'Enter text',
                   hintStyle: TextStyle(color: Colors.black),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.deepPurple, width: 2.0),
+                    borderSide: BorderSide(
+                      color: Colors.deepPurple,
+                      width: 2.0,
+                    ),
                   ),
                 ),
               ),
@@ -78,16 +79,15 @@ class _SearchPageState extends State<SearchPage> {
                 padding: EdgeInsets.zero,
                 itemCount: widget.categories.length,
                 controller: ScrollController(),
-                separatorBuilder: (context, index) => const Divider(
-                  indent: 50,
-                  height: 0,
-                ),
+                separatorBuilder:
+                    (context, index) => const Divider(indent: 50, height: 0),
                 itemBuilder: (context, index) {
                   return CategoryItem(
                     onTap: () => _onCategoryTap(index),
                     category: widget.categories[index],
-                    categoryIcon:
-                        widget.categories[index].getImage(size: Size(200, 200)),
+                    categoryIcon: widget.categories[index].getImage(
+                      size: Size(200, 200),
+                    ),
                   );
                 },
               ),
@@ -98,15 +98,11 @@ class _SearchPageState extends State<SearchPage> {
                 padding: EdgeInsets.zero,
                 itemCount: landmarks.length,
                 controller: ScrollController(),
-                separatorBuilder: (context, index) => const Divider(
-                  indent: 50,
-                  height: 0,
-                ),
+                separatorBuilder:
+                    (context, index) => const Divider(indent: 50, height: 0),
                 itemBuilder: (context, index) {
                   final lmk = landmarks.elementAt(index);
-                  return SearchResultItem(
-                    landmark: lmk,
-                  );
+                  return SearchResultItem(landmark: lmk);
                 },
               ),
             ),
@@ -128,15 +124,18 @@ class _SearchPageState extends State<SearchPage> {
   void _onSubmitted(String text) {
     // Setting the preferences so the results are only from the selected categories
     SearchPreferences preferences = SearchPreferences(
-        maxMatches: 40,
-        allowFuzzyResults: false,
-        searchMapPOIs: true,
-        searchAddresses: false);
+      maxMatches: 40,
+      allowFuzzyResults: false,
+      searchMapPOIs: true,
+      searchAddresses: false,
+    );
 
     // Adding in search preferences the selected categories
     for (final category in selectedCategories) {
-      preferences.landmarks
-          .addStoreCategoryId(category.landmarkStoreId, category.id);
+      preferences.landmarks.addStoreCategoryId(
+        category.landmarkStoreId,
+        category.id,
+      );
     }
 
     search(text, widget.coordinates, preferences);
@@ -145,23 +144,30 @@ class _SearchPageState extends State<SearchPage> {
   late Completer<List<Landmark>> completer;
 
   // Search method
-  Future<void> search(String text, Coordinates coordinates,
-      SearchPreferences preferences) async {
+  Future<void> search(
+    String text,
+    Coordinates coordinates,
+    SearchPreferences preferences,
+  ) async {
     completer = Completer<List<Landmark>>();
 
     // Calling the search around position SDK method.
     // (err, results) - is a callback function that calls when the computing is done.
     // err is an error code, results is a list of landmarks
-    SearchService.searchAroundPosition(coordinates,
-        preferences: preferences, textFilter: text, (err, results) async {
-      // If there is an error or there aren't any results, the method will return an empty list.
-      if (err != GemError.success) {
-        completer.complete([]);
-        return;
-      }
+    SearchService.searchAroundPosition(
+      coordinates,
+      preferences: preferences,
+      textFilter: text,
+      (err, results) async {
+        // If there is an error or there aren't any results, the method will return an empty list.
+        if (err != GemError.success) {
+          completer.complete([]);
+          return;
+        }
 
-      if (!completer.isCompleted) completer.complete(results);
-    });
+        if (!completer.isCompleted) completer.complete(results);
+      },
+    );
 
     final result = await completer.future;
 
@@ -194,14 +200,15 @@ class _SearchPageState extends State<SearchPage> {
 // Class for the categories.
 class CategoryItem extends StatefulWidget {
   final LandmarkCategory category;
-  final Uint8List categoryIcon;
+  final Uint8List? categoryIcon;
   final VoidCallback onTap;
 
-  const CategoryItem(
-      {super.key,
-      required this.category,
-      required this.onTap,
-      required this.categoryIcon});
+  const CategoryItem({
+    super.key,
+    required this.category,
+    required this.onTap,
+    required this.categoryIcon,
+  });
 
   @override
   State<CategoryItem> createState() => _CategoryItemState();
@@ -213,32 +220,37 @@ class _CategoryItemState extends State<CategoryItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        onTap: () {
-          widget.onTap();
-          setState(() {
-            _isSelected = !_isSelected;
-          });
-        },
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          width: 50,
-          height: 50,
-          child: Image.memory(widget.categoryIcon),
+      onTap: () {
+        widget.onTap();
+        setState(() {
+          _isSelected = !_isSelected;
+        });
+      },
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        width: 50,
+        height: 50,
+        child:
+            widget.categoryIcon != null
+                ? Image.memory(widget.categoryIcon!)
+                : SizedBox(),
+      ),
+      title: Text(
+        widget.category.name,
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
         ),
-        title: Text(widget.category.name,
-            style: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w600)),
-        trailing: (_isSelected)
-            ? const SizedBox(
+      ),
+      trailing:
+          (_isSelected)
+              ? const SizedBox(
                 width: 50,
-                child: Icon(
-                  Icons.check,
-                  color: Colors.grey,
-                ),
+                child: Icon(Icons.check, color: Colors.grey),
               )
-            : null);
+              : null,
+    );
   }
 }
 
@@ -260,22 +272,29 @@ class _SearchResultItemState extends State<SearchResultItem> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         width: 50,
-        child: Image.memory(
-          widget.landmark.getImage(),
-        ),
+        child:
+            widget.landmark.getImage() != null
+                ? Image.memory(widget.landmark.getImage()!)
+                : SizedBox(),
       ),
       title: Text(
         widget.landmark.name,
         overflow: TextOverflow.fade,
         style: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
         maxLines: 2,
       ),
       subtitle: Text(
         widget.landmark.getFormattedDistance() + widget.landmark.getAddress(),
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
       ),
     );
   }
@@ -297,7 +316,8 @@ extension LandmarkExtension on Landmark {
 
     double distance =
         (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) /
-            1000) as double;
+                1000)
+            as double;
     formattedDistance = "${distance.toStringAsFixed(0)}km";
     return formattedDistance;
   }

@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 # vim:ts=4:sts=4:sw=4:et
 
-# Copyright (C) 2019-2024, Magic Lane B.V.
-# All rights reserved.
+# SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+# SPDX-License-Identifier: BSD-3-Clause
 #
-# This software is confidential and proprietary information of Magic Lane
-# ("Confidential Information"). You shall not disclose such Confidential
-# Information and shall use it only in accordance with the terms of the
-# license agreement you entered into with Magic Lane.
+# Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 declare -r PROGNAME=${0##*/}
 
@@ -47,6 +44,7 @@ function on_exit()
                 rm -rf "plugins/gem_kit"
             fi
             find . -type d -name ".gradle" -exec rm -rf {} +
+            find . -type d -name ".cxx" -exec rm -rf {} +
             popd &>/dev/null || error_msg "popd failed"
         done
     fi
@@ -248,6 +246,7 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
 		rm -rf "plugins/gem_kit"
 	fi
 	find . -type d -name ".gradle" -exec rm -rf {} +
+	find . -type d -name ".cxx" -exec rm -rf {} +
 
     popd &>/dev/null
 done

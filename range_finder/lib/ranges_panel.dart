@@ -1,10 +1,7 @@
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
+// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
+// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -21,11 +18,12 @@ class RangesPanel extends StatefulWidget {
   final Landmark landmark;
   final GemMapController mapController;
   final VoidCallback onCancelTap;
-  const RangesPanel(
-      {super.key,
-      required this.landmark,
-      required this.onCancelTap,
-      required this.mapController});
+  const RangesPanel({
+    super.key,
+    required this.landmark,
+    required this.onCancelTap,
+    required this.mapController,
+  });
 
   @override
   State<RangesPanel> createState() => _RangesPanelState();
@@ -69,25 +67,22 @@ class _RangesPanelState extends State<RangesPanel> {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: routeRanges.length,
-                          itemBuilder: (BuildContext context, int index) =>
-                              RouteRangeChip(
-                            range: routeRanges[index],
-                            onDelete: () => _deleteRouteRange(index),
-                            onTap: () => _toggleRouteRange(index),
-                          ),
-                          separatorBuilder: (BuildContext context, int index) =>
-                              const SizedBox(
-                            width: 10,
-                          ),
+                          itemBuilder:
+                              (BuildContext context, int index) =>
+                                  RouteRangeChip(
+                                    range: routeRanges[index],
+                                    onDelete: () => _deleteRouteRange(index),
+                                    onTap: () => _toggleRouteRange(index),
+                                  ),
+                          separatorBuilder:
+                              (BuildContext context, int index) =>
+                                  const SizedBox(width: 10),
                         ),
                       ),
                       IconButton(
                         padding: EdgeInsets.zero,
                         onPressed: widget.onCancelTap,
-                        icon: const Icon(
-                          Icons.cancel,
-                          size: 30,
-                        ),
+                        icon: const Icon(Icons.cancel, size: 30),
                       ),
                     ],
                   ),
@@ -109,10 +104,10 @@ class _RangesPanelState extends State<RangesPanel> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () =>
-                                _onAddRouteRangeButtonPressed(context),
+                            onPressed:
+                                () => _onAddRouteRangeButtonPressed(context),
                             icon: const Icon(Icons.add),
-                          )
+                          ),
                         ],
                       ),
                       RangeValueSlider(
@@ -127,21 +122,20 @@ class _RangesPanelState extends State<RangesPanel> {
                       DropMenuItem(
                         title: 'Transport mode',
                         selection: _transportMode,
-                        onSelected: (RouteTransportMode value) => {
-                          setState(() {
-                            _transportMode = value;
-                            _routeType = RouteType.fastest;
-                            _rangeValue = 3600;
-                          })
-                        },
+                        onSelected:
+                            (RouteTransportMode value) => {
+                              setState(() {
+                                _transportMode = value;
+                                _routeType = RouteType.fastest;
+                                _rangeValue = 3600;
+                              }),
+                            },
                         values: RouteTransportMode.values.sublist(0, 4),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Container(
                   color: Colors.white,
                   padding: const EdgeInsets.all(10.0),
@@ -151,47 +145,50 @@ class _RangesPanelState extends State<RangesPanel> {
                         DropMenuItem(
                           title: 'Route Type',
                           selection: _routeType,
-                          onSelected: (RouteType value) => {
-                            setState(() {
-                              _routeType = value;
-                              switch (value) {
-                                case RouteType.fastest:
-                                  _rangeValue = 3600;
-                                case RouteType.shortest:
-                                  _rangeValue = 1000;
-                                case RouteType.economic:
-                                  _rangeValue = 1000;
-                              }
-                            })
-                          },
+                          onSelected:
+                              (RouteType value) => {
+                                setState(() {
+                                  _routeType = value;
+                                  switch (value) {
+                                    case RouteType.fastest:
+                                      _rangeValue = 3600;
+                                    case RouteType.shortest:
+                                      _rangeValue = 1000;
+                                    case RouteType.economic:
+                                      _rangeValue = 1000;
+                                  }
+                                }),
+                              },
                           values: [
                             RouteType.fastest,
                             if (_transportMode != RouteTransportMode.bicycle)
                               RouteType.shortest,
                             if (_transportMode == RouteTransportMode.bicycle)
-                              RouteType.economic
+                              RouteType.economic,
                           ],
                         ),
                       if (_transportMode == RouteTransportMode.bicycle)
                         DropMenuItem(
                           title: 'Bike type',
                           selection: _bikeProfile,
-                          onSelected: (BikeProfile value) => {
-                            setState(() {
-                              _bikeProfile = value;
-                            })
-                          },
+                          onSelected:
+                              (BikeProfile value) => {
+                                setState(() {
+                                  _bikeProfile = value;
+                                }),
+                              },
                           values: BikeProfile.values,
                         ),
                       if (_transportMode == RouteTransportMode.lorry)
                         DropMenuItem(
                           title: 'Avoid Traffic',
                           selection: _trafficAvoidance,
-                          onSelected: (TrafficAvoidance value) => {
-                            setState(() {
-                              _trafficAvoidance = value;
-                            })
-                          },
+                          onSelected:
+                              (TrafficAvoidance value) => {
+                                setState(() {
+                                  _trafficAvoidance = value;
+                                }),
+                              },
                           values: TrafficAvoidance.values,
                         ),
                       if (_transportMode == RouteTransportMode.car ||
@@ -240,33 +237,35 @@ class _RangesPanelState extends State<RangesPanel> {
                           children: [
                             const Text('Hills', style: TextStyle(fontSize: 18)),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                              ),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text('0'),
                                   Text(_hillsValue.toString()),
-                                  const Text('10')
+                                  const Text('10'),
                                 ],
                               ),
                             ),
                             Slider(
-                                value: _hillsValue,
-                                divisions: 10,
-                                min: 0,
-                                max: 10,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _hillsValue = value;
-                                  });
-                                }),
+                              value: _hillsValue,
+                              divisions: 10,
+                              min: 0,
+                              max: 10,
+                              onChanged: (value) {
+                                setState(() {
+                                  _hillsValue = value;
+                                });
+                              },
+                            ),
                           ],
                         ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -290,10 +289,14 @@ class _RangesPanelState extends State<RangesPanel> {
       return;
     } else {
       // If the route range is disabled, display it on map and center on it.
-      RouteRenderSettings settings =
-          RouteRenderSettings(fillColor: routeRanges[index].color);
-      widget.mapController.preferences.routes
-          .add(routeRanges[index].route, true, routeRenderSettings: settings);
+      RouteRenderSettings settings = RouteRenderSettings(
+        fillColor: routeRanges[index].color,
+      );
+      widget.mapController.preferences.routes.add(
+        routeRanges[index].route,
+        true,
+        routeRenderSettings: settings,
+      );
       _centerOnRouteRange(routeRanges[index].route);
     }
   }
@@ -338,7 +341,9 @@ class _RangesPanelState extends State<RangesPanel> {
           routeRanges: [_rangeValue],
           avoidBikingHillFactor: _hillsValue,
           bikeProfile: BikeProfileElectricBikeProfile(
-              profile: _bikeProfile, eProfile: ElectricBikeProfile()),
+            profile: _bikeProfile,
+            eProfile: ElectricBikeProfile(),
+          ),
         );
       default:
         return RoutePreferences();
@@ -352,8 +357,10 @@ class _RangesPanelState extends State<RangesPanel> {
       // Calling the calculateRoute SDK method.
       // (err, results) - is a callback function that gets called when the route computing is finished.
       // err is an error enum, results is a list of routes.
-      RoutingService.calculateRoute([widget.landmark], _getRoutePreferences(),
-          (err, routes) {
+      RoutingService.calculateRoute([widget.landmark], _getRoutePreferences(), (
+        err,
+        routes,
+      ) {
         ScaffoldMessenger.of(context).clearSnackBars();
 
         // If there aren't any errors, we display the range.
@@ -362,10 +369,15 @@ class _RangesPanelState extends State<RangesPanel> {
           final routesMap = widget.mapController.preferences.routes;
 
           // Color the range in a random color.
-          final randomColor = Color.fromARGB(128, Random().nextInt(200),
-              Random().nextInt(200), Random().nextInt(200));
-          RouteRenderSettings settings =
-              RouteRenderSettings(fillColor: randomColor);
+          final randomColor = Color.fromARGB(
+            128,
+            Random().nextInt(200),
+            Random().nextInt(200),
+            Random().nextInt(200),
+          );
+          RouteRenderSettings settings = RouteRenderSettings(
+            fillColor: randomColor,
+          );
 
           // Display the range on map.
           routesMap.add(routes.first, true, routeRenderSettings: settings);
@@ -384,18 +396,21 @@ class _RangesPanelState extends State<RangesPanel> {
   }
 
   String _getRouteRangeValueString() {
-    final String valueString = (_routeType == RouteType.fastest)
-        ? convertDuration(_rangeValue)
-        : (_routeType == RouteType.economic)
+    final String valueString =
+        (_routeType == RouteType.fastest)
+            ? convertDuration(_rangeValue)
+            : (_routeType == RouteType.economic)
             ? convertWh(_rangeValue)
             : convertDistance(_rangeValue);
     return valueString;
   }
 
   bool _doesRouteRangeExist() {
-    bool exists = routeRanges.any((range) =>
-        range.transportMode == _transportMode &&
-        range.value == _getRouteRangeValueString());
+    bool exists = routeRanges.any(
+      (range) =>
+          range.transportMode == _transportMode &&
+          range.value == _getRouteRangeValueString(),
+    );
     return exists;
   }
 
@@ -415,29 +430,34 @@ class _RangesPanelState extends State<RangesPanel> {
     const padding = 20;
 
     // Use the map controller to center on route above the panel.
-    widget.mapController.centerOnRoute(route,
-        screenRect: RectType(
-          x: 0,
-          y: (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
-              .toInt(),
-          width: (MediaQuery.of(context).size.width *
-                  MediaQuery.of(context).devicePixelRatio)
-              .toInt(),
-          height: ((MediaQuery.of(context).size.height / 2 -
-                      appbarHeight -
-                      2 * padding * MediaQuery.of(context).devicePixelRatio) *
-                  MediaQuery.of(context).devicePixelRatio)
-              .toInt(),
-        ));
+    widget.mapController.centerOnRoute(
+      route,
+      screenRect: RectType(
+        x: 0,
+        y:
+            (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
+                .toInt(),
+        width:
+            (MediaQuery.of(context).size.width *
+                    MediaQuery.of(context).devicePixelRatio)
+                .toInt(),
+        height:
+            ((MediaQuery.of(context).size.height / 2 -
+                        appbarHeight -
+                        2 * padding * MediaQuery.of(context).devicePixelRatio) *
+                    MediaQuery.of(context).devicePixelRatio)
+                .toInt(),
+      ),
+    );
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(BuildContext context,
-      {required String message, Duration duration = const Duration(hours: 1)}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: duration,
-    );
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
+    final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -448,12 +468,13 @@ class DropMenuItem<T> extends StatelessWidget {
   final Function onSelected;
   final T selection;
   final List<T> values;
-  const DropMenuItem(
-      {super.key,
-      required this.onSelected,
-      required this.selection,
-      required this.values,
-      required this.title});
+  const DropMenuItem({
+    super.key,
+    required this.onSelected,
+    required this.selection,
+    required this.values,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -469,7 +490,9 @@ class DropMenuItem<T> extends StatelessWidget {
             items: [
               for (final value in values)
                 DropdownMenuItem(
-                    value: value, child: Text((value as Enum).name))
+                  value: value,
+                  child: Text((value as Enum).name),
+                ),
             ],
             onChanged: (mode) => onSelected(mode),
           ),
@@ -483,11 +506,12 @@ class SwitchItem extends StatelessWidget {
   final String title;
   final bool value;
   final void Function(bool) onChanged;
-  const SwitchItem(
-      {super.key,
-      required this.value,
-      required this.onChanged,
-      required this.title});
+  const SwitchItem({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -495,10 +519,7 @@ class SwitchItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title),
-          Switch(value: value, onChanged: onChanged),
-        ],
+        children: [Text(title), Switch(value: value, onChanged: onChanged)],
       ),
     );
   }
@@ -513,11 +534,12 @@ class RangeValueSlider extends StatelessWidget {
   final void Function(double) onChanged;
   late final String Function(int) valueToString;
 
-  RangeValueSlider(
-      {super.key,
-      required this.value,
-      required this.onChanged,
-      required this.type}) {
+  RangeValueSlider({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    required this.type,
+  }) {
     switch (type) {
       case RouteType.fastest:
         minValue = 60;
@@ -546,7 +568,7 @@ class RangeValueSlider extends StatelessWidget {
           children: [
             Text(valueToString(minValue.toInt())),
             Text(valueToString(value.toInt())),
-            Text(valueToString(maxValue.toInt()))
+            Text(valueToString(maxValue.toInt())),
           ],
         ),
         Slider(
@@ -566,11 +588,12 @@ class RouteRangeChip extends StatefulWidget {
   final VoidCallback onDelete;
   final VoidCallback onTap;
 
-  const RouteRangeChip(
-      {super.key,
-      required this.range,
-      required this.onDelete,
-      required this.onTap});
+  const RouteRangeChip({
+    super.key,
+    required this.range,
+    required this.onDelete,
+    required this.onTap,
+  });
 
   @override
   State<RouteRangeChip> createState() => _RouteRangeChipState();
@@ -597,14 +620,9 @@ class _RouteRangeChipState extends State<RouteRangeChip> {
         ),
         child: Row(
           children: [
-            Icon(
-              _transportMeansIcon(widget.range.transportMode),
-            ),
+            Icon(_transportMeansIcon(widget.range.transportMode)),
             Text(widget.range.value),
-            InkWell(
-              onTap: widget.onDelete,
-              child: const Icon(Icons.close),
-            ),
+            InkWell(onTap: widget.onDelete, child: const Icon(Icons.close)),
           ],
         ),
       ),
