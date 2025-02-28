@@ -164,8 +164,13 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController.preferences.routes.clearAllButMainRoute();
     final routes = _mapController.preferences.routes;
 
+    if (routes.mainRoute == null) {
+      _showSnackBar(context, message: "No main route available");
+      return;
+    }
+
     _navigationHandler = NavigationService.startSimulation(
-      routes.mainRoute,
+      routes.mainRoute!,
       null,
       onNavigationInstruction: (instruction, events) {
         setState(() {
@@ -229,10 +234,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final routes = _mapController.preferences.routes;
 
+    if (routes.mainRoute == null) {
+      _showSnackBar(context, message: "No main route available");
+      return;
+    }
+
     // Calling the search along route SDK method.
     // (err, results) - is a callback function that gets called when the search is finished.
     // err is an error enum, results is a list of landmarks.
-    SearchService.searchAlongRoute(routes.mainRoute, (err, results) {
+    SearchService.searchAlongRoute(routes.mainRoute!, (err, results) {
       if (err != GemError.success) {
         print("SearchAlongRoute - no results found");
         return;

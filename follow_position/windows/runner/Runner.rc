@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "follow_position" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "follow_position" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2019-2024, Magic Lane B.V. <info@magiclane.com>" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 1995-2025 Magic Lane International B.V. <info@magiclane.com>" "\0"
             VALUE "OriginalFilename", "follow_position.exe" "\0"
             VALUE "ProductName", "follow_position" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

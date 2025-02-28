@@ -107,7 +107,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onWhatIsNearbyButtonPressed(BuildContext context) {
     // Get the current position with no altitude
-    final currentPosition = PositionService.instance.getPosition()!.coordinates;
+    final currentPosition = PositionService.instance.position;
+
+    if (currentPosition == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No position currently available')),
+      );
+      return;
+    }
+
     final currentPositionNoAltitude = Coordinates(
       latitude: currentPosition.latitude,
       longitude: currentPosition.longitude,

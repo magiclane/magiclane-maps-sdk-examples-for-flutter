@@ -57,7 +57,7 @@ class _MapsItemState extends State<MapsItem> {
     return [
       ContentStoreItemStatus.downloadQueued,
       ContentStoreItemStatus.downloadRunning,
-      ContentStoreItemStatus.downloadWaiting,
+      ContentStoreItemStatus.downloadWaitingNetwork,
       ContentStoreItemStatus.downloadWaitingFreeNetwork,
       ContentStoreItemStatus.downloadWaitingNetwork,
     ].contains(status);

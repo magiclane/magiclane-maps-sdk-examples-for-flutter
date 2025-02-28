@@ -3,6 +3,7 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:gem_kit/core.dart';
@@ -123,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       // Check if there is a selected Landmark.
       if (landmarks.isNotEmpty) {
-        _highlightLandmarks(landmarks);
+        _highlightLandmark(landmarks);
         return;
       }
 
@@ -132,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       // Check if there is a selected street.
       if (streets.isNotEmpty) {
-        _highlightLandmarks(streets);
+        _highlightLandmark(streets);
         return;
       }
 
@@ -145,20 +146,34 @@ class _MyHomePageState extends State<MyHomePage> {
       lmk.name = '${coordinates.latitude} ${coordinates.longitude}';
       lmk.setImageFromIcon(GemIcon.searchResultsPin);
 
-      _highlightLandmarks([lmk]);
+      _highlightLandmark([lmk]);
     });
   }
 
-  void _highlightLandmarks(List<Landmark> landmarks) {
+  void _highlightLandmark(List<Landmark> landmarks) {
+    final settings = HighlightRenderSettings(
+      options: {
+        HighlightOptions.showLandmark,
+        HighlightOptions.showContour,
+        HighlightOptions.overlap,
+      },
+    );
     // Highlight the landmark on the map.
-    _mapController.activateHighlight(landmarks);
+    _mapController.activateHighlight(landmarks, renderSettings: settings);
 
     final lmk = landmarks[0];
     setState(() {
       _focusedLandmark = lmk;
     });
 
-    _mapController.centerOnCoordinates(lmk.coordinates);
+    _mapController.centerOnCoordinates(
+      lmk.coordinates,
+      screenPosition: Point(
+        _mapController.viewport.width ~/ 2,
+        _mapController.viewport.height ~/ 2,
+      ),
+      zoomLevel: 70,
+    );
 
     _checkIfFavourite();
   }

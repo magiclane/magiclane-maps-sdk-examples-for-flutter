@@ -11,4 +11,4 @@ PRODUCT_NAME = search_along_route
 PRODUCT_BUNDLE_IDENTIFIER = com.magiclane.gem_kit.examples.search_along_route
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2019-2024 Magic Lane B.V. <info@magiclane.com>
+PRODUCT_COPYRIGHT = Copyright (C) 1995-2025 Magic Lane International B.V. <info@magiclane.com>

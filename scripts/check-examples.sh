@@ -103,7 +103,7 @@ flutter doctor || ( error_msg "flutter doctor failed"; exit 1 )
 MY_DIR="$(cd "$(dirname "${0}")" && pwd)"
 
 # Find paths that contain an app module
-EXAMPLE_PROJECTS=( $(find "${MY_DIR}/.." -maxdepth 2 -type d -exec [ -d {}/plugins ] \; -print -prune) )
+EXAMPLE_PROJECTS=( $(find "${MY_DIR}/.." -maxdepth 2 -type d -exec [ -d {}/plugins ] \; -print -prune | while read -r DIR; do realpath "${DIR}"; done) )
 
 function check_mismatch() {
 	local RC=0
@@ -170,9 +170,62 @@ function check_secrets() {
 	return ${RC}
 }
 
+function check_license() {
+	local RC=0
+
+	local SOURCES_WITH_MISSING_SPDX_IDENTIFIERS=()
+	local SOURCES=()
+
+	local FILE_EXT=()
+	local FILE_EXCEPTIONS=""
+
+	FILE_EXT+=( "*.h" )
+	FILE_EXT+=( "*.dart" )
+	FILE_EXT+=( "*.swift" )
+	FILE_EXT+=( "*.kt" )
+	FILE_EXT+=( "*.sh" )
+
+	FILE_EXCEPTIONS+="GeneratedPluginRegistrant.*|"
+	FILE_EXCEPTIONS+="generated_plugin_registrant.h"
+	
+	for i in "${!EXAMPLE_PROJECTS[@]}"; do
+		msg "Check '${EXAMPLE_PROJECTS[${i}]}' for license..."
+
+		SOURCES_WITH_MISSING_SPDX_IDENTIFIERS=()
+		SOURCES=()
+		
+		pushd "${EXAMPLE_PROJECTS[${i}]}" > /dev/null
+
+		mapfile -t SOURCES < <(
+			git ls-files "${FILE_EXT[@]}"
+		)
+
+		mapfile -t SOURCES_WITH_MISSING_SPDX_IDENTIFIERS < <(
+			grep -LE "SPDX-License-Identifier:.+" $(printf '%s\n' "${SOURCES[@]}" | sort -u | grep -vE "${FILE_EXCEPTIONS}")
+		)
+
+		if ((${#SOURCES_WITH_MISSING_SPDX_IDENTIFIERS[@]} > 0)); then
+			msg "Following files are missing SPDX-license header in '${EXAMPLE_PROJECTS[${i}]}':"
+			printf '    @ %s\n' "${SOURCES_WITH_MISSING_SPDX_IDENTIFIERS[@]}"
+			printf '\n'
+			RC=1
+		fi
+
+		popd > /dev/null
+	done
+
+	if [ ${RC} -eq 1 ]; then
+		msg "Missing license identifiers. Please check"
+	fi
+
+	return ${RC}
+	
+}
+
 RC=0
 
 check_mismatch || RC=1
 check_secrets || RC=1
+check_license || RC=1
 
 exit ${RC}

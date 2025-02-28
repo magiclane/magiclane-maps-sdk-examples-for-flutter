@@ -71,6 +71,7 @@ set -eEuo pipefail
 SDK_ARCHIVE_PATH=""
 BUILD_ANDROID=false
 BUILD_IOS=false
+BUILD_MACOS=false
 BUILD_WEB=false
 ANALYZE=false
 UPGRADE=false
@@ -89,7 +90,9 @@ Options:
     [OPTIONAL] --android
                     Build examples for Android
     [OPTIONAL] --ios
-                    Build examples for iOS/OSX
+                    Build examples for iOS
+     [OPTIONAL] --macos
+                    Build examples for MacOS
     [OPTIONAL] --web
                     Build examples for Web
 
@@ -104,6 +107,7 @@ LONGOPTS_LIST=(
     "sdk-archive:"
     "android"
     "ios"
+    "macos"
     "web"
     "analyze"
     "upgrade"
@@ -134,6 +138,9 @@ while true; do
         --ios)
             BUILD_IOS=true
             ;;
+        --macos)
+            BUILD_MACOS=true
+            ;;
         --web)
             BUILD_WEB=true
             ;;
@@ -157,9 +164,9 @@ done
 
 msg "Checking prerequisites..."
 
-if ${BUILD_IOS}; then
+if ${BUILD_IOS} || ${BUILD_MACOS}; then
     if ! is_mac; then
-        error_msg "Examples can be built for iOS/OSX only under OSX"
+        error_msg "Examples can be built for iOS/MacOS only under MacOS"
         exit 1
     fi
 fi
@@ -212,13 +219,12 @@ for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
 	fi
 
     if ${BUILD_IOS}; then
-        if is_mac; then
-            (cd ios; pod install --repo-update; cd ..)
-            flutter build ios --release --no-codesign
-
-            (cd macos; pod install --repo-update; cd ..)
-            flutter build macos --release
-        fi
+        (cd ios; pod install --repo-update; cd ..)
+        flutter build ios --release --no-codesign
+	fi
+    if ${BUILD_MACOS}; then
+        (cd macos; pod install --repo-update; cd ..)
+        flutter build macos --release
     fi
 
     if ${BUILD_ANDROID}; then

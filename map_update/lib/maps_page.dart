@@ -228,13 +228,13 @@ class _MapsPageState extends State<MapsPage> {
                 ],
               ),
               actions: [
-                CupertinoDialogAction(
+                TextButton(
                   child: const Text("Later"),
                   onPressed: () {
                     Navigator.pop(context);
                   },
                 ),
-                CupertinoDialogAction(
+                TextButton(
                   child: const Text("Update"),
                   onPressed: () {
                     if (!updatePersistence.isOldData) {
@@ -305,7 +305,7 @@ class _MapsPageState extends State<MapsPage> {
                 ),
                 content: const Column(children: [Text("The update is done.")]),
                 actions: [
-                  CupertinoDialogAction(
+                  TextButton(
                     child: const Text("Ok"),
                     onPressed: () {
                       Navigator.pop(context);

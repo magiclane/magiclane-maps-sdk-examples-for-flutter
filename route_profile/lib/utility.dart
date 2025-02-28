@@ -50,8 +50,6 @@ Color _getSurfaceTypeColor(SurfaceType type) {
       return const Color.fromARGB(255, 10, 10, 10);
     case SurfaceType.unpaved:
       return const Color.fromARGB(255, 157, 133, 104);
-    default:
-      return const Color.fromARGB(255, 10, 10, 10);
   }
 }
 
@@ -72,8 +70,6 @@ Color _getRoadTypeColor(RoadType type) {
       return const Color.fromARGB(255, 166, 133, 96);
     case RoadType.street:
       return const Color.fromARGB(255, 175, 185, 193);
-    default:
-      return const Color.fromARGB(255, 10, 10, 10);
   }
 }
 
@@ -102,8 +98,6 @@ Color _getSteepnessColor(Steepness steepness) {
       return const Color.fromARGB(255, 182, 42, 42);
     case Steepness.ascendExtreme:
       return const Color.fromARGB(255, 164, 16, 16);
-    default:
-      return const Color.fromARGB(255, 10, 10, 10);
   }
 }
 
@@ -119,8 +113,6 @@ Color getGradeColor(ClimbSection section) {
     case Grade.grade3:
       return const Color.fromARGB(100, 255, 220, 40);
     case Grade.grade4:
-      return const Color.fromARGB(100, 255, 240, 40);
-    default:
       return const Color.fromARGB(100, 255, 240, 40);
   }
 }

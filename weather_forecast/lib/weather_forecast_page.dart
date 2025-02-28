@@ -89,10 +89,11 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                             ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         }
-                        if (!snapshot.hasData)
+                        if (!snapshot.hasData) {
                           return Center(
                             child: Text("Error loading current forecast."),
                           );
+                        }
 
                         return ForecastNowPage(
                           condition: snapshot.data!,
@@ -108,10 +109,11 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                             ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         }
-                        if (!snapshot.hasData)
+                        if (!snapshot.hasData) {
                           return Center(
                             child: Text("Error loading hourly forecast."),
                           );
+                        }
 
                         return ForecastHourlyPage(
                           locationForecasts: snapshot.data!,
@@ -127,10 +129,11 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                           return Center(child: CircularProgressIndicator());
                         }
 
-                        if (!snapshot.hasData)
+                        if (!snapshot.hasData) {
                           return Center(
                             child: Text("Error loading daily forecast."),
                           );
+                        }
 
                         return ForecastDailyPage(
                           locationForecasts: snapshot.data!,

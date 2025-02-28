@@ -3,14 +3,6 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
-// Copyright (C) 2019-2024, Magic Lane B.V.
-// All rights reserved.
-//
-// This software is confidential and proprietary information of Magic Lane
-// ("Confidential Information"). You shall not disclose such Confidential
-// Information and shall use it only in accordance with the terms of the
-// license agreement you entered into with Magic Lane.
-
 // ignore_for_file: avoid_print
 
 import 'dart:math';
@@ -221,8 +213,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _startNavigation() async {
     final routes = _mapController.preferences.routes;
 
+    if (routes.mainRoute == null) {
+      _showSnackBar(context, message: "Route is not available");
+      return;
+    }
+
     _navigationHandler = NavigationService.startNavigation(
-      routes.mainRoute,
+      routes.mainRoute!,
       null,
       onNavigationInstruction: (instruction, events) {
         setState(() {
@@ -264,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _pushExternalPosition() async {
     final route = _mapController.preferences.routes.mainRoute;
-    final distance = route.getTimeDistance().totalDistanceM;
+    final distance = route!.getTimeDistance().totalDistanceM;
     Coordinates prevCoordinates = route.getCoordinateOnRoute(0);
 
     // Parse route distance

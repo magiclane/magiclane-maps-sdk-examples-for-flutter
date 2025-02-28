@@ -202,8 +202,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final routes = _mapController.preferences.routes;
 
+    if (routes.mainRoute == null) {
+      _showSnackBar(context, message: "No route available");
+      return;
+    }
+
     // Start navigation one the main route.
-    _navigationHandler = NavigationService.startSimulation(routes.mainRoute, (
+    _navigationHandler = NavigationService.startSimulation(routes.mainRoute!, (
       eventType,
       instruction,
     ) {

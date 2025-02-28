@@ -40,7 +40,7 @@ class LandmarkPanel extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child:
                 landmark.getImage() != null
-                    ? Image.memory(landmark.getImage()!)
+                    ? Image.memory(landmark.getImage(size: Size(128, 128))!)
                     : SizedBox(),
           ),
           Row(
