@@ -45,6 +45,7 @@ function on_exit()
             fi
             find . -type d -name ".gradle" -exec rm -rf {} +
             find . -type d -name ".cxx" -exec rm -rf {} +
+            find . -type d -name "local.properties" -exec rm -rf {} +
             popd &>/dev/null || error_msg "popd failed"
         done
     fi

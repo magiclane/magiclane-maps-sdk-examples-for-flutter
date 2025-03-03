@@ -28,12 +28,13 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Map Styles](map_styles) - Show list of styles. Show how to download and apply styles.
 * [Map Update](map_update) - Show list of maps. Show how to download maps.
 * [Multi-map Routing](multi_map_routing) - Display a map. Show how to create multiple views.
-* [Multimap View](multiview_map) - Show how to create multiple views.
+* [MultiView Map](multiview_map) - Show how to create multiple views.
 * [Navigate Route](navigate_route) - Calculate & display route. Navigate route.
 * [Offline Routing](offline_routing) - Show how to download maps.
 * [Overlapped Maps](overlapped_maps) - Show two maps overlapped.
 * [Public Transit](public_transit) - Calculates a public transit route. Displays the route.
 * [Range Finder](range_finder) - Calculate & display route. Show route ranges panel.
+* [Recorder](recorder) - Show how to record sensor data.
 * [Route Instructions](route_instructions) - Display a map. Show route instructions.
 * [Route Profile](route_profile) - Show route profile panel (elevation chart, climb details).
 * [Save Favorites](save_favorites) - Show to save landmarks to your favorites list, as well as remove them from favorites list.
