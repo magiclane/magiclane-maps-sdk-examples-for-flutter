@@ -39,16 +39,15 @@ class _MapsItemState extends State<MapsItem> {
     //so the progress indicator updates value from callback
     if (_isDownloadingOrWaiting()) {
       final errCode = widget.map.pauseDownload();
-      if (errCode != GemError.success) {
+      if (errCode == GemError.success) {
+        Future<dynamic>.delayed(
+          const Duration(milliseconds: 500),
+        ).then((value) => _downloadMap());
+      } else {
         print(
           "Download pause for item ${widget.map.id} failed with code $errCode",
         );
-        return;
       }
-
-      Future<dynamic>.delayed(
-        const Duration(milliseconds: 500),
-      ).then((value) => _downloadMap());
     }
   }
 
@@ -73,10 +72,9 @@ class _MapsItemState extends State<MapsItem> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               width: 50,
-              child:
-                  _getMapImage(widget.map) != null
-                      ? Image.memory(_getMapImage(widget.map)!)
-                      : SizedBox(),
+              child: _getMapImage(widget.map) != null
+                  ? Image.memory(_getMapImage(widget.map)!)
+                  : SizedBox(),
             ),
             title: Text(
               widget.map.name,
@@ -94,7 +92,7 @@ class _MapsItemState extends State<MapsItem> {
               dimension: 50,
               child: Builder(
                 builder: (context) {
-                  if (_isDownloaded == true) {
+                  if (_isDownloaded) {
                     return const Icon(Icons.download_done, color: Colors.green);
                   } else if (_isDownloadingOrWaiting()) {
                     return SizedBox(
@@ -136,7 +134,7 @@ class _MapsItemState extends State<MapsItem> {
   }
 
   void _onTileTap() {
-    if (_isDownloaded == true) return;
+    if (_isDownloaded) return;
 
     if (_isDownloadingOrWaiting()) {
       _pauseDownload();

@@ -5,24 +5,30 @@
 
 // ignore_for_file: avoid_print
 
-import 'dart:io';
-
 import 'package:flutter/services.dart';
+
 import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
-import 'package:map_update/update_persistence.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 
+import 'asset_bundle_utils.dart';
 import 'maps_page.dart';
+import 'update_persistence.dart';
 
 import 'package:flutter/material.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
-void main() {
+void main() async {
+  // Ensuring that all Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Simulate old maps
+  await rootBundle.loadOldMaps();
+
   GemKit.initialize(appAuthorization: projectApiToken).then((value) {
+    ContentStore.refreshContentStore();
+
     SdkSettings.setAllowConnection(
       true,
       onWorldwideRoadMapSupportStatusCallback: (status) {
@@ -32,7 +38,6 @@ void main() {
         }
       },
     );
-    SdkSettings.appAuthorization = projectApiToken;
   });
 
   runApp(const MyApp());
@@ -70,8 +75,6 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  bool showButton = true;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,13 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
         onMapCreated: onMapCreated,
         appAuthorization: projectApiToken,
       ),
-      floatingActionButton:
-          showButton
-              ? FloatingActionButton(
-                onPressed: loadMaps,
-                child: const Icon(Icons.file_copy),
-              )
-              : null,
     );
   }
 
@@ -108,83 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (context) => MapsPage(mapId: mapId!),
         ),
       );
-    }
-  }
-
-  Future<bool> loadAsset(
-    String assetName,
-    String destinationDirectoryPath,
-  ) async {
-    final destinationFilePath = path.join(destinationDirectoryPath, assetName);
-
-    File file = File(destinationFilePath);
-    if (await file.exists()) {
-      return false;
-    }
-    await file.create();
-
-    final asset = await rootBundle.load('assets/$assetName');
-    final buffer = asset.buffer;
-    await file.writeAsBytes(
-      buffer.asUint8List(asset.offsetInBytes, asset.lengthInBytes),
-      flush: true,
-    );
-    print("Wrote file ${file.path}");
-    return true;
-  }
-
-  Future<void> loadMaps() async {
-    const cmap = 'AndorraOSM_2021Q1.cmap';
-    const worldMap = 'WM_7_406.map';
-
-    final dirPath = await getDirPath();
-    final resFilePath = path.joinAll([dirPath.path, "Data", "Res"]);
-    final mapsFilePath = path.joinAll([dirPath.path, "Data", "Maps"]);
-
-    await deleteAssets(resFilePath, RegExp(r'WM_\d_\d+\.map'));
-    await deleteAssets(mapsFilePath, RegExp(r'.+\.cmap'));
-
-    await loadAsset(cmap, mapsFilePath);
-    await loadAsset(worldMap, resFilePath);
-
-    ContentStore.refreshContentStore();
-
-    setState(() {
-      showButton = false;
-    });
-  }
-
-  Future<Directory> getDirPath() async {
-    if (Platform.isAndroid) {
-      return (await getExternalStorageDirectory())!;
-    } else if (Platform.isIOS) {
-      return await getApplicationDocumentsDirectory();
-    } else {
-      throw Exception('Platform not supported');
-    }
-  }
-
-  Future<void> deleteAssets(String directoryPath, RegExp pattern) async {
-    final directory = Directory(directoryPath);
-
-    if (!directory.existsSync()) {
-      print(
-        '\x1B[31mWARNING: Directory $directoryPath not found. Test might fail.\x1B[0m',
-      );
-    }
-
-    for (final file in directory.listSync()) {
-      final filename = path.basename(file.path);
-      if (pattern.hasMatch(filename)) {
-        try {
-          print('INFO DELETE ASSETS: deleting file ${file.path}');
-          file.deleteSync();
-        } catch (e) {
-          print(
-            '\x1B[31mWARNING: Deleting file ${file.path} failed. Test might fail. Reason:\n${e.toString()}\x1B[0m',
-          );
-        }
-      }
     }
   }
 }

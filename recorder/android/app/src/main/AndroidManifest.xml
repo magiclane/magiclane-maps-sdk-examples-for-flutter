@@ -6,6 +6,10 @@
   Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    
     <application
         android:label="Recorder"
         android:name="${applicationName}"

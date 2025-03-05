@@ -145,11 +145,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Clear displayed paths
     _mapController.preferences.paths.clear();
+    _mapController.deactivateAllHighlights();
   }
 
   Future<void> _onStopRecordingButtonPressed() async {
+    final endErr = await _recorder.stopRecording();
+
+    if (endErr == GemError.success) {
+      await _presentRecordedRoute();
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Recording failed: $endErr'),
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+
+    setState(() {
+      _isRecording = false;
+    });
+  }
+
+  Future<void> _presentRecordedRoute() async {
     final logsDir = await getDirectoryPath("Tracks");
-    await _recorder.stopRecording();
 
     // It loads all .gm and .mp4 files at logsDir
     final bookmarks = RecorderBookmarks.create(logsDir);
@@ -164,6 +185,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Create a path entity from coordinates
     final path = Path.fromCoordinates(recorderCoordinates);
+
+    Landmark beginLandmark = Landmark.withCoordinates(recorderCoordinates.first);
+    Landmark endLandmark = Landmark.withCoordinates(recorderCoordinates.last);
+
+    beginLandmark.setImageFromIcon(GemIcon.waypointStart);
+    endLandmark.setImageFromIcon(GemIcon.waypointFinish);
+
+    HighlightRenderSettings renderSettings = HighlightRenderSettings(
+      options: {HighlightOptions.showLandmark},
+    );
+
+    _mapController.activateHighlight([beginLandmark, endLandmark], renderSettings: renderSettings, highlightId: 1);
 
     // Show the path immediately after stopping recording
     _mapController.preferences.paths.add(path);
@@ -183,13 +216,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Duration: $duration'),
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 5),
         ),
       );
     }
-
-    setState(() {
-      _isRecording = false;
-    });
   }
 }

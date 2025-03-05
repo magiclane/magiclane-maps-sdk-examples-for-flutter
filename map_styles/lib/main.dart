@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.deepPurple[900],
         title: const Text('Map Styles', style: TextStyle(color: Colors.white)),
         actions: [
-          if (_isDownloadingStyle == true)
+          if (_isDownloadingStyle)
             const SizedBox(
               width: 20,
               height: 20,
@@ -84,25 +84,33 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onMapCreated(GemMapController controller) async {
     _mapController = controller;
+
     SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(
       ServiceGroupType.contentService,
       true,
     );
-    getStyles();
   }
 
   // Method to load the styles
   void getStyles() {
+    _showSnackBar(context, message: "Styles list is loading.");
+
     ContentStore.asyncGetStoreContentList(ContentType.viewStyleLowRes, (
       err,
       items,
       isCached,
     ) {
-      if (err == GemError.success && items != null) {
-        for (final item in items) {
-          _stylesList.add(item);
-        }
+      if (err == GemError.success) {
+        _stylesList.addAll(items!);
+
         ScaffoldMessenger.of(context).clearSnackBars();
+
+        _showSnackBar(context,
+            message: "Styles list is loaded.", duration: Duration(seconds: 2));
+      } else {
+        _showSnackBar(context,
+            message: "Styles list could not be loaded.",
+            duration: Duration(seconds: 2));
       }
     });
   }
@@ -112,19 +120,13 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _isDownloadingStyle = true;
     });
+
     Completer<bool> completer = Completer<bool>();
     style.asyncDownload(
       (err) {
-        if (err != GemError.success) {
-          // An error was encountered during download
-          completer.complete(false);
-          setState(() {
-            _isDownloadingStyle = false;
-          });
-          return;
-        }
-        // Download was successful
-        completer.complete(true);
+        final isSuccess = err == GemError.success;
+        completer.complete(isSuccess);
+
         setState(() {
           _isDownloadingStyle = false;
         });
@@ -152,26 +154,23 @@ class _MyHomePageState extends State<MyHomePage> {
   // Method to change the current style
   Future<void> _onMapButtonTap(BuildContext context) async {
     if (_stylesList.isEmpty) {
-      _showSnackBar(context, message: "The map styles are loading.");
       getStyles();
       return;
     }
 
-    final indexOfNextStyle =
-        (_indexOfCurrentStyle >= _stylesList.length - 1)
-            ? 0
-            : _indexOfCurrentStyle + 1;
+    final indexOfNextStyle = (_indexOfCurrentStyle + 1) % _stylesList.length;
     ContentStoreItem currentStyle = _stylesList[indexOfNextStyle];
 
-    if (currentStyle.isCompleted == false) {
+    if (!currentStyle.isCompleted) {
       final didDownloadSucessfully = await _downloadStyle(currentStyle);
-      if (didDownloadSucessfully == false) return;
+      if (!didDownloadSucessfully) return;
     }
 
     _indexOfCurrentStyle = indexOfNextStyle;
 
     final String filename = currentStyle.fileName;
     _mapController.preferences.setMapStyleByPath(filename);
+
     setState(() {});
   }
 }

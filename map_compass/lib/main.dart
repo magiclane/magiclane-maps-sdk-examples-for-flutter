@@ -43,11 +43,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Uint8List? compassImage;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     GemKit.release();
     super.dispose();
@@ -83,16 +78,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.white,
                     ),
                     child: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child:
-                          compassImage != null
-                              ? Image.memory(
-                                compassImage!,
-                                gaplessPlayback: true,
-                              )
-                              : SizedBox(),
-                    ),
+                        width: 40,
+                        height: 40,
+                        child: Image.memory(
+                          compassImage!,
+                          gaplessPlayback: true,
+                        )),
                   ),
                 ),
               ),
@@ -105,10 +96,12 @@ class _MyHomePageState extends State<MyHomePage> {
   // The callback for when map is ready to use.
   void _onMapCreated(GemMapController controller) {
     mapController = controller;
+
     // Register the map angle update callback.
     mapController.registerMapAngleUpdateCallback(
       (angle) => setState(() => compassAngle = angle),
     );
+
     setState(() {
       compassImage = _compassImage();
     });

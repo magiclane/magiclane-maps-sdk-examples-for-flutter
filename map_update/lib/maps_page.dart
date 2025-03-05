@@ -12,7 +12,6 @@ import 'maps_downloaded_item.dart';
 import 'maps_item.dart';
 import 'update_persistence.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
@@ -61,17 +60,17 @@ class _MapsPageState extends State<MapsPage> {
         actions: [
           updateProgress != null
               ? GestureDetector(
-                onTap: () {
-                  updatePersistence.cancel();
-                },
-                child: const Text("Cancel Update"),
-              )
+                  onTap: () {
+                    updatePersistence.cancel();
+                  },
+                  child: const Text("Cancel Update"),
+                )
               : IconButton(
-                onPressed: () {
-                  showUpdateDialog();
-                },
-                icon: const Icon(Icons.download),
-              ),
+                  onPressed: () {
+                    showUpdateDialog();
+                  },
+                  icon: const Icon(Icons.download),
+                ),
         ],
         backgroundColor: Colors.deepPurple[900],
       ),
@@ -84,8 +83,8 @@ class _MapsPageState extends State<MapsPage> {
             slivers: [
               const SliverToBoxAdapter(child: Text("Local: ")),
               SliverList.separated(
-                separatorBuilder:
-                    (context, index) => const Divider(indent: 50, height: 0),
+                separatorBuilder: (context, index) =>
+                    const Divider(indent: 50, height: 0),
                 itemCount: localMaps.length,
                 itemBuilder: (context, index) {
                   final map = localMaps.elementAt(index);
@@ -101,17 +100,20 @@ class _MapsPageState extends State<MapsPage> {
                 const SliverToBoxAdapter(
                   child: Center(child: CircularProgressIndicator()),
                 )
-              else if (snapshot.data == null)
+              else if (snapshot.data == null || snapshot.data!.isEmpty)
                 const SliverToBoxAdapter(
                   child: Center(
-                    child: Text('Error while trying to fetch maps.'),
+                    child: Text(
+                      'The list of online maps is not available (missing internet connection or expired local content).',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 )
               else
                 SliverList.separated(
                   itemCount: snapshot.data!.length,
-                  separatorBuilder:
-                      (context, index) => const Divider(indent: 50, height: 0),
+                  separatorBuilder: (context, index) =>
+                      const Divider(indent: 50, height: 0),
                   itemBuilder: (context, index) {
                     final map = snapshot.data!.elementAt(index);
                     return MapsItem(
@@ -141,18 +143,19 @@ class _MapsPageState extends State<MapsPage> {
 
   // Method to load the online map list
   Future<List<ContentStoreItem>> _getMaps() async {
-    Completer<List<ContentStoreItem>> mapsList =
-        Completer<List<ContentStoreItem>>();
+    final mapsListCompleter = Completer<List<ContentStoreItem>>();
     ContentStore.asyncGetStoreContentList(ContentType.roadMap, (
       err,
       items,
       isCached,
     ) {
       if (err == GemError.success && items != null) {
-        mapsList.complete(items);
+        mapsListCompleter.complete(items);
+      } else {
+        mapsListCompleter.complete([]);
       }
     });
-    return mapsList.future;
+    return mapsListCompleter.future;
   }
 
   // Method to load the downloaded map list
@@ -193,11 +196,13 @@ class _MapsPageState extends State<MapsPage> {
                 title: const Text("No updates available"),
                 content: const Column(children: [Text("You are up to date.")]),
                 actions: [
-                  CupertinoDialogAction(
-                    child: const Text("Ok"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                  Center(
+                    child: TextButton(
+                      child: const Text("Ok"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -303,7 +308,12 @@ class _MapsPageState extends State<MapsPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [Text("Update finished")],
                 ),
-                content: const Column(children: [Text("The update is done.")]),
+                content: const Column(children: [
+                  Text(
+                    "The update is done.",
+                    textAlign: TextAlign.center,
+                  ),
+                ]),
                 actions: [
                   TextButton(
                     child: const Text("Ok"),

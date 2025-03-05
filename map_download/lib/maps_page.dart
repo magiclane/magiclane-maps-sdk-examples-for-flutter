@@ -46,8 +46,8 @@ class _MapsPageState extends State<MapsPage> {
             child: ListView.separated(
               padding: EdgeInsets.zero,
               itemCount: snapshot.data!.length,
-              separatorBuilder:
-                  (context, index) => const Divider(indent: 50, height: 0),
+              separatorBuilder: (context, index) =>
+                  const Divider(indent: 50, height: 0),
               itemBuilder: (context, index) {
                 final map = snapshot.data!.elementAt(index);
                 return MapsItem(map: map);
@@ -61,17 +61,20 @@ class _MapsPageState extends State<MapsPage> {
 
   // Method to load the maps
   Future<List<ContentStoreItem>> _getMaps() async {
-    Completer<List<ContentStoreItem>> mapsList =
-        Completer<List<ContentStoreItem>>();
+    final mapsListCompleter = Completer<List<ContentStoreItem>>();
+
     ContentStore.asyncGetStoreContentList(ContentType.roadMap, (
       err,
       items,
       isCached,
     ) {
-      if (err == GemError.success && items != null) {
-        mapsList.complete(items);
+      if (err == GemError.success) {
+        mapsListCompleter.complete(items);
+      } else {
+        mapsListCompleter.complete([]);
       }
     });
-    return mapsList.future;
+
+    return mapsListCompleter.future;
   }
 }
