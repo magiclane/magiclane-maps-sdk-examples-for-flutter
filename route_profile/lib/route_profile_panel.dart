@@ -411,7 +411,12 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
     landmark.setImageFromIcon(GemIcon.searchResultsPin);
     landmark.coordinates = coords;
 
-    widget.mapController.activateHighlight([landmark]);
+    widget.mapController.activateHighlight(
+      [landmark],
+      renderSettings: HighlightRenderSettings(
+        options: {HighlightOptions.showLandmark, HighlightOptions.noFading},
+      ),
+    );
   }
 }
 

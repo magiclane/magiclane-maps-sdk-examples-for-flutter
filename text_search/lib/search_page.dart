@@ -125,7 +125,11 @@ class _SearchResultItemState extends State<SearchResultItem> {
         width: 50,
         child:
             widget.landmark.getImage() != null
-                ? Image.memory(widget.landmark.getImage()!)
+                ? Image.memory(
+                  widget.landmark.getImage(size: Size(128, 128))!,
+                  width: 128,
+                  height: 128,
+                )
                 : SizedBox(),
       ),
       title: Text(
@@ -159,7 +163,7 @@ extension LandmarkExtension on Landmark {
     final city = addressInfo.getField(AddressField.city);
     final country = addressInfo.getField(AddressField.country);
 
-    return '$street $city $country';
+    return " ${street ?? ""} ${city ?? ""} ${country ?? ""}";
   }
 
   String getFormattedDistance() {

@@ -274,7 +274,11 @@ class _SearchResultItemState extends State<SearchResultItem> {
         width: 50,
         child:
             widget.landmark.getImage() != null
-                ? Image.memory(widget.landmark.getImage()!)
+                ? Image.memory(
+                  widget.landmark.getImage(size: Size(128, 128))!,
+                  width: 128,
+                  height: 128,
+                )
                 : SizedBox(),
       ),
       title: Text(
@@ -288,7 +292,7 @@ class _SearchResultItemState extends State<SearchResultItem> {
         maxLines: 2,
       ),
       subtitle: Text(
-        widget.landmark.getFormattedDistance() + widget.landmark.getAddress(),
+        "${widget.landmark.getFormattedDistance()} ${widget.landmark.getAddress()}",
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(
           color: Colors.black,
@@ -308,7 +312,11 @@ extension LandmarkExtension on Landmark {
     final city = addressInfo.getField(AddressField.city);
     final country = addressInfo.getField(AddressField.country);
 
-    return '$street $city $country';
+    if (street == null && city == null && country == null) {
+      return 'Address not available';
+    }
+
+    return " ${street ?? ""} ${city ?? ""} ${country ?? ""}";
   }
 
   String getFormattedDistance() {

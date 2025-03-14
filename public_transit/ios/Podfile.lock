@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - gem_kit (2.14.0):
+  - gem_kit (2.15.0):
     - Flutter
   - integration_test (0.0.1):
     - Flutter
@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  gem_kit: 0dba2fb9040f2700ae8edf75e74ef67c4693e4b9
+  gem_kit: a36b5dae87bd10238ad3a59478615a9e3e34c497
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
 
 PODFILE CHECKSUM: 1959d098c91d8a792531a723c4a9d7e9f6a01e38

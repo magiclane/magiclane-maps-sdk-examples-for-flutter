@@ -156,7 +156,7 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
       latitude: 48.864716,
       longitude: 2.349014,
     );
-    final weatherCurrentCompleter = Completer<List<LocationForecast>?>();
+    final weatherCurrentCompleter = Completer<List<LocationForecast>>();
 
     WeatherService.getCurrent(
       coords: [locationCoordinates],
@@ -167,7 +167,7 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
 
     final currentForecast = await weatherCurrentCompleter.future;
 
-    return currentForecast!.first;
+    return currentForecast.first;
   }
 
   Future<List<LocationForecast>> _getHourlyForecast() async {
@@ -175,7 +175,7 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
       latitude: 48.864716,
       longitude: 2.349014,
     );
-    final weatherHourlyCompleter = Completer<List<LocationForecast>?>();
+    final weatherHourlyCompleter = Completer<List<LocationForecast>>();
 
     WeatherService.getHourlyForecast(
       hours: 24,
@@ -187,7 +187,7 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
 
     final currentForecast = await weatherHourlyCompleter.future;
 
-    return currentForecast!;
+    return currentForecast;
   }
 
   Future<List<LocationForecast>> _getDailyForecast() async {
@@ -195,7 +195,7 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
       latitude: 48.864716,
       longitude: 2.349014,
     );
-    final weatherDailyCompleter = Completer<List<LocationForecast>?>();
+    final weatherDailyCompleter = Completer<List<LocationForecast>>();
 
     WeatherService.getDailyForecast(
       days: 10,
@@ -207,6 +207,6 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
 
     final currentForecast = await weatherDailyCompleter.future;
 
-    return currentForecast!;
+    return currentForecast;
   }
 }

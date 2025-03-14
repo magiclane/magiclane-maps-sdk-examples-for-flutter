@@ -72,9 +72,10 @@ class _MapsItemState extends State<MapsItem> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               width: 50,
-              child: _getMapImage(widget.map) != null
-                  ? Image.memory(_getMapImage(widget.map)!)
-                  : SizedBox(),
+              child:
+                  _getMapImage(widget.map) != null
+                      ? Image.memory(_getMapImage(widget.map)!)
+                      : SizedBox(),
             ),
             title: Text(
               widget.map.name,

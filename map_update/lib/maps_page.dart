@@ -60,17 +60,17 @@ class _MapsPageState extends State<MapsPage> {
         actions: [
           updateProgress != null
               ? GestureDetector(
-                  onTap: () {
-                    updatePersistence.cancel();
-                  },
-                  child: const Text("Cancel Update"),
-                )
+                onTap: () {
+                  updatePersistence.cancel();
+                },
+                child: const Text("Cancel Update"),
+              )
               : IconButton(
-                  onPressed: () {
-                    showUpdateDialog();
-                  },
-                  icon: const Icon(Icons.download),
-                ),
+                onPressed: () {
+                  showUpdateDialog();
+                },
+                icon: const Icon(Icons.download),
+              ),
         ],
         backgroundColor: Colors.deepPurple[900],
       ),
@@ -83,8 +83,8 @@ class _MapsPageState extends State<MapsPage> {
             slivers: [
               const SliverToBoxAdapter(child: Text("Local: ")),
               SliverList.separated(
-                separatorBuilder: (context, index) =>
-                    const Divider(indent: 50, height: 0),
+                separatorBuilder:
+                    (context, index) => const Divider(indent: 50, height: 0),
                 itemCount: localMaps.length,
                 itemBuilder: (context, index) {
                   final map = localMaps.elementAt(index);
@@ -112,8 +112,8 @@ class _MapsPageState extends State<MapsPage> {
               else
                 SliverList.separated(
                   itemCount: snapshot.data!.length,
-                  separatorBuilder: (context, index) =>
-                      const Divider(indent: 50, height: 0),
+                  separatorBuilder:
+                      (context, index) => const Divider(indent: 50, height: 0),
                   itemBuilder: (context, index) {
                     final map = snapshot.data!.elementAt(index);
                     return MapsItem(
@@ -308,12 +308,11 @@ class _MapsPageState extends State<MapsPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [Text("Update finished")],
                 ),
-                content: const Column(children: [
-                  Text(
-                    "The update is done.",
-                    textAlign: TextAlign.center,
-                  ),
-                ]),
+                content: const Column(
+                  children: [
+                    Text("The update is done.", textAlign: TextAlign.center),
+                  ],
+                ),
                 actions: [
                   TextButton(
                     child: const Text("Ok"),

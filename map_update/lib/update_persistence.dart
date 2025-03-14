@@ -28,9 +28,16 @@ class UpdatePersistence {
   }
 
   GemError update() {
-    _contentUpdater = ContentStore.createContentUpdater(ContentType.roadMap);
+    final result = ContentStore.createContentUpdater(ContentType.roadMap);
+    final error = result.second;
 
-    final err = _contentUpdater!.update(
+    if (error != GemError.success) {
+      print("Content updater could not be created: ${error.name}");
+      return error;
+    }
+
+    _contentUpdater = result.first;
+    _contentUpdater!.update(
       true,
       onStatusUpdated: (status) {
         print("UpdatePersistence: onNotifyStatusChanged with code $status");
@@ -49,8 +56,7 @@ class UpdatePersistence {
         onProgress?.call(progress);
       },
     );
-    print("UpdatePersistence: update resolved with code ${err.code}");
-    return err;
+    return GemError.success;
   }
 
   void cancel() {

@@ -99,7 +99,13 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      _locationPermissionStatus = PermissionStatus.granted;
+      final locationPermssionWeb =
+          await PositionService.requestLocationPermission;
+      if (locationPermssionWeb == true) {
+        _locationPermissionStatus = PermissionStatus.granted;
+      } else {
+        _locationPermissionStatus = PermissionStatus.denied;
+      }
     } else {
       // For Android & iOS platforms, permission_handler package is used to ask for permissions.
       _locationPermissionStatus = await Permission.locationWhenInUse.request();
@@ -176,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final bookmarks = RecorderBookmarks.create(logsDir);
 
     // Get all recordings path
-    final logList = bookmarks?.logsList;
+    final logList = bookmarks?.getLogsList();
 
     // Get the LogMetadata to obtain details about recorded session
     LogMetadata meta = bookmarks!.getLogMetadata(logList!.last);
@@ -186,7 +192,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // Create a path entity from coordinates
     final path = Path.fromCoordinates(recorderCoordinates);
 
-    Landmark beginLandmark = Landmark.withCoordinates(recorderCoordinates.first);
+    Landmark beginLandmark = Landmark.withCoordinates(
+      recorderCoordinates.first,
+    );
     Landmark endLandmark = Landmark.withCoordinates(recorderCoordinates.last);
 
     beginLandmark.setImageFromIcon(GemIcon.waypointStart);
@@ -196,7 +204,11 @@ class _MyHomePageState extends State<MyHomePage> {
       options: {HighlightOptions.showLandmark},
     );
 
-    _mapController.activateHighlight([beginLandmark, endLandmark], renderSettings: renderSettings, highlightId: 1);
+    _mapController.activateHighlight(
+      [beginLandmark, endLandmark],
+      renderSettings: renderSettings,
+      highlightId: 1,
+    );
 
     // Show the path immediately after stopping recording
     _mapController.preferences.paths.add(path);

@@ -78,12 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.white,
                     ),
                     child: SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: Image.memory(
-                          compassImage!,
-                          gaplessPlayback: true,
-                        )),
+                      width: 40,
+                      height: 40,
+                      child: Image.memory(compassImage!, gaplessPlayback: true),
+                    ),
                   ),
                 ),
               ),

@@ -83,7 +83,13 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      _locationPermissionStatus = PermissionStatus.granted;
+      final locationPermssionWeb =
+          await PositionService.requestLocationPermission;
+      if (locationPermssionWeb == true) {
+        _locationPermissionStatus = PermissionStatus.granted;
+      } else {
+        _locationPermissionStatus = PermissionStatus.denied;
+      }
     } else {
       // For Android & iOS platforms, permission_handler package is used to ask for permissions.
       _locationPermissionStatus = await Permission.locationWhenInUse.request();

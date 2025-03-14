@@ -105,12 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
         ScaffoldMessenger.of(context).clearSnackBars();
 
-        _showSnackBar(context,
-            message: "Styles list is loaded.", duration: Duration(seconds: 2));
+        _showSnackBar(
+          context,
+          message: "Styles list is loaded.",
+          duration: Duration(seconds: 2),
+        );
       } else {
-        _showSnackBar(context,
-            message: "Styles list could not be loaded.",
-            duration: Duration(seconds: 2));
+        _showSnackBar(
+          context,
+          message: "Styles list could not be loaded.",
+          duration: Duration(seconds: 2),
+        );
       }
     });
   }
@@ -162,8 +167,8 @@ class _MyHomePageState extends State<MyHomePage> {
     ContentStoreItem currentStyle = _stylesList[indexOfNextStyle];
 
     if (!currentStyle.isCompleted) {
-      final didDownloadSucessfully = await _downloadStyle(currentStyle);
-      if (!didDownloadSucessfully) return;
+      final didDownloadSuccessfully = await _downloadStyle(currentStyle);
+      if (!didDownloadSuccessfully) return;
     }
 
     _indexOfCurrentStyle = indexOfNextStyle;
