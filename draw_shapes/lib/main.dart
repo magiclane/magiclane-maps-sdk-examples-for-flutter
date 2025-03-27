@@ -149,6 +149,6 @@ class _MyHomePageState extends State<MyHomePage> {
       markerCollection,
       settings: settings,
     );
-    _mapController.centerOnArea(markerCollection.area);
+    _mapController.centerOnArea(markerCollection.area, zoomLevel: 50);
   }
 }

@@ -147,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Save controller for further usage.
     _mapController = controller;
 
-    _dataSource = DataSource.createExternalDataSource([DataType.position]);
+    _dataSource = DataSource.createExternalDataSource([DataType.position])!;
   }
 
   void _onBuildRouteButtonPressed(BuildContext context) {
@@ -333,7 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onFollowPositionButtonPressed() {
     if (!_hasDataSource) {
-      PositionService.instance.setExternalDataSource(_dataSource);
+      PositionService.instance.setExternalDataSource(_dataSource)!;
 
       _dataSource.start();
 

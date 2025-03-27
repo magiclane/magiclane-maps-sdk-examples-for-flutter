@@ -85,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _mapController.centerOnCoordinates(
       Coordinates(latitude: 45.472358, longitude: 9.184945),
+      zoomLevel: 80,
     );
 
     // Enable cursor to render on screen

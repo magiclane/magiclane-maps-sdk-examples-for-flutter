@@ -3,6 +3,8 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
+import 'dart:math';
+
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 
@@ -96,6 +98,9 @@ class _MyHomePageState extends State<MyHomePage> {
       // Get the selected landmarks.
       final landmarks = _mapController.cursorSelectionLandmarks();
 
+      // Reset the cursor position back to middle of the screen
+      await _mapController.resetMapSelection();
+
       // Check if there is a selected Landmark.
       if (landmarks.isEmpty) {
         return;
@@ -110,7 +115,14 @@ class _MyHomePageState extends State<MyHomePage> {
       });
 
       // Use the map controller to center on coordinates.
-      _mapController.centerOnCoordinates(lmk.coordinates);
+      _mapController.centerOnCoordinates(
+        lmk.coordinates,
+        zoomLevel: 70,
+        screenPosition: Point<int>(
+          _mapController.viewport.width ~/ 2,
+          _mapController.viewport.height ~/ 3,
+        ),
+      );
     });
   }
 

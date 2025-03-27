@@ -135,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final recorder = Recorder.create(
       RecorderConfiguration(
-        dataSource: DataSource.createLiveDataSource(),
+        dataSource: DataSource.createLiveDataSource()!,
         logsDir: logsDir,
         recordedTypes: [DataType.position],
         minDurationSeconds: 0,

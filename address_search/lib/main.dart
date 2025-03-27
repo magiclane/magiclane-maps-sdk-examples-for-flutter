@@ -134,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController.centerOnCoordinates(
       landmark.coordinates,
       animation: animation,
+      zoomLevel: 50,
     );
   }
 

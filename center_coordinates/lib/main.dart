@@ -84,6 +84,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final animation = GemAnimation(type: AnimationType.linear);
 
     // Use the map controller to center on coordinates.
-    _mapController.centerOnCoordinates(targetCoordinates, animation: animation);
+    _mapController.centerOnCoordinates(
+      targetCoordinates,
+      animation: animation,
+      zoomLevel: 60,
+    );
   }
 }

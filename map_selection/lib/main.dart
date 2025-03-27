@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
-
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 
@@ -95,6 +94,9 @@ class _MyHomePageState extends State<MyHomePage> {
       // Get the selected landmarks.
       final landmarks = _mapController.cursorSelectionLandmarks();
 
+      // Reset the cursor position back to middle of the screen
+      await _mapController.resetMapSelection();
+
       // Check if there is a selected Landmark.
       if (landmarks.isNotEmpty) {
         // Highlight the selected landmark.
@@ -105,7 +107,10 @@ class _MyHomePageState extends State<MyHomePage> {
         });
 
         // Use the map controller to center on coordinates.
-        _mapController.centerOnCoordinates(landmarks[0].coordinates);
+        _mapController.centerOnCoordinates(
+          _focusedLandmark!.coordinates,
+          zoomLevel: 60,
+        );
       }
     });
   }

@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ], renderSettings: HighlightRenderSettings());
 
       // Centering the map on the desired coordinates
-      _mapController.centerOnCoordinates(result.coordinates);
+      _mapController.centerOnCoordinates(result.coordinates, zoomLevel: 70);
     }
   }
 }

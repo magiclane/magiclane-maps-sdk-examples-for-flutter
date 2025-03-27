@@ -1,7 +1,7 @@
 PODS:
   - CocoaAsyncSocket (7.6.5)
   - Flutter (1.0.0)
-  - gem_kit (2.15.0):
+  - gem_kit (2.16.0):
     - Flutter
   - integration_test (0.0.1):
     - Flutter
@@ -38,7 +38,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  gem_kit: a36b5dae87bd10238ad3a59478615a9e3e34c497
+  gem_kit: 81c98c6d010a75d43588b5984b49096474a9c6ba
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
   patrol: dd82ffedfee3aba87c1d0ed2daad0b77bfb8ee1f
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
