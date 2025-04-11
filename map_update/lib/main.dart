@@ -7,13 +7,11 @@
 
 import 'package:flutter/services.dart';
 
-import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 
-import 'asset_bundle_utils.dart';
 import 'maps_page.dart';
-import 'update_persistence.dart';
+import 'maps_provider.dart';
 
 import 'package:flutter/material.dart';
 
@@ -23,21 +21,21 @@ void main() async {
   // Ensuring that all Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Simulate old maps
-  await rootBundle.loadOldMaps();
+  final autoUpdate = AutoUpdateSettings(
+    isAutoUpdateForRoadMapEnabled: false,
+    isAutoUpdateForViewStyleHighResEnabled: false,
+    isAutoUpdateForViewStyleLowResEnabled: false,
+    isAutoUpdateForHumanVoiceEnabled: false, // default
+    isAutoUpdateForComputerVoiceEnabled: false, // default
+    isAutoUpdateForCarModelEnabled: false, // default
+    isAutoUpdateForResourcesEnabled: false,
+  );
 
-  GemKit.initialize(appAuthorization: projectApiToken).then((value) {
-    ContentStore.refreshContentStore();
-
-    SdkSettings.setAllowConnection(
-      true,
-      onWorldwideRoadMapSupportStatusCallback: (status) {
-        print("UpdatePersistence: onWorldwideRoadMapSupportStatus $status");
-        if (status != Status.upToDate) {
-          UpdatePersistence.instance.isOldData = true;
-        }
-      },
-    );
+  GemKit.initialize(
+    appAuthorization: projectApiToken,
+    autoUpdateSettings: autoUpdate,
+  ).then((value) async {
+    MapsProvider.instance.init(rootBundle);
   });
 
   runApp(const MyApp());
@@ -63,10 +61,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int? mapId;
+  GemMapController? mapController;
 
   void onMapCreated(GemMapController controller) async {
-    mapId = controller.mapId;
+    mapController = controller;
   }
 
   @override
@@ -98,12 +96,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Method to navigate to the Maps Page.
   void _onMapButtonTap(BuildContext context) async {
-    if (mapId != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute<dynamic>(
-          builder: (context) => MapsPage(mapId: mapId!),
-        ),
-      );
+    if (mapController != null) {
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute<dynamic>(builder: (context) => MapsPage()));
     }
   }
 }

@@ -4,7 +4,6 @@
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:flutter/material.dart';
-import 'package:gem_kit/core.dart';
 import 'package:gem_kit/weather.dart';
 import 'package:weather_forecast/extensions.dart';
 
@@ -30,21 +29,12 @@ class ForecastNowPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: 80,
-              width: 80,
-              child: FutureBuilder(
-                future: ImageHandler.decodeImageData(
-                  condition.forecast.first.image,
-                  width: 30,
-                  height: 30,
-                ), // Decodes the image data for the weather icon.
-                builder: (context, snapshot) {
-                  if (snapshot.data != null) {
-                    return RawImage(image: snapshot.data!);
-                  }
-                  return Container();
-                },
-              ),
+              child:
+                  condition.forecast.first.img.isValid
+                      ? Image.memory(
+                        condition.forecast.first.img.getRenderableImageBytes()!,
+                      )
+                      : SizedBox(),
             ),
             Text(condition.forecast.first.description),
           ],

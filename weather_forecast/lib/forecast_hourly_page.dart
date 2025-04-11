@@ -4,7 +4,6 @@
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:flutter/material.dart';
-import 'package:gem_kit/core.dart';
 import 'package:gem_kit/weather.dart';
 import 'package:weather_forecast/extensions.dart';
 
@@ -44,7 +43,7 @@ class WeatherForecastHourlyItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Extracting the image and temperature information from the condition.
-    final conditionImage = condition.image;
+    final conditionImage = condition.img;
     final tempHigh =
         condition.params
             .where((element) => element.type == "Temperature")
@@ -62,19 +61,9 @@ class WeatherForecastHourlyItem extends StatelessWidget {
               Text(condition.getFormattedDate()),
             ],
           ),
-          FutureBuilder(
-            future: ImageHandler.decodeImageData(
-              conditionImage,
-              width: 30,
-              height: 30,
-            ), // Decodes the image data.
-            builder: (context, snapshot) {
-              if (snapshot.data != null) {
-                return RawImage(image: snapshot.data!);
-              }
-              return Container();
-            },
-          ),
+          conditionImage.isValid
+              ? Image.memory(conditionImage.getRenderableImageBytes()!)
+              : SizedBox(),
           Text("${tempHigh.value} ${tempHigh.unit}"),
         ],
       ),

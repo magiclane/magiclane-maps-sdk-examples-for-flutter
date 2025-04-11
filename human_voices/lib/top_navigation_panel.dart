@@ -32,19 +32,16 @@ class NavigationInstructionPanel extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             width: 100,
             child:
-                instruction.nextTurnDetails.getAbstractGeometryImage(
-                          renderSettings: AbstractGeometryImageRenderSettings(),
-                          size: const Size(200, 200),
-                        ) !=
-                        null
+                instruction.nextTurnDetails.abstractGeometryImg.isValid
                     ? Image.memory(
-                      instruction.nextTurnDetails.getAbstractGeometryImage(
-                        renderSettings: AbstractGeometryImageRenderSettings(),
-                        size: const Size(200, 200),
-                      )!,
+                      instruction.nextTurnDetails.abstractGeometryImg
+                          .getRenderableImageBytes(
+                            size: Size(200, 200),
+                            format: ImageFileFormat.png,
+                          )!,
                       gaplessPlayback: true,
                     )
-                    : const SizedBox(),
+                    : const SizedBox(), // Empty widget
           ),
           SizedBox(
             width: MediaQuery.of(context).size.width - 150,
@@ -60,6 +57,7 @@ class NavigationInstructionPanel extends StatelessWidget {
                     fontSize: 25,
                     fontWeight: FontWeight.w600,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   instruction.nextStreetName,
@@ -68,6 +66,7 @@ class NavigationInstructionPanel extends StatelessWidget {
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

@@ -4,13 +4,11 @@
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 import 'package:gem_kit/content_store.dart';
-import 'package:gem_kit/core.dart';
 
 import 'maps_item.dart';
+import 'utils.dart';
 
 import 'package:flutter/material.dart';
-
-import 'dart:async';
 
 class MapsPage extends StatefulWidget {
   const MapsPage({super.key});
@@ -20,12 +18,7 @@ class MapsPage extends StatefulWidget {
 }
 
 class _MapsPageState extends State<MapsPage> {
-  List<ContentStoreItem> mapsList = [];
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  final mapsList = <ContentStoreItem>[];
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +30,7 @@ class _MapsPageState extends State<MapsPage> {
         backgroundColor: Colors.deepPurple[900],
       ),
       body: FutureBuilder<List<ContentStoreItem>>(
-        future: _getMaps(),
+        future: getMaps(),
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.data == null) {
             return const Center(child: CircularProgressIndicator());
@@ -49,32 +42,13 @@ class _MapsPageState extends State<MapsPage> {
               separatorBuilder:
                   (context, index) => const Divider(indent: 50, height: 0),
               itemBuilder: (context, index) {
-                final map = snapshot.data!.elementAt(index);
-                return MapsItem(map: map);
+                final mapItem = snapshot.data!.elementAt(index);
+                return MapsItem(mapItem: mapItem);
               },
             ),
           );
         },
       ),
     );
-  }
-
-  // Method to load the maps
-  Future<List<ContentStoreItem>> _getMaps() async {
-    final mapsListCompleter = Completer<List<ContentStoreItem>>();
-
-    ContentStore.asyncGetStoreContentList(ContentType.roadMap, (
-      err,
-      items,
-      isCached,
-    ) {
-      if (err == GemError.success) {
-        mapsListCompleter.complete(items);
-      } else {
-        mapsListCompleter.complete([]);
-      }
-    });
-
-    return mapsListCompleter.future;
   }
 }

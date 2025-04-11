@@ -13,7 +13,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
-import 'dart:typed_data';
 
 class SearchPage extends StatefulWidget {
   final GemMapController controller;
@@ -85,9 +84,7 @@ class _SearchPageState extends State<SearchPage> {
                   return CategoryItem(
                     onTap: () => _onCategoryTap(index),
                     category: widget.categories[index],
-                    categoryIcon: widget.categories[index].getImage(
-                      size: Size(200, 200),
-                    ),
+                    categoryIcon: widget.categories[index].img,
                   );
                 },
               ),
@@ -200,7 +197,7 @@ class _SearchPageState extends State<SearchPage> {
 // Class for the categories.
 class CategoryItem extends StatefulWidget {
   final LandmarkCategory category;
-  final Uint8List? categoryIcon;
+  final Img categoryIcon;
   final VoidCallback onTap;
 
   const CategoryItem({
@@ -228,11 +225,13 @@ class _CategoryItemState extends State<CategoryItem> {
       },
       leading: Container(
         padding: const EdgeInsets.all(8),
-        width: 50,
-        height: 50,
         child:
-            widget.categoryIcon != null
-                ? Image.memory(widget.categoryIcon!)
+            widget.categoryIcon.isValid
+                ? Image.memory(
+                  widget.categoryIcon.getRenderableImageBytes(
+                    size: Size(50, 50),
+                  )!,
+                )
                 : SizedBox(),
       ),
       title: Text(
@@ -271,13 +270,12 @@ class _SearchResultItemState extends State<SearchResultItem> {
       onTap: () => Navigator.of(context).pop(widget.landmark),
       leading: Container(
         padding: const EdgeInsets.all(8),
-        width: 50,
         child:
-            widget.landmark.getImage() != null
+            widget.landmark.img.isValid
                 ? Image.memory(
-                  widget.landmark.getImage(size: Size(128, 128))!,
-                  width: 128,
-                  height: 128,
+                  widget.landmark.img.getRenderableImageBytes(
+                    size: Size(50, 50),
+                  )!,
                 )
                 : SizedBox(),
       ),

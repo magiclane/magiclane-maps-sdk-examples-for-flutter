@@ -56,10 +56,13 @@ class _FavoritesItemState extends State<FavoritesItem> {
       onTap: () => Navigator.of(context).pop(widget.landmark),
       leading: Container(
         padding: const EdgeInsets.all(8),
-        width: 50,
         child:
-            widget.landmark.getImage() != null
-                ? Image.memory(widget.landmark.getImage()!)
+            widget.landmark.img.isValid
+                ? Image.memory(
+                  widget.landmark.img.getRenderableImageBytes(
+                    size: Size(50, 50),
+                  )!,
+                )
                 : SizedBox(),
       ),
       title: Text(

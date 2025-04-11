@@ -333,7 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onFollowPositionButtonPressed() {
     if (!_hasDataSource) {
-      PositionService.instance.setExternalDataSource(_dataSource)!;
+      PositionService.instance.setExternalDataSource(_dataSource);
 
       _dataSource.start();
 

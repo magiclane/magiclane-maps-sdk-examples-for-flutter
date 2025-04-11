@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           if (_focusedLandmark != null)
             Positioned(
-              bottom: 10,
+              bottom: 30,
               child: LandmarkPanel(
                 onCancelTap: _onCancelLandmarkPanelTap,
                 onFavoritesTap: _onFavoritesLandmarkPanelTap,

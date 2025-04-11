@@ -61,11 +61,7 @@ class _InstructionsItemState extends State<InstructionsItem> {
         padding: const EdgeInsets.all(8),
         width: 50,
         child:
-            widget.instruction.turnDetails.getAbstractGeometryImage(
-                      renderSettings: AbstractGeometryImageRenderSettings(),
-                      size: Size(100, 100),
-                    ) !=
-                    null
+            widget.instruction.turnImg.isValid
                 ? Image.memory(
                   widget.instruction.turnDetails.getAbstractGeometryImage(
                     renderSettings: AbstractGeometryImageRenderSettings(),

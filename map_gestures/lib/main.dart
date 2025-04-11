@@ -9,6 +9,7 @@ import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 
 import 'package:flutter/material.dart';
+import 'package:map_gestures/gesture_panel.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
@@ -40,6 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
   // GemMapController object used to interact with the map
   late GemMapController _mapController;
 
+  String? _mapGesture;
+
   @override
   void dispose() {
     GemKit.release();
@@ -57,10 +60,19 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         actions: [],
       ),
-      body: GemMap(
-        key: ValueKey("GemMap"),
-        onMapCreated: _onMapCreated,
-        appAuthorization: projectApiToken,
+      body: Stack(
+        children: [
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
+          ),
+          if (_mapGesture != null)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 1,
+              child: GesturePanel(gesture: _mapGesture!),
+            ),
+        ],
       ),
     );
   }
@@ -69,21 +81,106 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController = controller;
 
     _mapController.registerMapAngleUpdateCallback((angle) {
+      setState(() {
+        _mapGesture = 'Rotate gesture';
+      });
       print("Gesture: onMapAngleUpdate $angle");
     });
 
     _mapController.registerTouchCallback((point) {
+      setState(() {
+        _mapGesture = 'Touch Gesture';
+      });
       print("Gesture: onTouch $point");
     });
 
     _mapController.registerMoveCallback((point1, point2) {
+      setState(() {
+        _mapGesture = 'Pan Gesture';
+      });
       print(
         'Gesture: onMove from (${point1.x} ${point1.y}) to (${point2.x} ${point2.y})',
       );
     });
 
     _mapController.registerLongPressCallback((point) {
+      setState(() {
+        _mapGesture = 'Long Press Gesture';
+      });
       print('Gesture: onLongPress $point');
     });
+
+    _mapController.registerDoubleTouchCallback((point) {
+      setState(() {
+        _mapGesture = 'Double Touch Gesture';
+      });
+      print('Gesture: onDoubleTouch $point');
+    });
+
+    _mapController.registerPinchCallback((
+      point1,
+      point2,
+      point3,
+      point4,
+      point5,
+    ) {
+      setState(() {
+        _mapGesture = 'Pinch Gesture';
+      });
+      print(
+        'Gesture: onPinch from (${point1.x} ${point1.y}) to (${point2.x} ${point2.y})',
+      );
+    });
+
+    _mapController.registerShoveCallback((degrees, point1, point2, point3) {
+      setState(() {
+        _mapGesture = 'Shove Gesture';
+      });
+      print(
+        'Gesture: onShove with $degrees angle from (${point1.x} ${point1.y}) to (${point2.x} ${point2.y})',
+      );
+    });
+
+    _mapController.registerSwipeCallback((distX, distY, speedMMPerSec) {
+      setState(() {
+        _mapGesture = 'Swipe Gesture';
+      });
+      print(
+        'Gesture: onSwipe with $distX distance in X and $distY distance in Y at $speedMMPerSec mm/s',
+      );
+    });
+
+    _mapController.registerPinchSwipeCallback((point, zoomSpeed, rotateSpeed) {
+      setState(() {
+        _mapGesture = 'Pinch Swipe Gesture';
+      });
+      print(
+        'Gesture: onPinchSwipe with zoom speed $zoomSpeed and rotate speed $rotateSpeed',
+      );
+    });
+
+    _mapController.registerTwoTouchesCallback((point) {
+      setState(() {
+        _mapGesture = 'Two Touches Gesture';
+      });
+      print('Gesture: onTwoTouches $point');
+    });
+
+    _mapController.registerTouchPinchCallback((point1, point2, point3, point4) {
+      setState(() {
+        _mapGesture = 'Touch Pinch Gesture';
+      });
+      print(
+        'Gesture: onTouchPinch from (${point1.x} ${point1.y}) to (${point2.x} ${point2.y})',
+      );
+    });
+  }
+
+  void showSnackbar(String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 3),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

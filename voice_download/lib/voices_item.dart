@@ -5,15 +5,11 @@
 
 // ignore_for_file: avoid_print
 
-import 'dart:typed_data';
-
 import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 
 import 'package:flutter/material.dart';
-
-import 'dart:async';
 
 class VoicesItem extends StatefulWidget {
   final ContentStoreItem voice;
@@ -32,23 +28,24 @@ class _VoicesItemState extends State<VoicesItem> {
   @override
   void initState() {
     super.initState();
+
     _isDownloaded = widget.voice.isCompleted;
     _downloadProgress = widget.voice.downloadProgress.toDouble();
 
     //If the voice is downloading pause and start downloading again
     //so the progress indicator updates value from callback
     if (_isDownloadingOrWaiting()) {
-      final errCode = widget.voice.pauseDownload();
-      if (errCode != GemError.success) {
-        print(
-          "Download pause for item ${widget.voice.id} failed with code $errCode",
-        );
-        return;
-      }
-
-      Future<dynamic>.delayed(
-        const Duration(milliseconds: 500),
-      ).then((value) => _downloadVoice());
+      widget.voice.pauseDownload(
+        onComplete: (err) {
+          if (err == GemError.success) {
+            _downloadVoice();
+          } else {
+            print(
+              "Download pause for item ${widget.voice.id} failed with code $err",
+            );
+          }
+        },
+      );
     }
   }
 
@@ -65,6 +62,7 @@ class _VoicesItemState extends State<VoicesItem> {
 
   @override
   Widget build(BuildContext context) {
+    Img countryImg = _getCountryImage(widget.voice)!;
     return Row(
       children: [
         Expanded(
@@ -74,8 +72,10 @@ class _VoicesItemState extends State<VoicesItem> {
               padding: const EdgeInsets.all(8),
               width: 50,
               child:
-                  _getCountryImage(widget.voice) != null
-                      ? Image.memory(_getCountryImage(widget.voice)!)
+                  countryImg.isValid
+                      ? Image.memory(
+                        countryImg.getRenderableImageBytes(size: Size(80, 80))!,
+                      )
                       : SizedBox(),
             ),
             title: Text(
@@ -126,12 +126,9 @@ class _VoicesItemState extends State<VoicesItem> {
   }
 
   // Method that returns the image of the country
-  Uint8List? _getCountryImage(ContentStoreItem voice) {
+  Img? _getCountryImage(ContentStoreItem voice) {
     final countryCodes = voice.countryCodes;
-    final countryImage = MapDetails.getCountryFlag(
-      countryCode: countryCodes[0],
-      size: const Size(100, 100),
-    );
+    final countryImage = MapDetails.getCountryFlagImg(countryCodes[0]);
     return countryImage;
   }
 

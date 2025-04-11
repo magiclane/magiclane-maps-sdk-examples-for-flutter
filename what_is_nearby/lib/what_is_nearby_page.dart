@@ -102,6 +102,14 @@ class _NearbyItemState extends State<NearbyItem> {
         ),
         maxLines: 2,
       ),
+      leading:
+          widget.landmark.img.isValid
+              ? Image.memory(
+                widget.landmark.img.getRenderableImageBytes(
+                  size: Size(128, 128),
+                )!,
+              )
+              : SizedBox(),
       trailing: Text(
         _convertDistance(
           widget.landmark.coordinates.distance(widget.currentPosition).toInt(),

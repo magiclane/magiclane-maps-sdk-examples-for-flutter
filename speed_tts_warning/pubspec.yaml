@@ -1,0 +1,31 @@
+name: speed_tts_warning
+description: A Flutter example using Maps SDK for Flutter.
+
+publish_to: 'none' 
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  gem_kit:
+    path: plugins/gem_kit
+
+  cupertino_icons: ^1.0.2
+  intl: ^0.20.0
+  flutter_tts: ^4.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

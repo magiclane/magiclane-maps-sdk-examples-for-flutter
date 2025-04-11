@@ -164,13 +164,12 @@ class _SearchResultItemState extends State<SearchResultItem> {
       onTap: () => Navigator.of(context).pop(widget.landmark),
       leading: Container(
         padding: const EdgeInsets.all(8),
-        width: 50,
         child:
-            widget.landmark.getImage() != null
+            widget.landmark.img.isValid
                 ? Image.memory(
-                  widget.landmark.getImage(size: Size(128, 128))!,
-                  width: 128,
-                  height: 128,
+                  widget.landmark.img.getRenderableImageBytes(
+                    size: Size(50, 50),
+                  )!,
                 )
                 : SizedBox(),
       ),

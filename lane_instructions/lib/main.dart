@@ -102,26 +102,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.all(8.0),
                   // Call getLaneImage on instruction
                   child:
-                      currentInstruction.getLaneImage(
-                                size: Size(100, 50),
-                                renderSettings: LaneImageRenderSettings(
-                                  backgroundColor: Colors.white,
-                                  activeColor: Colors.green,
-                                  inactiveColor: Colors.black,
-                                ),
-                              ) !=
-                              null
+                      currentInstruction.laneImg.isValid
                           ? Image.memory(
-                            currentInstruction.getLaneImage(
-                              size: Size(100, 50),
-                              renderSettings: LaneImageRenderSettings(
-                                backgroundColor: Colors.white,
-                                activeColor: Colors.green,
-                                inactiveColor: Colors.black,
-                              ),
-                            )!,
+                            currentInstruction.laneImg
+                                .getRenderableImage(
+                                  size: Size(100, 50),
+                                  format: ImageFileFormat.png,
+                                  allowResize: true,
+                                )!
+                                .bytes,
+                            gaplessPlayback: true,
                           )
-                          : const SizedBox(),
+                          : SizedBox(),
                 ),
               ),
             ),

@@ -6,9 +6,11 @@
 import 'package:gem_kit/weather.dart';
 
 extension ConditionExtension on Conditions {
-  // Formatting the date for display.
+  // Formatting the date for display in DD/MM/YYYY format
   String getFormattedDate() {
-    return "${stamp.day}/${stamp.month}/${stamp.year}";
+    final day = (stamp.day < 10 ? "0" : "") + stamp.day.toString();
+    final month = (stamp.month < 10 ? "0" : "") + stamp.month.toString();
+    return "$day/$month/${stamp.year}";
   }
 
   // Formatting the temperature for display

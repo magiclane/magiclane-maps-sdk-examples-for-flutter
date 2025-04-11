@@ -105,6 +105,27 @@ MY_DIR="$(cd "$(dirname "${0}")" && pwd)"
 # Find paths that contain an app module
 EXAMPLE_PROJECTS=( $(find "${MY_DIR}/.." -maxdepth 2 -type d -exec [ -d {}/plugins ] \; -print -prune | while read -r DIR; do realpath "${DIR}"; done) )
 
+function check_app_identifiers() {
+	local RC=0
+
+	for i in "${!EXAMPLE_PROJECTS[@]}"; do
+		msg "Check '${EXAMPLE_PROJECTS[${i}]}' for app identifiers..."
+		
+		EXAMPLE_I="$(basename ${EXAMPLE_PROJECTS[${i}]})"
+		EXAMPLE_I_NO_UNDERSCORE=${EXAMPLE_I//_}
+		if grep -irl --exclude "*.dart" --exclude-dir "*/gem_kit" "${EXAMPLE_I_NO_UNDERSCORE}" ${EXAMPLE_PROJECTS[${i}]}; then
+			msg "Found wrong app identifier: '${EXAMPLE_I_NO_UNDERSCORE}' in '${EXAMPLE_I}'"
+			RC=1
+			find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/${EXAMPLE_I_NO_UNDERSCORE}/${EXAMPLE_I}/gI" {} +
+		fi
+
+		find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/PRODUCT_BUNDLE_IDENTIFIER = com\.example\./PRODUCT_BUNDLE_IDENTIFIER = com.magiclane.gemkit.examples./g" {} +
+		find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/PRODUCT_COPYRIGHT = Copyright © 2024 com\.example\. All rights reserved./PRODUCT_COPYRIGHT = 1995-2025 Magic Lane International B.V. <info@magiclane.com>/g" {} +
+	done
+
+	return ${RC}
+}	
+		
 function check_mismatch() {
 	local RC=0
 
@@ -119,21 +140,30 @@ function check_mismatch() {
 
 			EXAMPLE_J="$(basename ${EXAMPLE_PROJECTS[${j}]})"
 			if grep -irl "${EXAMPLE_J}" ${EXAMPLE_PROJECTS[${i}]}; then
-				msg "Found mismatch string: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
-				RC=1
-				find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -prune \) -exec sed -i "s/${EXAMPLE_J}/${EXAMPLE_I}/g" {} +
+				if [[ "${EXAMPLE_PROJECTS[${i}]}" != *"${EXAMPLE_J}"* ]]; then
+					msg "Found mismatch string: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
+					RC=1
+					find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -prune \) -exec sed -i "s/${EXAMPLE_J}/${EXAMPLE_I}/g" {} +
+				fi
 			fi
+
+			EXAMPLE_I_NO_UNDERSCORE=${EXAMPLE_I//_}
 			EXAMPLE_J_NO_UNDERSCORE=${EXAMPLE_J//_}
 			if grep -irl --exclude "*.dart" --exclude-dir "*/gem_kit" "${EXAMPLE_J_NO_UNDERSCORE}" ${EXAMPLE_PROJECTS[${i}]}; then
-				msg "Found mismatch string: '${EXAMPLE_J_NO_UNDERSCORE}' in '${EXAMPLE_I}'"
-				RC=1
-				find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/${EXAMPLE_J_NO_UNDERSCORE}/${EXAMPLE_I//_}/gI" {} +
+				if [[ "${EXAMPLE_I_NO_UNDERSCORE}" != *"${EXAMPLE_J_NO_UNDERSCORE}"* ]]; then
+					msg "Found mismatch string: '${EXAMPLE_J_NO_UNDERSCORE}' in '${EXAMPLE_I}'"
+					RC=1
+					find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/${EXAMPLE_J_NO_UNDERSCORE}/${EXAMPLE_I//_}/gI" {} +
+				fi
 			fi
-			MISMATCH_DIRS=( $(find "${EXAMPLE_PROJECTS[${i}]}" -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" 2>/dev/null) )
-			if [ ${#MISMATCH_DIRS[@]} -gt 0 ]; then
-				msg "Found mismatch folder: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
-				RC=1
-				find ${EXAMPLE_PROJECTS[${i}]} -depth -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" -execdir rename -v "s/${EXAMPLE_J}/${EXAMPLE_I}/" '{}' +
+
+			if [[ "${EXAMPLE_I}" != *"${EXAMPLE_J}"* ]]; then
+				MISMATCH_DIRS=( $(find "${EXAMPLE_PROJECTS[${i}]}" -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" 2>/dev/null) )
+				if [ ${#MISMATCH_DIRS[@]} -gt 0 ]; then
+					msg "Found mismatch folder: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
+					RC=1
+					find ${EXAMPLE_PROJECTS[${i}]} -depth -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" -execdir rename -v "s/${EXAMPLE_J}/${EXAMPLE_I}/" '{}' +
+				fi
 			fi
 		done
 	done
@@ -224,8 +254,17 @@ function check_license() {
 
 RC=0
 
-check_mismatch || RC=1
+echo -e "\n"
+msg "Check application identifiers..."
+check_app_identifiers || RC=1
+echo -e "\n"
+msg "Check folder/file mismatches..."
+check_mismatch || RC=1s
+echo -e "\n"
+msg "Check secrets..."
 check_secrets || RC=1
+echo -e "\n"
+msg "Check licenses..."
 check_license || RC=1
 
 exit ${RC}

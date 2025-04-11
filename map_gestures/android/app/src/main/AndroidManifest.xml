@@ -7,7 +7,7 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="MapGestures"
+        android:label="map_gestures"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

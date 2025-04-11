@@ -7,7 +7,7 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="MultiMapRouting"
+        android:label="multi_map_routing"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

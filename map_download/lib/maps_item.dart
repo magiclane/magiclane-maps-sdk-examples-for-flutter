@@ -3,63 +3,33 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
-// ignore_for_file: avoid_print
-
-import 'dart:typed_data';
-
 import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
 
 import 'package:flutter/material.dart';
 
-import 'dart:async';
+import 'utils.dart';
 
 class MapsItem extends StatefulWidget {
-  final ContentStoreItem map;
+  final ContentStoreItem mapItem;
 
-  const MapsItem({super.key, required this.map});
+  const MapsItem({super.key, required this.mapItem});
 
   @override
   State<MapsItem> createState() => _MapsItemState();
 }
 
 class _MapsItemState extends State<MapsItem> {
-  late bool _isDownloaded;
-
-  double _downloadProgress = 0;
+  ContentStoreItem get mapItem => widget.mapItem;
 
   @override
   void initState() {
     super.initState();
-    _isDownloaded = widget.map.isCompleted;
-    _downloadProgress = widget.map.downloadProgress.toDouble();
 
-    //If the map is downloading pause and start downloading again
-    //so the progress indicator updates value from callback
-    if (_isDownloadingOrWaiting()) {
-      final errCode = widget.map.pauseDownload();
-      if (errCode == GemError.success) {
-        Future<dynamic>.delayed(
-          const Duration(milliseconds: 500),
-        ).then((value) => _downloadMap());
-      } else {
-        print(
-          "Download pause for item ${widget.map.id} failed with code $errCode",
-        );
-      }
-    }
-  }
-
-  bool _isDownloadingOrWaiting() {
-    final status = widget.map.status;
-    return [
-      ContentStoreItemStatus.downloadQueued,
-      ContentStoreItemStatus.downloadRunning,
-      ContentStoreItemStatus.downloadWaitingNetwork,
-      ContentStoreItemStatus.downloadWaitingFreeNetwork,
-      ContentStoreItemStatus.downloadWaitingNetwork,
-    ].contains(status);
+    mapItem.restartDownloadIfNecessary(
+      _onMapDownloadFinished,
+      onProgressCallback: _onMapDownloadProgressUpdated,
+    );
   }
 
   @override
@@ -73,12 +43,12 @@ class _MapsItemState extends State<MapsItem> {
               padding: const EdgeInsets.all(8),
               width: 50,
               child:
-                  _getMapImage(widget.map) != null
-                      ? Image.memory(_getMapImage(widget.map)!)
+                  mapItem.image != null
+                      ? Image.memory(mapItem.image!)
                       : SizedBox(),
             ),
             title: Text(
-              widget.map.name,
+              mapItem.name,
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16,
@@ -86,26 +56,25 @@ class _MapsItemState extends State<MapsItem> {
               ),
             ),
             subtitle: Text(
-              "${(widget.map.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
+              "${(mapItem.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
               style: const TextStyle(color: Colors.black, fontSize: 16),
             ),
             trailing: SizedBox.square(
               dimension: 50,
               child: Builder(
                 builder: (context) {
-                  if (_isDownloaded) {
+                  if (mapItem.isCompleted) {
                     return const Icon(Icons.download_done, color: Colors.green);
-                  } else if (_isDownloadingOrWaiting()) {
+                  } else if (mapItem.isDownloadingOrWaiting) {
                     return SizedBox(
                       height: 10,
                       child: CircularProgressIndicator(
-                        value: _downloadProgress / 100,
+                        value: mapItem.downloadProgress / 100.0,
                         color: Colors.blue,
                         backgroundColor: Colors.grey.shade300,
                       ),
                     );
-                  } else if (widget.map.status ==
-                      ContentStoreItemStatus.paused) {
+                  } else if (mapItem.status == ContentStoreItemStatus.paused) {
                     return const Icon(Icons.pause);
                   }
                   return const SizedBox.shrink();
@@ -114,9 +83,13 @@ class _MapsItemState extends State<MapsItem> {
             ),
           ),
         ),
-        if (_isDownloaded)
+        if (mapItem.isCompleted)
           IconButton(
-            onPressed: () => _deleteMap(widget.map),
+            onPressed: () {
+              if (mapItem.deleteContent() == GemError.success) {
+                setState(() {});
+              }
+            },
             padding: EdgeInsets.zero,
             icon: const Icon(Icons.delete),
           ),
@@ -124,30 +97,19 @@ class _MapsItemState extends State<MapsItem> {
     );
   }
 
-  // Method that returns the image of a map
-  Uint8List? _getMapImage(ContentStoreItem map) {
-    final countryCodes = map.countryCodes;
-    final countryImage = MapDetails.getCountryFlag(
-      countryCode: countryCodes[0],
-      size: const Size(100, 100),
-    );
-    return countryImage;
-  }
-
   void _onTileTap() {
-    if (_isDownloaded) return;
-
-    if (_isDownloadingOrWaiting()) {
-      _pauseDownload();
-      return;
+    if (!mapItem.isCompleted) {
+      if (mapItem.isDownloadingOrWaiting) {
+        _pauseDownload();
+      } else {
+        _downloadMap();
+      }
     }
-
-    _downloadMap();
   }
 
   void _downloadMap() {
     // Download the map.
-    widget.map.asyncDownload(
+    mapItem.asyncDownload(
       _onMapDownloadFinished,
       onProgressCallback: _onMapDownloadProgressUpdated,
       allowChargedNetworks: true,
@@ -156,31 +118,20 @@ class _MapsItemState extends State<MapsItem> {
 
   void _pauseDownload() {
     // Pause the download.
-    widget.map.pauseDownload();
-
+    mapItem.pauseDownload();
     setState(() {});
   }
 
   void _onMapDownloadProgressUpdated(int progress) {
     if (mounted) {
-      setState(() => _downloadProgress = progress.toDouble());
+      setState(() {});
     }
   }
 
   void _onMapDownloadFinished(GemError err) {
     // If there is no error, we change the state
-    if (err == GemError.success && mounted) {
-      setState(() => _isDownloaded = true);
-    }
-  }
-
-  void _deleteMap(ContentStoreItem map) {
-    final deletedSuccesfully = map.deleteContent() == GemError.success;
-    if (deletedSuccesfully) {
-      setState(() {
-        _isDownloaded = false;
-        _downloadProgress = 0;
-      });
+    if (mounted && err == GemError.success) {
+      setState(() {});
     }
   }
 }

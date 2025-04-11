@@ -7,7 +7,7 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="RouteInstructions"
+        android:label="route_instructions"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
