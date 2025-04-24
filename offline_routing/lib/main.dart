@@ -226,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
 
       // Deny internet connection
-      SdkSettings.setAllowConnection(false);
+      SdkSettings.setAllowInternetConnection(false);
       return;
     }
 
@@ -253,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // If there is no error, we change the state
     if (err == GemError.success) {
       // Deny internet connection
-      SdkSettings.setAllowConnection(false);
+      SdkSettings.setAllowInternetConnection(false);
 
       setState(() => _isDownloaded = true);
     }

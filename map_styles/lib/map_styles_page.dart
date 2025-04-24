@@ -23,12 +23,6 @@ class _MapStylesPageState extends State<MapStylesPage> {
   StylesProvider stylesProvider = StylesProvider.instance;
 
   @override
-  void initState() {
-    stylesProvider.init();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final offlineStyles = StylesProvider.getOfflineStyles();
     return Scaffold(

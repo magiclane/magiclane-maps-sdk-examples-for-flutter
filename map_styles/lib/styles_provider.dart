@@ -16,11 +16,6 @@ class StylesProvider {
   StylesProvider._privateConstructor();
   static final StylesProvider instance = StylesProvider._privateConstructor();
 
-  void init() async {
-    // Ensure network connection is live
-    SdkSettings.setAllowConnection(true, canDoAutoUpdateResources: true);
-  }
-
   // Method to load the local-available styles
   static List<ContentStoreItem> getOfflineStyles() {
     final localMaps = ContentStore.getLocalContentList(

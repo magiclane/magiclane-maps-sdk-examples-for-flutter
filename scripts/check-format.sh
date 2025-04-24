@@ -60,10 +60,10 @@ msg "Running 'dart format' to check examples dart style."
 MY_DIR="$(cd "$(dirname "${0}")" && pwd)"
 
 # Find paths that contain an app module
-EXAMPLE_PROJECTS=$(find "${MY_DIR}/.." -maxdepth 1 -type d -exec [ -d {}/plugins ] \; -print -prune)
+EXAMPLE_PROJECTS=( $(find "${MY_DIR}/.." -maxdepth 1 -type d -exec [ -d {}/plugins ] \; -print -prune | while read -r DIR; do realpath "${DIR}"; done) )
 
 FORMAT_OK=1
-for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
+for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
     msg "Check '${EXAMPLE_PATH}'..."
     
     pushd "${EXAMPLE_PATH}" &>/dev/null

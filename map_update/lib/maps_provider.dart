@@ -33,14 +33,15 @@ class MapsProvider {
     // AS A USER YOU NEVER DO THAT
     await loadOldMaps(assetBundle);
 
+    SdkSettings.setAllowInternetConnection(true);
+
     // keep track of the new maps status
-    SdkSettings.setAllowConnection(
-      true,
-      onWorldwideRoadMapSupportStatusCallback: (status) async {
-        print("MapsProvider: Maps status updated: $status");
-        _currentMapsStatus = CurrentMapsStatus.fromStatus(status);
-      },
-    );
+    SdkSettings.offBoardListener.registerOnWorldwideRoadMapSupportStatus((
+      status,
+    ) async {
+      print("MapsProvider: Maps status updated: $status");
+      _currentMapsStatus = CurrentMapsStatus.fromStatus(status);
+    });
 
     // force trying the map update process
     //The user will be notified via onWorldwideRoadMapSupportStatusCallback

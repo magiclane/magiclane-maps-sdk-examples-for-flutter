@@ -202,9 +202,9 @@ ${BUILD_WEB} && mkdir _WEB
 popd &>/dev/null
 
 # Find paths that contain an app module
-EXAMPLE_PROJECTS=$(find "${MY_DIR}" -maxdepth 1 -type d -exec [ -d {}/plugins ] \; -print -prune)
+EXAMPLE_PROJECTS=( $(find "${MY_DIR}" -maxdepth 1 -type d -exec [ -d {}/plugins ] \; -print -prune | while read -r DIR; do realpath "${DIR}"; done) )
 
-for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
+for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
 	EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
 
     cp -R "${SDK_TEMP_DIR}"/gem_kit "${EXAMPLE_PATH}"/plugins/

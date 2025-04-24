@@ -59,6 +59,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Weather Forecast](weather_forecast) - Show how to get weather information for a coordinate.
 * [What is Nearby](what_is_nearby) - Show how to get current position and use `GenericCategories`. Perform `searchAroundPosition` with specific categories and position.
 * [What Is Nearby Category](what_is_nearby_category) - Search nearby locations based on category.
+* [Social Report](social_report) - Upload and view social events.
 
 **Note:** As the very first step, we highly recommend that you get a token from [Magic Lane Portal](https://developer.magiclane.com/api). If no token is set, you can still test your apps, but a watermark will be displayed, and all the online services including mapping, searching, routing, etc. will slow down after a few minutes.
 

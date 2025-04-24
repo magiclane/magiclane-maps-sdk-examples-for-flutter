@@ -24,22 +24,45 @@ class StylesProvider {
 
   Future<void> init() {
     final completer = Completer<void>();
+
+    SdkSettings.setAllowInternetConnection(true);
+
     // Keep track of the new styles status
-    SdkSettings.setAllowConnection(
-      true,
-      onWorldwideRoadMapSupportStatusCallback: (status) async {
-        print("MapsProvider: Maps status updated: $status");
-      },
-      onAvailableContentUpdateCallback: (type, status) {
-        if (type == ContentType.viewStyleHighRes ||
-            type == ContentType.viewStyleLowRes) {
-          _currentStylesStatus = CurrentStylesStatus.fromStatus(status);
-        }
-        if (!completer.isCompleted) {
-          completer.complete();
-        }
-      },
-    );
+    SdkSettings.offBoardListener.registerOnWorldwideRoadMapSupportStatus((
+      status,
+    ) async {
+      print("MapsProvider: Maps status updated: $status");
+    });
+
+    SdkSettings.offBoardListener.registerOnAvailableContentUpdate((
+      type,
+      status,
+    ) {
+      if (type == ContentType.viewStyleHighRes ||
+          type == ContentType.viewStyleLowRes) {
+        _currentStylesStatus = CurrentStylesStatus.fromStatus(status);
+      }
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+    });
+
+    // // Keep track of the new styles status - deprecated
+    // SdkSettings.setAllowConnection(
+    //   true,
+    //   onWorldwideRoadMapSupportStatusCallback: (status) async {
+    //     print("MapsProvider: Maps status updated: $status");
+    //   },
+    //   onAvailableContentUpdateCallback: (type, status) {
+    //     if (type == ContentType.viewStyleHighRes ||
+    //         type == ContentType.viewStyleLowRes) {
+    //       _currentStylesStatus = CurrentStylesStatus.fromStatus(status);
+    //     }
+    //     if (!completer.isCompleted) {
+    //       completer.complete();
+    //     }
+    //   },
+    // );
 
     // Force trying the style update process
     // The user will be notified via onAvailableContentUpdateCallback
