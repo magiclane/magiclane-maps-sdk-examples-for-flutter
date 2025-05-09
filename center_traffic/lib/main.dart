@@ -158,37 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final trafficEvent = trafficEvents.first;
 
-    // Prepare start and end landmarks of the traffic event.
-    Landmark beginLandmark = Landmark.withCoordinates(
-      trafficEvent.fromLandmark.first.coordinates,
-    );
-    Landmark endLandmark = Landmark.withCoordinates(
-      trafficEvent.toLandmark.first.coordinates,
-    );
-
-    beginLandmark.setImageFromIcon(GemIcon.waypointIntermediary);
-    endLandmark.setImageFromIcon(GemIcon.waypointIntermediary);
-
-    // Define the area of the traffic event.
-    final area = RectangleGeographicArea(
-      topLeft: trafficEvent.from,
-      bottomRight: trafficEvent.to,
-    );
-
-    // Highlight the traffic event area.
-    _mapController.activateHighlight([beginLandmark, endLandmark]);
-
-    // Center the camera on the traffic event area.
-    _mapController.centerOnAreaRect(
-      area,
-      zoomLevel: 70,
-      viewRc: RectType(
-        x: _mapController.viewport.x + 100,
-        y: _mapController.viewport.y + 100,
-        width: _mapController.viewport.width - 200,
-        height: _mapController.viewport.height - 100,
-      ),
-    );
+    _mapController.centerOnRouteTrafficEvent(trafficEvent, zoomLevel: 70);
   }
 
   void _onClearRoutesButtonPressed() {

@@ -1,0 +1,34 @@
+PODS:
+  - Flutter (1.0.0)
+  - gem_kit (2.17.0):
+    - Flutter
+  - integration_test (0.0.1):
+    - Flutter
+  - permission_handler_apple (9.3.0):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - gem_kit (from `.symlinks/plugins/gem_kit/ios`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  gem_kit:
+    :path: ".symlinks/plugins/gem_kit/ios"
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  gem_kit: 99883c3472af3c3fcbbefca7f3dc2142b0db3f38
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
+
+PODFILE CHECKSUM: 176b5471b99dc31171d2eb9018ce88be808dc5fd
+
+COCOAPODS: 1.16.2

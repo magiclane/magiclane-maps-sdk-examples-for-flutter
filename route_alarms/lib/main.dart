@@ -46,7 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
   // We use the progress listener to cancel the route calculation.
   TaskHandler? _routingHandler;
 
-  // We use the progress listener to cancel the navigation.
   TaskHandler? _navigationHandler;
   AlarmService? _alarmService;
   AlarmListener? _alarmListener;

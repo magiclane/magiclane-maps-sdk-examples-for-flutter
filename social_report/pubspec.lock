@@ -128,7 +128,7 @@ packages:
       path: "plugins/gem_kit"
       relative: true
     source: path
-    version: "2.18.0"
+    version: "2.19.0"
   image:
     dependency: "direct main"
     description:
@@ -421,4 +421,4 @@ packages:
     version: "6.5.0"
 sdks:
   dart: ">=3.7.0-0 <4.0.0"
-  flutter: ">=3.18.0-18.0.pre.54"
+  flutter: ">=3.27.0"

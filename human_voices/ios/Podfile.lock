@@ -1,23 +1,18 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_tts (0.0.1):
-    - Flutter
-  - gem_kit (2.18.0):
+  - gem_kit (2.19.0):
     - Flutter
   - integration_test (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
   - gem_kit (from `.symlinks/plugins/gem_kit/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_tts:
-    :path: ".symlinks/plugins/flutter_tts/ios"
   gem_kit:
     :path: ".symlinks/plugins/gem_kit/ios"
   integration_test:
@@ -25,9 +20,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_tts: b88dbc8655d3dc961bc4a796e4e16a4cc1795833
-  gem_kit: 15946469d1e1f4e99a70acc03b7c2a234337093e
-  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  gem_kit: 769fc235836a68607cba4170357e4334178a4dec
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
 
 PODFILE CHECKSUM: 9c46fd01abff66081b39f5fa5767b3f1d0b11d76
 

@@ -113,11 +113,11 @@ class _MyHomePageState extends State<MyHomePage> {
     Path gemPath;
 
     if (kIsWeb) {
-      final imageBytes = await rootBundle.load('assets/recorded_route.gpx');
-      final buffer = imageBytes.buffer;
+      final fileBytes = await rootBundle.load('assets/recorded_route.gpx');
+      final buffer = fileBytes.buffer;
       final pathData = buffer.asUint8List(
-        imageBytes.offsetInBytes,
-        imageBytes.lengthInBytes,
+        fileBytes.offsetInBytes,
+        fileBytes.lengthInBytes,
       );
 
       // Process GPX data using your existing method
@@ -206,10 +206,10 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!kIsWeb) {
       final docDirectory = await getApplicationDocumentsDirectory();
       final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
-      final imageBytes = await rootBundle.load('assets/recorded_route.gpx');
-      final buffer = imageBytes.buffer;
+      final fileBytes = await rootBundle.load('assets/recorded_route.gpx');
+      final buffer = fileBytes.buffer;
       await gpxFile.writeAsBytes(
-        buffer.asUint8List(imageBytes.offsetInBytes, imageBytes.lengthInBytes),
+        buffer.asUint8List(fileBytes.offsetInBytes, fileBytes.lengthInBytes),
       );
     }
   }

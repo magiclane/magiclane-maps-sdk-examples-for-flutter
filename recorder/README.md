@@ -3,7 +3,8 @@
 This example app demonstrates the following features:
 - Display a map.
 - Show how to set live datasource & `startFollowingPosition`.
-- Tool designed for managing sensor data recording.
+- Sensor data recording.
+- Display recorded path on map.
 
 ## Build instructions
 

@@ -3,6 +3,7 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
+import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 import 'package:gem_kit/navigation.dart';
@@ -10,7 +11,6 @@ import 'package:gem_kit/routing.dart';
 
 import 'bottom_navigation_panel.dart';
 import 'top_navigation_panel.dart';
-import 'tts_engine.dart';
 import 'utility.dart';
 
 import 'package:flutter/material.dart' hide Route, Animation;
@@ -45,7 +45,6 @@ class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
 
   late NavigationInstruction currentInstruction;
-  late TTSEngine _ttsEngine;
 
   bool _areRoutesBuilt = false;
   bool _isSimulationActive = false;
@@ -58,9 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    _ttsEngine = TTSEngine();
-    _ttsEngine.initTts();
-
     super.initState();
   }
 
@@ -140,6 +136,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMapCreated(GemMapController controller) {
     // Save controller for further usage.
     _mapController = controller;
+
+    // Get the available list of human voices
+    final voices = ContentStore.getLocalContentList(ContentType.humanVoice);
+
+    // Apply the first voice
+    SdkSettings.setVoiceByPath(voices.first.fileName);
   }
 
   void _onBuildRouteButtonPressed(BuildContext context) {
@@ -225,10 +227,8 @@ class _MyHomePageState extends State<MyHomePage> {
         }
         return;
       },
-      onTextToSpeechInstruction: (textInstruction) {
-        // Play the text instruction;
-        _ttsEngine.speakText(textInstruction);
-      },
+      // Set auto play sound to true, so that the voice instructions will be played automatically
+      autoPlaySound: true,
       speedMultiplier: 20,
     );
 

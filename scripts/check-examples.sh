@@ -113,10 +113,10 @@ function check_app_identifiers() {
 		
 		EXAMPLE_I="$(basename ${EXAMPLE_PROJECTS[${i}]})"
 		EXAMPLE_I_NO_UNDERSCORE=${EXAMPLE_I//_}
-		if grep -irl --exclude "*.dart" --exclude-dir "*/gem_kit" "${EXAMPLE_I_NO_UNDERSCORE}" ${EXAMPLE_PROJECTS[${i}]}; then
+		if grep -irl --exclude "*.dart" --exclude "README.md" --exclude-dir "*/gem_kit" "${EXAMPLE_I_NO_UNDERSCORE}" ${EXAMPLE_PROJECTS[${i}]}; then
 			msg "Found wrong app identifier: '${EXAMPLE_I_NO_UNDERSCORE}' in '${EXAMPLE_I}'"
 			RC=1
-			find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/${EXAMPLE_I_NO_UNDERSCORE}/${EXAMPLE_I}/gI" {} +
+			find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -or -name "README.md" -prune \) -not -path "*/gem_kit" -exec sed -i "s/${EXAMPLE_I_NO_UNDERSCORE}/${EXAMPLE_I}/gI" {} +
 		fi
 
 		find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/PRODUCT_BUNDLE_IDENTIFIER = com\.example\./PRODUCT_BUNDLE_IDENTIFIER = com.magiclane.gemkit.examples./g" {} +
@@ -139,28 +139,28 @@ function check_mismatch() {
 			fi
 
 			EXAMPLE_J="$(basename ${EXAMPLE_PROJECTS[${j}]})"
-			if grep -irl "${EXAMPLE_J}" ${EXAMPLE_PROJECTS[${i}]}; then
+			if grep -irl "${EXAMPLE_J}" --exclude "*.style" ${EXAMPLE_PROJECTS[${i}]}; then
 				if [[ "${EXAMPLE_PROJECTS[${i}]}" != *"${EXAMPLE_J}"* ]]; then
-					msg "Found mismatch string: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
+					error_msg "1Found mismatch string: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
 					RC=1
-					find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -prune \) -exec sed -i "s/${EXAMPLE_J}/${EXAMPLE_I}/g" {} +
+					find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.style" -prune \) -exec sed -i "s/${EXAMPLE_J}/${EXAMPLE_I}/g" {} +
 				fi
 			fi
 
 			EXAMPLE_I_NO_UNDERSCORE=${EXAMPLE_I//_}
 			EXAMPLE_J_NO_UNDERSCORE=${EXAMPLE_J//_}
-			if grep -irl --exclude "*.dart" --exclude-dir "*/gem_kit" "${EXAMPLE_J_NO_UNDERSCORE}" ${EXAMPLE_PROJECTS[${i}]}; then
+			if grep -irl --exclude "*.dart" --exclude "*.style" --exclude-dir "*/gem_kit" "${EXAMPLE_J_NO_UNDERSCORE}" ${EXAMPLE_PROJECTS[${i}]}; then
 				if [[ "${EXAMPLE_I_NO_UNDERSCORE}" != *"${EXAMPLE_J_NO_UNDERSCORE}"* ]]; then
-					msg "Found mismatch string: '${EXAMPLE_J_NO_UNDERSCORE}' in '${EXAMPLE_I}'"
+					error_msg "2Found mismatch string: '${EXAMPLE_J_NO_UNDERSCORE}' in '${EXAMPLE_I}'"
 					RC=1
-					find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -prune \) -not -path "*/gem_kit" -exec sed -i "s/${EXAMPLE_J_NO_UNDERSCORE}/${EXAMPLE_I//_}/gI" {} +
+					find ${EXAMPLE_PROJECTS[${i}]} -type f -not \( -wholename "*/.git*" -or -name "*.dart" -or -name "*.style" -prune \) -not -path "*/gem_kit" -exec sed -i "s/${EXAMPLE_J_NO_UNDERSCORE}/${EXAMPLE_I//_}/gI" {} +
 				fi
 			fi
 
 			if [[ "${EXAMPLE_I}" != *"${EXAMPLE_J}"* ]]; then
 				MISMATCH_DIRS=( $(find "${EXAMPLE_PROJECTS[${i}]}" -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" 2>/dev/null) )
 				if [ ${#MISMATCH_DIRS[@]} -gt 0 ]; then
-					msg "Found mismatch folder: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
+					error_msg "Found mismatch folder: '${EXAMPLE_J}' in '${EXAMPLE_I}'"
 					RC=1
 					find ${EXAMPLE_PROJECTS[${i}]} -depth -type d -not \( -wholename "*/.git*" -prune \) -not -path "*/gem_kit" -name "${EXAMPLE_J}" -execdir rename -v "s/${EXAMPLE_J}/${EXAMPLE_I}/" '{}' +
 				fi
@@ -235,7 +235,7 @@ function check_license() {
 		)
 
 		if ((${#SOURCES_WITH_MISSING_SPDX_IDENTIFIERS[@]} > 0)); then
-			msg "Following files are missing SPDX-license header in '${EXAMPLE_PROJECTS[${i}]}':"
+			error_msg "Following files are missing SPDX-license header in '${EXAMPLE_PROJECTS[${i}]}':"
 			printf '    @ %s\n' "${SOURCES_WITH_MISSING_SPDX_IDENTIFIERS[@]}"
 			printf '\n'
 			RC=1
@@ -259,7 +259,7 @@ msg "Check application identifiers..."
 check_app_identifiers || RC=1
 echo -e "\n"
 msg "Check folder/file mismatches..."
-check_mismatch || RC=1s
+check_mismatch || RC=1
 echo -e "\n"
 msg "Check secrets..."
 check_secrets || RC=1

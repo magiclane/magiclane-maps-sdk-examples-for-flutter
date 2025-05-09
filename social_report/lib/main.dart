@@ -47,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   PermissionStatus _locationPermissionStatus = PermissionStatus.denied;
   bool _hasLiveDataSource = false;
 
+  // Current selected overlay item
   OverlayItem? _selectedItem;
 
   @override
@@ -111,13 +112,17 @@ class _MyHomePageState extends State<MyHomePage> {
     // Save controller for further usage.
     _mapController = controller;
 
+    // Register callback for touch events and updated cursor position
     _mapController.registerTouchCallback((point) {
       _mapController.setCursorScreenPosition(point);
     });
 
+    // Get selected overlay items under cursor
     _mapController.registerCursorSelectionUpdatedOverlayItemsCallback((items) {
       if (items.isEmpty) return;
       final selectedItem = items.first;
+
+      // Update selected item
       setState(() {
         _selectedItem = selectedItem;
       });

@@ -8,9 +8,6 @@ import 'package:gem_kit/routing.dart';
 
 import 'package:intl/intl.dart';
 
-import 'dart:typed_data';
-import 'dart:ui';
-
 // Utility function to convert the meters distance into a suitable format
 String convertDistance(int meters) {
   if (meters >= 1000) {
@@ -48,13 +45,6 @@ String getCurrentTime({
   );
   var formatter = DateFormat('HH:mm');
   return formatter.format(updatedTime);
-}
-
-// Utility function to convert a raw image in byte data
-Future<Uint8List?> imageToUint8List(Image? image) async {
-  if (image == null) return null;
-  final byteData = await image.toByteData(format: ImageByteFormat.png);
-  return byteData!.buffer.asUint8List();
 }
 
 // Define an extension for route for calculating the route label which will be displayed on map

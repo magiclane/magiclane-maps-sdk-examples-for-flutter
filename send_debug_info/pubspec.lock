@@ -168,7 +168,7 @@ packages:
       path: "plugins/gem_kit"
       relative: true
     source: path
-    version: "2.18.0"
+    version: "2.19.0"
   http:
     dependency: transitive
     description:
