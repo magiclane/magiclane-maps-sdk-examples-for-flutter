@@ -104,7 +104,9 @@ Options:
 \033[0m\n"
 }
 
+SHORTOPTS="h"
 LONGOPTS_LIST=(
+	"help"
     "sdk-archive:"
     "android"
     "ios"
@@ -116,7 +118,7 @@ LONGOPTS_LIST=(
 
 if ! PARSED_OPTIONS=$(getopt \
     -s bash \
-    --options "" \
+    --options ${SHORTOPTS} \
     --longoptions "$(printf "%s," "${LONGOPTS_LIST[@]}")" \
     --name "${PROGNAME}" \
     -- "$@"); then
@@ -129,6 +131,10 @@ unset PARSED_OPTIONS
 
 while true; do
     case "${1}" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
         --sdk-archive)
             shift
             SDK_ARCHIVE_PATH="${1}"

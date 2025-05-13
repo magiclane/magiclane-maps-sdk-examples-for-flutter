@@ -44,6 +44,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Public Transit Stop Schedule](public_transit_stop_schedule) - Select public transport stations from the map. Display public transport trip information. Show departure times for each public transport trip.
 * [Range Finder](range_finder) - Calculate & display route. Show route ranges panel.
 * [Recorder](recorder) - Show how to record sensor data.
+* [Record NMEA](record_nmea) - Show how to record a log including NMEA Chunks and how to export the resulting file to CSV.
 * [Recorder Bookmarks](recorder_bookmarks) - Show how to display sensor data recordings.
 * [Route Alarms](route_alarms) - Show how to use the alarms service.
 * [Route Instructions](route_instructions) - Display a map. Show route instructions.
