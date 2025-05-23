@@ -29,12 +29,11 @@ class ForecastNowPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              child:
-                  condition.forecast.first.img.isValid
-                      ? Image.memory(
-                        condition.forecast.first.img.getRenderableImageBytes()!,
-                      )
-                      : SizedBox(),
+              child: condition.forecast.first.img.isValid
+                  ? Image.memory(
+                      condition.forecast.first.img.getRenderableImageBytes()!,
+                    )
+                  : SizedBox(),
             ),
             Text(condition.forecast.first.description),
           ],

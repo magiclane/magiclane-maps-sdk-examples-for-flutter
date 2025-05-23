@@ -63,38 +63,36 @@ class _PublicTransitStopPanelState extends State<PublicTransitStopPanel> {
         Expanded(
           child: Container(
             color: Colors.white,
-            child:
-                _selectedTrip == null
-                    ? ListView.separated(
-                      itemCount: widget.ptStopInfo.trips.length,
-                      itemBuilder: (context, index) {
-                        final trip = widget.ptStopInfo.trips[index];
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: PTLineListItem(
-                            localCurrentTime: widget.localTime,
-                            ptTrip: trip,
-                            onTap: () {
-                              setState(() {
-                                _selectedTrip = trip;
-                              });
-                            },
-                          ),
-                        );
-                      },
-                      separatorBuilder:
-                          (_, __) => const Divider(
-                            height: 1,
-                            thickness: 1,
-                            indent: 16,
-                            endIndent: 16,
-                          ),
-                    )
-                    : DepartureTimesPanel(
-                      stopTimes: _selectedTrip!.stopTimes,
-                      localTime: widget.localTime,
-                      onCloseTap: widget.onCloseTap,
+            child: _selectedTrip == null
+                ? ListView.separated(
+                    itemCount: widget.ptStopInfo.trips.length,
+                    itemBuilder: (context, index) {
+                      final trip = widget.ptStopInfo.trips[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: PTLineListItem(
+                          localCurrentTime: widget.localTime,
+                          ptTrip: trip,
+                          onTap: () {
+                            setState(() {
+                              _selectedTrip = trip;
+                            });
+                          },
+                        ),
+                      );
+                    },
+                    separatorBuilder: (_, __) => const Divider(
+                      height: 1,
+                      thickness: 1,
+                      indent: 16,
+                      endIndent: 16,
                     ),
+                  )
+                : DepartureTimesPanel(
+                    stopTimes: _selectedTrip!.stopTimes,
+                    localTime: widget.localTime,
+                    onCloseTap: widget.onCloseTap,
+                  ),
           ),
         ),
       ],

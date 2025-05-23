@@ -33,15 +33,14 @@ class SocialEventPanel extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:
-                        overlayImg.isValid
-                            ? Image.memory(
-                              overlayImg.getRenderableImageBytes(
-                                size: Size(50, 50),
-                                format: ImageFileFormat.png,
-                              )!,
-                            )
-                            : const SizedBox(),
+                    child: overlayImg.isValid
+                        ? Image.memory(
+                            overlayImg.getRenderableImageBytes(
+                              size: Size(50, 50),
+                              format: ImageFileFormat.png,
+                            )!,
+                          )
+                        : const SizedBox(),
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

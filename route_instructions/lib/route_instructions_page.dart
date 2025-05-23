@@ -34,8 +34,8 @@ class _RouteInstructionsState extends State<RouteInstructionsPage> {
       body: ListView.separated(
         padding: EdgeInsets.zero,
         itemCount: widget.instructionList.length,
-        separatorBuilder:
-            (context, index) => const Divider(indent: 50, height: 0),
+        separatorBuilder: (context, index) =>
+            const Divider(indent: 50, height: 0),
         itemBuilder: (contex, index) {
           final instruction = widget.instructionList.elementAt(index);
           return InstructionsItem(instruction: instruction);
@@ -60,15 +60,14 @@ class _InstructionsItemState extends State<InstructionsItem> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         width: 50,
-        child:
-            widget.instruction.turnImg.isValid
-                ? Image.memory(
-                  widget.instruction.turnDetails.getAbstractGeometryImage(
-                    renderSettings: AbstractGeometryImageRenderSettings(),
-                    size: Size(100, 100),
-                  )!,
-                )
-                : SizedBox(),
+        child: widget.instruction.turnImg.isValid
+            ? Image.memory(
+                widget.instruction.turnDetails.getAbstractGeometryImage(
+                  renderSettings: AbstractGeometryImageRenderSettings(),
+                  size: Size(100, 100),
+                )!,
+              )
+            : SizedBox(),
       ),
       title: Text(
         widget.instruction.turnInstruction,

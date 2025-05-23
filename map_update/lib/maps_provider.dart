@@ -193,7 +193,7 @@ Future<void> loadOldMaps(AssetBundle assetBundle) async {
 
   // don't use this in production code
   // only used to illustrate the map update process
-  ContentStore.refreshContentStore();
+  ContentStore.refresh();
 }
 
 Future<bool> _loadAsset(
@@ -260,13 +260,13 @@ enum CurrentMapsStatus {
   upToDate, // updated maps
   unknown; // not received any notification yet
 
-  static CurrentMapsStatus fromStatus(Status status) {
+  static CurrentMapsStatus fromStatus(MapStatus status) {
     switch (status) {
-      case Status.expiredData:
+      case MapStatus.expiredData:
         return CurrentMapsStatus.expiredData;
-      case Status.oldData:
+      case MapStatus.oldData:
         return CurrentMapsStatus.oldData;
-      case Status.upToDate:
+      case MapStatus.upToDate:
         return CurrentMapsStatus.upToDate;
     }
   }
@@ -286,12 +286,12 @@ extension ContentStoreItemExtension on ContentStoreItem {
   }
 
   bool get isDownloadingOrWaiting => [
-    ContentStoreItemStatus.downloadQueued,
-    ContentStoreItemStatus.downloadRunning,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-    ContentStoreItemStatus.downloadWaitingFreeNetwork,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-  ].contains(status);
+        ContentStoreItemStatus.downloadQueued,
+        ContentStoreItemStatus.downloadRunning,
+        ContentStoreItemStatus.downloadWaitingNetwork,
+        ContentStoreItemStatus.downloadWaitingFreeNetwork,
+        ContentStoreItemStatus.downloadWaitingNetwork,
+      ].contains(status);
 
   void restartDownloadIfNecessary(
     void Function(GemError err) onCompleteCallback, {

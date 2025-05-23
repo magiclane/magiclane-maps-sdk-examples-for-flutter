@@ -72,16 +72,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: FutureBuilder(
                   future: getLocalTime(_selectedPTStopCoords!),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting)
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return Container();
+                    }
                     return PublicTransitStopPanel(
                       ptStopInfo: _selectedPTStop!,
                       localTime: snapshot.data!,
-                      onCloseTap:
-                          () => setState(() {
-                            _selectedPTStop = null;
-                            _selectedPTStopCoords = null;
-                          }),
+                      onCloseTap: () => setState(() {
+                        _selectedPTStop = null;
+                        _selectedPTStopCoords = null;
+                      }),
                     );
                   },
                 ),

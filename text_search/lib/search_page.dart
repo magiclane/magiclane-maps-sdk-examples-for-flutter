@@ -51,8 +51,8 @@ class _SearchPageState extends State<SearchPage> {
               padding: EdgeInsets.zero,
               itemCount: landmarks.length,
               controller: ScrollController(),
-              separatorBuilder:
-                  (context, index) => const Divider(indent: 50, height: 0),
+              separatorBuilder: (context, index) =>
+                  const Divider(indent: 50, height: 0),
               itemBuilder: (context, index) {
                 final lmk = landmarks.elementAt(index);
                 return SearchResultItem(landmark: lmk);
@@ -122,14 +122,13 @@ class _SearchResultItemState extends State<SearchResultItem> {
       onTap: () => Navigator.of(context).pop(widget.landmark),
       leading: Container(
         padding: const EdgeInsets.all(8),
-        child:
-            widget.landmark.img.isValid
-                ? Image.memory(
-                  widget.landmark.img.getRenderableImageBytes(
-                    size: Size(50, 50),
-                  )!,
-                )
-                : SizedBox(),
+        child: widget.landmark.img.isValid
+            ? Image.memory(
+                widget.landmark.img.getRenderableImageBytes(
+                  size: Size(50, 50),
+                )!,
+              )
+            : SizedBox(),
       ),
       title: Text(
         widget.landmark.name,
@@ -170,8 +169,7 @@ extension LandmarkExtension on Landmark {
 
     double distance =
         (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) /
-                1000)
-            as double;
+            1000) as double;
     formattedDistance = "${distance.toStringAsFixed(0)}km";
     return formattedDistance;
   }

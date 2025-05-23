@@ -31,17 +31,16 @@ class NavigationInstructionPanel extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             width: 100,
-            child:
-                instruction.nextTurnDetails.abstractGeometryImg.isValid
-                    ? Image.memory(
-                      instruction.nextTurnDetails.abstractGeometryImg
-                          .getRenderableImageBytes(
-                            size: Size(200, 200),
-                            format: ImageFileFormat.png,
-                          )!,
-                      gaplessPlayback: true,
-                    )
-                    : const SizedBox(), // Empty widget
+            child: instruction.nextTurnDetails.abstractGeometryImg.isValid
+                ? Image.memory(
+                    instruction.nextTurnDetails.abstractGeometryImg
+                        .getRenderableImageBytes(
+                      size: Size(200, 200),
+                      format: ImageFileFormat.png,
+                    )!,
+                    gaplessPlayback: true,
+                  )
+                : const SizedBox(), // Empty widget
           ),
           SizedBox(
             width: MediaQuery.of(context).size.width - 150,

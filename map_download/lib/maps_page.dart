@@ -39,8 +39,8 @@ class _MapsPageState extends State<MapsPage> {
             child: ListView.separated(
               padding: EdgeInsets.zero,
               itemCount: snapshot.data!.length,
-              separatorBuilder:
-                  (context, index) => const Divider(indent: 50, height: 0),
+              separatorBuilder: (context, index) =>
+                  const Divider(indent: 50, height: 0),
               itemBuilder: (context, index) {
                 final mapItem = snapshot.data!.elementAt(index);
                 return MapsItem(mapItem: mapItem);

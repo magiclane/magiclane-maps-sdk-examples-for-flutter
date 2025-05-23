@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
       final locationPermssionWeb =
-          await PositionService.requestLocationPermission;
+          await PositionService.requestLocationPermission();
       if (locationPermssionWeb == true) {
         _locationPermissionStatus = PermissionStatus.granted;
       } else {
@@ -206,8 +206,8 @@ class _MyHomePageState extends State<MyHomePage> {
       params,
     );
 
-    // ignore: use_build_context_synchronously
     _showSnackBar(
+      // ignore: use_build_context_synchronously
       context,
       message: "Successfully added report: $res.",
       duration: Duration(seconds: 3),

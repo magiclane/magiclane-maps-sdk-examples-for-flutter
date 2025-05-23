@@ -71,12 +71,11 @@ class _VoicesItemState extends State<VoicesItem> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               width: 50,
-              child:
-                  countryImg.isValid
-                      ? Image.memory(
-                        countryImg.getRenderableImageBytes(size: Size(80, 80))!,
-                      )
-                      : SizedBox(),
+              child: countryImg.isValid
+                  ? Image.memory(
+                      countryImg.getRenderableImageBytes(size: Size(80, 80))!,
+                    )
+                  : SizedBox(),
             ),
             title: Text(
               '${widget.voice.name} (${(widget.voice.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB)',

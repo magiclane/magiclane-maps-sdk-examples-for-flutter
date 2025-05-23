@@ -67,16 +67,14 @@ class _RangesPanelState extends State<RangesPanel> {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: routeRanges.length,
-                          itemBuilder:
-                              (BuildContext context, int index) =>
-                                  RouteRangeChip(
-                                    range: routeRanges[index],
-                                    onDelete: () => _deleteRouteRange(index),
-                                    onTap: () => _toggleRouteRange(index),
-                                  ),
-                          separatorBuilder:
-                              (BuildContext context, int index) =>
-                                  const SizedBox(width: 10),
+                          itemBuilder: (BuildContext context, int index) =>
+                              RouteRangeChip(
+                            range: routeRanges[index],
+                            onDelete: () => _deleteRouteRange(index),
+                            onTap: () => _toggleRouteRange(index),
+                          ),
+                          separatorBuilder: (BuildContext context, int index) =>
+                              const SizedBox(width: 10),
                         ),
                       ),
                       IconButton(
@@ -104,8 +102,8 @@ class _RangesPanelState extends State<RangesPanel> {
                             ),
                           ),
                           IconButton(
-                            onPressed:
-                                () => _onAddRouteRangeButtonPressed(context),
+                            onPressed: () =>
+                                _onAddRouteRangeButtonPressed(context),
                             icon: const Icon(Icons.add),
                           ),
                         ],
@@ -122,14 +120,13 @@ class _RangesPanelState extends State<RangesPanel> {
                       DropMenuItem(
                         title: 'Transport mode',
                         selection: _transportMode,
-                        onSelected:
-                            (RouteTransportMode value) => {
-                              setState(() {
-                                _transportMode = value;
-                                _routeType = RouteType.fastest;
-                                _rangeValue = 3600;
-                              }),
-                            },
+                        onSelected: (RouteTransportMode value) => {
+                          setState(() {
+                            _transportMode = value;
+                            _routeType = RouteType.fastest;
+                            _rangeValue = 3600;
+                          }),
+                        },
                         values: RouteTransportMode.values.sublist(0, 4),
                       ),
                     ],
@@ -145,20 +142,19 @@ class _RangesPanelState extends State<RangesPanel> {
                         DropMenuItem(
                           title: 'Route Type',
                           selection: _routeType,
-                          onSelected:
-                              (RouteType value) => {
-                                setState(() {
-                                  _routeType = value;
-                                  switch (value) {
-                                    case RouteType.fastest:
-                                      _rangeValue = 3600;
-                                    case RouteType.shortest:
-                                      _rangeValue = 1000;
-                                    case RouteType.economic:
-                                      _rangeValue = 1000;
-                                  }
-                                }),
-                              },
+                          onSelected: (RouteType value) => {
+                            setState(() {
+                              _routeType = value;
+                              switch (value) {
+                                case RouteType.fastest:
+                                  _rangeValue = 3600;
+                                case RouteType.shortest:
+                                  _rangeValue = 1000;
+                                case RouteType.economic:
+                                  _rangeValue = 1000;
+                              }
+                            }),
+                          },
                           values: [
                             RouteType.fastest,
                             if (_transportMode != RouteTransportMode.bicycle)
@@ -171,24 +167,22 @@ class _RangesPanelState extends State<RangesPanel> {
                         DropMenuItem(
                           title: 'Bike type',
                           selection: _bikeProfile,
-                          onSelected:
-                              (BikeProfile value) => {
-                                setState(() {
-                                  _bikeProfile = value;
-                                }),
-                              },
+                          onSelected: (BikeProfile value) => {
+                            setState(() {
+                              _bikeProfile = value;
+                            }),
+                          },
                           values: BikeProfile.values,
                         ),
                       if (_transportMode == RouteTransportMode.lorry)
                         DropMenuItem(
                           title: 'Avoid Traffic',
                           selection: _trafficAvoidance,
-                          onSelected:
-                              (TrafficAvoidance value) => {
-                                setState(() {
-                                  _trafficAvoidance = value;
-                                }),
-                              },
+                          onSelected: (TrafficAvoidance value) => {
+                            setState(() {
+                              _trafficAvoidance = value;
+                            }),
+                          },
                           values: TrafficAvoidance.values,
                         ),
                       if (_transportMode == RouteTransportMode.car ||
@@ -396,10 +390,9 @@ class _RangesPanelState extends State<RangesPanel> {
   }
 
   String _getRouteRangeValueString() {
-    final String valueString =
-        (_routeType == RouteType.fastest)
-            ? convertDuration(_rangeValue)
-            : (_routeType == RouteType.economic)
+    final String valueString = (_routeType == RouteType.fastest)
+        ? convertDuration(_rangeValue)
+        : (_routeType == RouteType.economic)
             ? convertWh(_rangeValue)
             : convertDistance(_rangeValue);
     return valueString;
@@ -434,19 +427,16 @@ class _RangesPanelState extends State<RangesPanel> {
       route,
       screenRect: RectType(
         x: 0,
-        y:
-            (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
-                .toInt(),
-        width:
-            (MediaQuery.of(context).size.width *
-                    MediaQuery.of(context).devicePixelRatio)
-                .toInt(),
-        height:
-            ((MediaQuery.of(context).size.height / 2 -
-                        appbarHeight -
-                        2 * padding * MediaQuery.of(context).devicePixelRatio) *
-                    MediaQuery.of(context).devicePixelRatio)
-                .toInt(),
+        y: (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
+            .toInt(),
+        width: (MediaQuery.of(context).size.width *
+                MediaQuery.of(context).devicePixelRatio)
+            .toInt(),
+        height: ((MediaQuery.of(context).size.height / 2 -
+                    appbarHeight -
+                    2 * padding * MediaQuery.of(context).devicePixelRatio) *
+                MediaQuery.of(context).devicePixelRatio)
+            .toInt(),
       ),
     );
   }

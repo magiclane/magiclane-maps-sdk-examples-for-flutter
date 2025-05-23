@@ -28,25 +28,50 @@ function is_mac() {
 
 SDK_TEMP_DIR=""
 
+# shellcheck disable=SC2317
 function ctrl_c()
 {
     exit 1
 }
 trap ctrl_c INT
 
+function clean_example()
+{
+    local EXAMPLE_PATH="${1}"
+
+    if [[ -z "${EXAMPLE_PATH}" || ! -d "${EXAMPLE_PATH}" ]]; then
+        return
+    fi
+
+    pushd "${EXAMPLE_PATH}" &>/dev/null
+
+	EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
+	msg "Clean example '${EXAMPLE_NAME}'..."
+
+    flutter clean &>/dev/null
+
+	[[ -d "plugins/gem_kit" ]] && rm -rf "plugins/gem_kit" &>/dev/null
+
+    find . -type d -name ".gradle" -exec rm -rf {} + 2>/dev/null
+    find . -type d -name ".cxx" -exec rm -rf {} + 2>/dev/null
+    find . -type f -name "local.properties" -exec rm -f {} + 2>/dev/null
+
+    local GEN_FILE="${EXAMPLE_PATH}/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java"
+    if [[ -f "${GEN_FILE}" ]]; then
+        local JAVA_DIR="${EXAMPLE_PATH}/android/app/src/main/java"
+        rm -rf "${JAVA_DIR}" &>/dev/null
+    fi
+
+    popd &>/dev/null
+}
+
+# shellcheck disable=SC2317
 function on_exit()
 {
-    if [[ -n ${EXAMPLE_PROJECTS+x} ]]; then
-        for EXAMPLE_PATH in ${EXAMPLE_PROJECTS}; do
-            pushd "${EXAMPLE_PATH}" &>/dev/null || error_msg "pushd failed"
-            flutter clean || error_msg "flutter clean failed"
-            if [ -d "plugins/gem_kit" ]; then
-                rm -rf "plugins/gem_kit"
-            fi
-            find . -type d -name ".gradle" -exec rm -rf {} +
-            find . -type d -name ".cxx" -exec rm -rf {} +
-            find . -type d -name "local.properties" -exec rm -rf {} +
-            popd &>/dev/null || error_msg "popd failed"
+	
+    if [[ -v EXAMPLE_PROJECTS ]]; then
+        for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
+			clean_example "${EXAMPLE_PATH}"
         done
     fi
 
@@ -65,6 +90,7 @@ if is_mac; then
     fi
 
     PATH="$(brew --prefix)/opt/gnu-getopt/bin:${PATH}"
+    export PATH
 fi
 
 set -eEuo pipefail
@@ -186,7 +212,7 @@ fi
 
 if ! command -v flutter >/dev/null; then
     error_msg "flutter command not found. Please get it from: https://docs.flutter.dev/get-started/install"
-    echo
+    printf '\n'
     exit 2
 fi
 
@@ -208,7 +234,7 @@ ${BUILD_WEB} && mkdir _WEB
 popd &>/dev/null
 
 # Find paths that contain an app module
-EXAMPLE_PROJECTS=( $(find "${MY_DIR}" -maxdepth 1 -type d -exec [ -d {}/plugins ] \; -print -prune | while read -r DIR; do realpath "${DIR}"; done) )
+mapfile -t EXAMPLE_PROJECTS < <(find "${MY_DIR}" -maxdepth 1 -type d -exec [ -d "{}/plugins" ] \; -exec realpath {} \; 2>/dev/null)
 
 for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
 	EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
@@ -216,6 +242,9 @@ for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
     cp -R "${SDK_TEMP_DIR}"/gem_kit "${EXAMPLE_PATH}"/plugins/
 
     pushd "${EXAMPLE_PATH}" &>/dev/null
+
+    printf '\n'
+	msg "Build '${EXAMPLE_NAME}'..."
 
     flutter pub get
 
@@ -235,7 +264,7 @@ for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
     fi
 
     if ${BUILD_ANDROID}; then
-        flutter build apk --release
+        flutter build apk --release --dart-define=CI=true
     fi
 
     if ${BUILD_WEB}; then
@@ -254,12 +283,7 @@ for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
         mv "build/web"/* "${MY_DIR}/_WEB/${EXAMPLE_NAME}"/
     fi
 
-    flutter clean || error_msg "flutter clean failed"
-    if [ -d "plugins/gem_kit" ]; then
-		rm -rf "plugins/gem_kit"
-	fi
-	find . -type d -name ".gradle" -exec rm -rf {} +
-	find . -type d -name ".cxx" -exec rm -rf {} +
+    clean_example "${EXAMPLE_PATH}"
 
     popd &>/dev/null
 done

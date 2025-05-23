@@ -214,13 +214,12 @@ class _MyHomePageState extends State<MyHomePage> {
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
-          builder:
-              (_) => BetterRoutePanel(
-                travelTime: Duration(seconds: travelTime),
-                delay: Duration(seconds: delay),
-                timeGain: Duration(seconds: timeGain),
-                onDismiss: () => Navigator.of(context).pop(),
-              ),
+          builder: (_) => BetterRoutePanel(
+            travelTime: Duration(seconds: travelTime),
+            delay: Duration(seconds: delay),
+            timeGain: Duration(seconds: timeGain),
+            onDismiss: () => Navigator.of(context).pop(),
+          ),
         );
       },
       onBetterRouteInvalidated: () {

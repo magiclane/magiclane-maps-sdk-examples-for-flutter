@@ -44,10 +44,9 @@ class WeatherForecastHourlyItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // Extracting the image and temperature information from the condition.
     final conditionImage = condition.img;
-    final tempHigh =
-        condition.params
-            .where((element) => element.type == "Temperature")
-            .first;
+    final tempHigh = condition.params
+        .where((element) => element.type == "Temperature")
+        .first;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),

@@ -29,21 +29,19 @@ class DepartureTimesPanel extends StatelessWidget {
             color: Colors.white,
             child: ListView.separated(
               itemCount: stopTimes.length,
-              itemBuilder:
-                  (context, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: DepartureTimesListItem(
-                      stop: stopTimes[index],
-                      localCurrentTime: localTime,
-                    ),
-                  ),
-              separatorBuilder:
-                  (context, index) => const Divider(
-                    height: 1,
-                    thickness: 1,
-                    indent: 16, // optional: inset the divider from the left
-                    endIndent: 16, // optional: inset the divider from the right
-                  ),
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DepartureTimesListItem(
+                  stop: stopTimes[index],
+                  localCurrentTime: localTime,
+                ),
+              ),
+              separatorBuilder: (context, index) => const Divider(
+                height: 1,
+                thickness: 1,
+                indent: 16, // optional: inset the divider from the left
+                endIndent: 16, // optional: inset the divider from the right
+              ),
             ),
           ),
         ),

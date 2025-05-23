@@ -49,17 +49,17 @@ class _MapStylesUpdatePageState extends State<MapStylesUpdatePage> {
           if (stylesProvider.canUpdateStyles)
             updateProgress != null
                 ? GestureDetector(
-                  onTap: () {
-                    stylesProvider.cancelUpdateStyles();
-                  },
-                  child: const Text("Cancel"),
-                )
+                    onTap: () {
+                      stylesProvider.cancelUpdateStyles();
+                    },
+                    child: const Text("Cancel"),
+                  )
                 : IconButton(
-                  onPressed: () {
-                    showUpdateDialog();
-                  },
-                  icon: const Icon(Icons.download),
-                ),
+                    onPressed: () {
+                      showUpdateDialog();
+                    },
+                    icon: const Icon(Icons.download),
+                  ),
         ],
       ),
       body: FutureBuilder<List<ContentStoreItem>?>(
@@ -69,8 +69,8 @@ class _MapStylesUpdatePageState extends State<MapStylesUpdatePage> {
             slivers: [
               const SliverToBoxAdapter(child: Text("Local: ")),
               SliverList.separated(
-                separatorBuilder:
-                    (context, index) => const Divider(indent: 20, height: 0),
+                separatorBuilder: (context, index) =>
+                    const Divider(indent: 20, height: 0),
                 itemCount: offlineStyles.length,
                 itemBuilder: (context, index) {
                   final styleItem = offlineStyles.elementAt(index);
@@ -102,8 +102,8 @@ class _MapStylesUpdatePageState extends State<MapStylesUpdatePage> {
               else
                 SliverList.separated(
                   itemCount: snapshot.data!.length,
-                  separatorBuilder:
-                      (context, index) => const Divider(indent: 20, height: 0),
+                  separatorBuilder: (context, index) =>
+                      const Divider(indent: 20, height: 0),
                   itemBuilder: (context, index) {
                     final styleItem = snapshot.data!.elementAt(index);
                     return Padding(
@@ -153,8 +153,8 @@ class _MapStylesUpdatePageState extends State<MapStylesUpdatePage> {
   }
 
   void _showMessage(String message) => ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text(message)));
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
 
   void onUpdateProgressChanged(int? value) {
     if (mounted) {

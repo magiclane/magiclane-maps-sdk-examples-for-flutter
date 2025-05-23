@@ -36,8 +36,7 @@ String convertDuration(int seconds) {
 // Define an extension for route for calculating the route label which will be displayed on map
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance =
-        getTimeDistance().unrestrictedDistanceM +
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;

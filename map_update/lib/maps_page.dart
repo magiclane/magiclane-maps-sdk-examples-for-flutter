@@ -48,17 +48,17 @@ class _MapsPageState extends State<MapsPage> {
           if (mapsProvider.canUpdateMaps)
             updateProgress != null
                 ? GestureDetector(
-                  onTap: () {
-                    mapsProvider.cancelUpdateMaps();
-                  },
-                  child: const Text("Cancel Update"),
-                )
+                    onTap: () {
+                      mapsProvider.cancelUpdateMaps();
+                    },
+                    child: const Text("Cancel Update"),
+                  )
                 : IconButton(
-                  onPressed: () {
-                    showUpdateDialog();
-                  },
-                  icon: const Icon(Icons.download),
-                ),
+                    onPressed: () {
+                      showUpdateDialog();
+                    },
+                    icon: const Icon(Icons.download),
+                  ),
         ],
         backgroundColor: Colors.deepPurple[900],
       ),
@@ -71,8 +71,8 @@ class _MapsPageState extends State<MapsPage> {
             slivers: [
               const SliverToBoxAdapter(child: Text("Local: ")),
               SliverList.separated(
-                separatorBuilder:
-                    (context, index) => const Divider(indent: 50, height: 0),
+                separatorBuilder: (context, index) =>
+                    const Divider(indent: 50, height: 0),
                 itemCount: localMaps.length,
                 itemBuilder: (context, index) {
                   final mapItem = localMaps.elementAt(index);
@@ -104,8 +104,8 @@ class _MapsPageState extends State<MapsPage> {
               else
                 SliverList.separated(
                   itemCount: snapshot.data!.length,
-                  separatorBuilder:
-                      (context, index) => const Divider(indent: 50, height: 0),
+                  separatorBuilder: (context, index) =>
+                      const Divider(indent: 50, height: 0),
                   itemBuilder: (context, index) {
                     final mapItem = snapshot.data!.elementAt(index);
                     return OnlineItem(
@@ -152,8 +152,8 @@ class _MapsPageState extends State<MapsPage> {
   }
 
   void _showMessage(String message) => ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text(message)));
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
 
   void onUpdateProgressChanged(int? value) {
     if (mounted) {

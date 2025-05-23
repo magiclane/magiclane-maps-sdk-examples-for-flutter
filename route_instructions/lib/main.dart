@@ -183,8 +183,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onRouteInstructionsButtonPressed() {
     Navigator.of(context).push(
       MaterialPageRoute<dynamic>(
-        builder:
-            (context) => RouteInstructionsPage(instructionList: instructions!),
+        builder: (context) =>
+            RouteInstructionsPage(instructionList: instructions!),
       ),
     );
   }

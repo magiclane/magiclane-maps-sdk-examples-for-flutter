@@ -65,7 +65,7 @@ class _LocationWikipediaPageState extends State<LocationWikipediaPage> {
     final searchCompleter = Completer<List<Landmark>>();
     SearchService.search(
       "Statue of Liberty",
-      Coordinates(latitude: 0.0, longitude: 0.0),
+      Coordinates(latitude: 40.53859, longitude: -73.91619),
       (err, lmks) {
         searchCompleter.complete(lmks);
       },
@@ -73,16 +73,27 @@ class _LocationWikipediaPageState extends State<LocationWikipediaPage> {
 
     final lmk = (await searchCompleter.future).first;
 
-    final completer = Completer<ExternalInfo?>();
+    if (!ExternalInfoService.hasWikiInfo(lmk)) {
+      return (
+        "Wikipedia info not available",
+        "The landamrk does not have Wikipedia info",
+      );
+    }
 
-    ExternalInfo.getExternalInfo(
+    final completer = Completer<ExternalInfo?>();
+    ExternalInfoService.requestWikiInfo(
       lmk,
-      onWikiDataAvailable: (externalInfo) => completer.complete(externalInfo),
+      onComplete: (err, externalInfo) => completer.complete(externalInfo),
     );
 
     final externalInfo = await completer.future;
-    final title = externalInfo!.getWikiPageTitle();
-    final content = externalInfo.getWikiPageDescription();
+
+    if (externalInfo == null) {
+      return ("Querry failed", "The request to Wikipedia failed");
+    }
+
+    final title = externalInfo.wikiPageTitle;
+    final content = externalInfo.wikiPageDescription;
 
     return (title, content);
   }

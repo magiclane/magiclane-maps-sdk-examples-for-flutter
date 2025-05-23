@@ -49,28 +49,25 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                   Expanded(
                     child: InkWell(
                       child: Center(child: Text("Now")),
-                      onTap:
-                          () => setState(() {
-                            _weatherTab = WeatherTab.now;
-                          }),
+                      onTap: () => setState(() {
+                        _weatherTab = WeatherTab.now;
+                      }),
                     ),
                   ),
                   Expanded(
                     child: InkWell(
                       child: Center(child: Text("Hourly")),
-                      onTap:
-                          () => setState(() {
-                            _weatherTab = WeatherTab.hourly;
-                          }),
+                      onTap: () => setState(() {
+                        _weatherTab = WeatherTab.hourly;
+                      }),
                     ),
                   ),
                   Expanded(
                     child: InkWell(
                       child: Center(child: Text("Daily")),
-                      onTap:
-                          () => setState(() {
-                            _weatherTab = WeatherTab.daily;
-                          }),
+                      onTap: () => setState(() {
+                        _weatherTab = WeatherTab.daily;
+                      }),
                     ),
                   ),
                 ],

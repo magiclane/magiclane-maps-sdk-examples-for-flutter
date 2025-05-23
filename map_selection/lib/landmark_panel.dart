@@ -29,14 +29,13 @@ class LandmarkPanel extends StatelessWidget {
           height: 70,
           width: 70,
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child:
-              landmark.getImage() != null
-                  ? Image.memory(
-                    landmark.getImage(size: Size(128, 128))!,
-                    width: 128,
-                    height: 128,
-                  )
-                  : SizedBox(),
+          child: landmark.getImage() != null
+              ? Image.memory(
+                  landmark.getImage(size: Size(128, 128))!,
+                  width: 128,
+                  height: 128,
+                )
+              : SizedBox(),
         ),
         title: Text(
           landmark.name,

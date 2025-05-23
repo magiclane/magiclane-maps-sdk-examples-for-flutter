@@ -107,8 +107,8 @@ class _MyHomePageState extends State<MyHomePage> {
       // ignore: use_build_context_synchronously
       context,
       MaterialPageRoute<ContentStoreItem>(
-        builder:
-            (context) => MapStylesUpdatePage(stylesProvider: stylesProvider),
+        builder: (context) =>
+            MapStylesUpdatePage(stylesProvider: stylesProvider),
       ),
     );
 

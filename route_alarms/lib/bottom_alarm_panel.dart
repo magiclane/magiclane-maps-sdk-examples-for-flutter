@@ -40,11 +40,11 @@ class BottomAlarmPanel extends StatelessWidget {
         children: [
           image != null
               ? Image.memory(
-                image!,
-                width: 50,
-                height: 50,
-                gaplessPlayback: true,
-              )
+                  image!,
+                  width: 50,
+                  height: 50,
+                  gaplessPlayback: true,
+                )
               : SizedBox(),
           const SizedBox(width: 20),
           Text(

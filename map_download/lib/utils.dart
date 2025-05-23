@@ -15,12 +15,12 @@ import 'package:gem_kit/map.dart';
 
 extension ContentStoreItemExtension on ContentStoreItem {
   bool get isDownloadingOrWaiting => [
-    ContentStoreItemStatus.downloadQueued,
-    ContentStoreItemStatus.downloadRunning,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-    ContentStoreItemStatus.downloadWaitingFreeNetwork,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-  ].contains(status);
+        ContentStoreItemStatus.downloadQueued,
+        ContentStoreItemStatus.downloadRunning,
+        ContentStoreItemStatus.downloadWaitingNetwork,
+        ContentStoreItemStatus.downloadWaitingFreeNetwork,
+        ContentStoreItemStatus.downloadWaitingNetwork,
+      ].contains(status);
 
   // Method that returns the image of the country associated with the road map item
   Uint8List? get image {

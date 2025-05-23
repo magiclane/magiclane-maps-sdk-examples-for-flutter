@@ -44,8 +44,8 @@ class _WhatIsNearbyCategoryPageState extends State<WhatIsNearbyCategoryPage> {
                 currentPosition: widget.position,
               );
             },
-            separatorBuilder:
-                (context, index) => const Divider(indent: 0, height: 0),
+            separatorBuilder: (context, index) =>
+                const Divider(indent: 0, height: 0),
             itemCount: snapshot.data!.length,
           );
         },
@@ -106,14 +106,13 @@ class _NearbyItemState extends State<NearbyItem> {
         ),
         maxLines: 2,
       ),
-      leading:
-          widget.landmark.img.isValid
-              ? Image.memory(
-                widget.landmark.img.getRenderableImageBytes(
-                  size: Size(128, 128),
-                )!,
-              )
-              : SizedBox(),
+      leading: widget.landmark.img.isValid
+          ? Image.memory(
+              widget.landmark.img.getRenderableImageBytes(
+                size: Size(128, 128),
+              )!,
+            )
+          : SizedBox(),
       trailing: Text(
         _convertDistance(
           widget.landmark.coordinates.distance(widget.currentPosition).toInt(),

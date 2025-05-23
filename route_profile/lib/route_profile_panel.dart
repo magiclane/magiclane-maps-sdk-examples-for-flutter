@@ -68,14 +68,12 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
                     controller: widget.chartController,
                     points: getElevationSamples(),
                     climbSections: widget.route.terrainProfile!.climbSections,
-                    onSelect:
-                        (distance) =>
-                            _presentLandmarkAtDistance(distance.floor()),
+                    onSelect: (distance) =>
+                        _presentLandmarkAtDistance(distance.floor()),
                     onViewPortChanged: (leftX, rightX) {
-                      final path =
-                          widget.route
-                              .getPath(leftX.floor(), rightX.floor())!
-                              .area;
+                      final path = widget.route
+                          .getPath(leftX.floor(), rightX.floor())!
+                          .area;
                       _centerOnArea(path);
                     },
                   ),
@@ -150,25 +148,24 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
                   title: 'Surfaces',
                   sections: _getSurfaceSections(),
                   route: widget.route,
-                  onSelectionChanged:
-                      (type) => _presentSurfacePaths(type as SurfaceType),
+                  onSelectionChanged: (type) =>
+                      _presentSurfacePaths(type as SurfaceType),
                 ),
                 const SizedBox(height: 10),
                 SliderItem(
                   title: 'Road Types',
                   sections: _getRoadSections(),
                   route: widget.route,
-                  onSelectionChanged:
-                      (type) => _presentRoadPaths(type as RoadType),
+                  onSelectionChanged: (type) =>
+                      _presentRoadPaths(type as RoadType),
                 ),
                 const SizedBox(height: 10),
                 SliderItem(
                   title: 'Steepness',
                   sections: _getSteepnessSections(),
                   route: widget.route,
-                  onSelectionChanged:
-                      (steepness) =>
-                          _presentSteepnessPaths(steepness as Steepness),
+                  onSelectionChanged: (steepness) =>
+                      _presentSteepnessPaths(steepness as Steepness),
                 ),
               ],
             ),
@@ -228,10 +225,9 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       // Calculate the start and end distances for the current section.
       final isLast = index == surfaceSections.length - 1;
       final startDistance = surfaceSections[index].startDistanceM;
-      final endDistance =
-          isLast
-              ? widget.route.totalDistance()
-              : (surfaceSections[index + 1].startDistanceM);
+      final endDistance = isLast
+          ? widget.route.totalDistance()
+          : (surfaceSections[index + 1].startDistanceM);
       final length = endDistance - startDistance;
 
       if (!map.containsKey(type)) {
@@ -257,10 +253,9 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
 
       final isLast = index == sections.length - 1;
       final startDistance = sections[index].startDistanceM;
-      final endDistance =
-          isLast
-              ? widget.route.totalDistance()
-              : (sections[index + 1].startDistanceM);
+      final endDistance = isLast
+          ? widget.route.totalDistance()
+          : (sections[index + 1].startDistanceM);
 
       final path = widget.route.getPath(startDistance, endDistance);
       paths.add(path!);
@@ -281,10 +276,9 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       // Calculate the start and end distances for the current section.
       final isLast = index == roadTypeSections.length - 1;
       final startDistance = roadTypeSections[index].startDistanceM;
-      final endDistance =
-          isLast
-              ? widget.route.totalDistance()
-              : (roadTypeSections[index + 1].startDistanceM);
+      final endDistance = isLast
+          ? widget.route.totalDistance()
+          : (roadTypeSections[index + 1].startDistanceM);
       final length = endDistance - startDistance;
 
       if (!map.containsKey(type)) {
@@ -310,10 +304,9 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
 
       final isLast = index == sections.length - 1;
       final startDistance = sections[index].startDistanceM;
-      final endDistance =
-          isLast
-              ? widget.route.totalDistance()
-              : (sections[index + 1].startDistanceM);
+      final endDistance = isLast
+          ? widget.route.totalDistance()
+          : (sections[index + 1].startDistanceM);
 
       final path = widget.route.getPath(startDistance, endDistance);
       paths.add(path!);
@@ -336,10 +329,9 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
       // Calculate the start and end distances for the current section.
       final isLast = index == steepnessSections.length - 1;
       final startDistance = steepnessSections[index].startDistanceM;
-      final endDistance =
-          isLast
-              ? widget.route.totalDistance()
-              : (steepnessSections[index + 1].startDistanceM);
+      final endDistance = isLast
+          ? widget.route.totalDistance()
+          : (steepnessSections[index + 1].startDistanceM);
       final length = endDistance - startDistance;
 
       if (!map.containsKey(type)) {
@@ -373,10 +365,9 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
 
       final isLast = index == sections.length - 1;
       final startDistance = sections[index].startDistanceM ?? 0;
-      final endDistance =
-          isLast
-              ? widget.route.totalDistance()
-              : (sections[index + 1].startDistanceM ?? 0);
+      final endDistance = isLast
+          ? widget.route.totalDistance()
+          : (sections[index + 1].startDistanceM ?? 0);
 
       final path = widget.route.getPath(
         startDistance as int,

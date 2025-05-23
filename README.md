@@ -6,6 +6,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 
 * [Add Markers](add_markers) - Handle marker tap. Customize position tracker.
 * [Address Search](address_search) - Showcase address search functionality.
+* [Areas Alarms](areas_alarms) - Get notified when corssing a geographic area. 
 * [Assets Map Style](assets_map_style) - Show how to load styles from assets folder and how to apply style.
 * [Better Route Notification](better_route_notification) - Show detailed insights on calculated routes.
 * [Calculate Bike Route](calculate_bike_route) - Calculate a bike route & display on a map.
@@ -15,6 +16,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Center Traffic](center_traffic) - Center the camera on traffic.
 * [Custom Position Icon](custom_position_icon) - Show how to set a custom icon for the position tracker.
 * [Display Cursor Street Name](display_cursor_street_name) - Show street name based on tapped street.
+* [Draw Roadblock](draw_roadblock) - Draw and upload roadblocks.
 * [Draw Shapes](draw_shapes) - Show how to draw and center on a polyline, polygon and on points.
 * [Driver Behaviour](driver_behaviour) - Start recording driver behaviour analysis. View recorded analyses.
 * [External Position Source Navigation](external_position_source_navigation) - Show how to use `DataSource` to push positions in order to simulate navigation.

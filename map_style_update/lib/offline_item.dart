@@ -69,10 +69,9 @@ class _OfflineItemState extends State<OfflineItem> {
                     const Text("Version up to date"),
                 ],
               ),
-              trailing:
-                  (isOld)
-                      ? const Icon(Icons.warning, color: Colors.orange)
-                      : null,
+              trailing: (isOld)
+                  ? const Icon(Icons.warning, color: Colors.orange)
+                  : null,
             ),
           ),
         ],

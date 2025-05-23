@@ -213,13 +213,13 @@ enum CurrentStylesStatus {
   upToDate, // updated maps
   unknown; // not received any notification yet
 
-  static CurrentStylesStatus fromStatus(Status status) {
+  static CurrentStylesStatus fromStatus(MapStatus status) {
     switch (status) {
-      case Status.expiredData:
+      case MapStatus.expiredData:
         return CurrentStylesStatus.expiredData;
-      case Status.oldData:
+      case MapStatus.oldData:
         return CurrentStylesStatus.oldData;
-      case Status.upToDate:
+      case MapStatus.upToDate:
         return CurrentStylesStatus.upToDate;
     }
   }
@@ -232,17 +232,17 @@ extension VersionExtension on Version {
 extension ContentStoreItemExtension on ContentStoreItem {
   // Map style image preview
   Uint8List? getStyleImage(Size? size) => imgPreview.getRenderableImageBytes(
-    size: size,
-    format: ImageFileFormat.png,
-  );
+        size: size,
+        format: ImageFileFormat.png,
+      );
 
   bool get isDownloadingOrWaiting => [
-    ContentStoreItemStatus.downloadQueued,
-    ContentStoreItemStatus.downloadRunning,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-    ContentStoreItemStatus.downloadWaitingFreeNetwork,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-  ].contains(status);
+        ContentStoreItemStatus.downloadQueued,
+        ContentStoreItemStatus.downloadRunning,
+        ContentStoreItemStatus.downloadWaitingNetwork,
+        ContentStoreItemStatus.downloadWaitingFreeNetwork,
+        ContentStoreItemStatus.downloadWaitingNetwork,
+      ].contains(status);
 }
 
 extension ContentUpdaterStatusExtension on ContentUpdaterStatus {

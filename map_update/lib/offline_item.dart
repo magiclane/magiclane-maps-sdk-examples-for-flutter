@@ -42,10 +42,9 @@ class _OfflineItemState extends State<OfflineItem> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               width: 50,
-              child:
-                  mapItem.image != null
-                      ? Image.memory(mapItem.image!)
-                      : SizedBox(),
+              child: mapItem.image != null
+                  ? Image.memory(mapItem.image!)
+                  : SizedBox(),
             ),
             title: Text(
               mapItem.name,
@@ -69,10 +68,9 @@ class _OfflineItemState extends State<OfflineItem> {
                   const Text("Version up to date"),
               ],
             ),
-            trailing:
-                (isOld)
-                    ? const Icon(Icons.warning, color: Colors.orange)
-                    : null,
+            trailing: (isOld)
+                ? const Icon(Icons.warning, color: Colors.orange)
+                : null,
           ),
         ),
         IconButton(

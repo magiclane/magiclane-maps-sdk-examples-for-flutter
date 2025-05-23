@@ -99,11 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
               left: 0,
               child: BottomAlarmPanel(
                 remainingDistance: _closestOverlayItem!.distance.toString(),
-                image:
-                    _closestOverlayItem!.overlayItem.img.isValid
-                        ? _closestOverlayItem!.overlayItem.img
-                            .getRenderableImageBytes()
-                        : null,
+                image: _closestOverlayItem!.overlayItem.img.isValid
+                    ? _closestOverlayItem!.overlayItem.img
+                        .getRenderableImageBytes()
+                    : null,
               ),
             ),
         ],

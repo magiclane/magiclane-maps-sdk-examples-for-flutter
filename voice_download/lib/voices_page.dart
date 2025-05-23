@@ -46,8 +46,8 @@ class _VoicesPageState extends State<VoicesPage> {
             child: ListView.separated(
               padding: EdgeInsets.zero,
               itemCount: snapshot.data!.length,
-              separatorBuilder:
-                  (context, index) => const Divider(indent: 50, height: 0),
+              separatorBuilder: (context, index) =>
+                  const Divider(indent: 50, height: 0),
               itemBuilder: (context, index) {
                 final voice = snapshot.data!.elementAt(index);
                 return VoicesItem(voice: voice);

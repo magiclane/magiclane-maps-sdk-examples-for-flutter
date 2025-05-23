@@ -87,9 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // Navigating to search screen. The result will be the selected search result(Landmark)
     final result = await Navigator.of(context).push(
       MaterialPageRoute<dynamic>(
-        builder:
-            (context) =>
-                SearchPage(controller: _mapController, coordinates: mapCoords),
+        builder: (context) =>
+            SearchPage(controller: _mapController, coordinates: mapCoords),
       ),
     );
 

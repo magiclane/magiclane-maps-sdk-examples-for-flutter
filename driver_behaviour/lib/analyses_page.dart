@@ -22,94 +22,91 @@ class AnalysesPage extends StatelessWidget {
         backgroundColor: Colors.deepPurple[900],
         foregroundColor: Colors.white,
       ),
-      body:
-          behaviourAnalyses.isEmpty
-              ? const Center(child: Text('No analyses recorded'))
-              : ListView.builder(
-                itemCount: behaviourAnalyses.length,
-                itemBuilder: (_, i) {
-                  final a = behaviourAnalyses[i];
-                  if (!a.isValid) {
-                    return const ListTile(title: Text('Invalid analysis'));
-                  }
-                  final start =
-                      DateTime.fromMillisecondsSinceEpoch(
-                        a.startTime,
-                      ).toLocal();
-                  final end =
-                      DateTime.fromMillisecondsSinceEpoch(
-                        a.finishTime,
-                      ).toLocal();
-                  final dur = end.difference(start);
+      body: behaviourAnalyses.isEmpty
+          ? const Center(child: Text('No analyses recorded'))
+          : ListView.builder(
+              itemCount: behaviourAnalyses.length,
+              itemBuilder: (_, i) {
+                final a = behaviourAnalyses[i];
+                if (!a.isValid) {
+                  return const ListTile(title: Text('Invalid analysis'));
+                }
+                final start = DateTime.fromMillisecondsSinceEpoch(
+                  a.startTime,
+                ).toLocal();
+                final end = DateTime.fromMillisecondsSinceEpoch(
+                  a.finishTime,
+                ).toLocal();
+                final dur = end.difference(start);
 
-                  // Build a list of simple Text rows
-                  final rows = <Widget>[
-                    _buildRow('Start', fmt.format(start)),
-                    _buildRow('End', fmt.format(end)),
-                    _buildRow('Duration', formatDuration(dur)),
-                    _buildRow(
-                      'Distance (km)',
-                      a.kilometersDriven.toStringAsFixed(2),
-                    ),
-                    _buildRow(
-                      'Driving Time (min)',
-                      a.minutesDriven.toStringAsFixed(1),
-                    ),
-                    _buildRow(
-                      'Total Elapsed (min)',
-                      a.minutesTotalElapsed.toStringAsFixed(1),
-                    ),
-                    _buildRow(
-                      'Speeding (min)',
-                      a.minutesSpeeding.toStringAsFixed(1),
-                    ),
-                    _buildRow(
-                      'Risk Mean Speed (%)',
-                      formatPercent(a.riskRelatedToMeanSpeed),
-                    ),
-                    _buildRow(
-                      'Risk Speed Var (%)',
-                      formatPercent(a.riskRelatedToSpeedVariation),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Events:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    _buildRow(
-                      'Harsh Accel',
-                      a.numberOfHarshAccelerationEvents.toString(),
-                    ),
-                    _buildRow(
-                      'Harsh Braking',
-                      a.numberOfHarshBrakingEvents.toString(),
-                    ),
-                    _buildRow(
-                      'Cornering',
-                      a.numberOfCorneringEvents.toString(),
-                    ),
-                    _buildRow('Swerving', a.numberOfSwervingEvents.toString()),
-                    _buildRow(
-                      'Ignored Stops',
-                      a.numberOfIgnoredStopSigns.toString(),
-                    ),
-                    _buildRow(
-                      'Stop Signs',
-                      a.numberOfEncounteredStopSigns.toString(),
-                    ),
-                  ];
+                // Build a list of simple Text rows
+                final rows = <Widget>[
+                  _buildRow('Start', fmt.format(start)),
+                  _buildRow('End', fmt.format(end)),
+                  _buildRow('Duration', formatDuration(dur)),
+                  _buildRow(
+                    'Distance (km)',
+                    a.kilometersDriven.toStringAsFixed(2),
+                  ),
+                  _buildRow(
+                    'Driving Time (min)',
+                    a.minutesDriven.toStringAsFixed(1),
+                  ),
+                  _buildRow(
+                    'Total Elapsed (min)',
+                    a.minutesTotalElapsed.toStringAsFixed(1),
+                  ),
+                  _buildRow(
+                    'Speeding (min)',
+                    a.minutesSpeeding.toStringAsFixed(1),
+                  ),
+                  _buildRow(
+                    'Risk Mean Speed (%)',
+                    formatPercent(a.riskRelatedToMeanSpeed),
+                  ),
+                  _buildRow(
+                    'Risk Speed Var (%)',
+                    formatPercent(a.riskRelatedToSpeedVariation),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Events:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  _buildRow(
+                    'Harsh Accel',
+                    a.numberOfHarshAccelerationEvents.toString(),
+                  ),
+                  _buildRow(
+                    'Harsh Braking',
+                    a.numberOfHarshBrakingEvents.toString(),
+                  ),
+                  _buildRow(
+                    'Cornering',
+                    a.numberOfCorneringEvents.toString(),
+                  ),
+                  _buildRow('Swerving', a.numberOfSwervingEvents.toString()),
+                  _buildRow(
+                    'Ignored Stops',
+                    a.numberOfIgnoredStopSigns.toString(),
+                  ),
+                  _buildRow(
+                    'Stop Signs',
+                    a.numberOfEncounteredStopSigns.toString(),
+                  ),
+                ];
 
-                  return ExpansionTile(
-                    title: Text('Trip ${i + 1}'),
-                    subtitle: Text(fmt.format(start)),
-                    childrenPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    children: rows,
-                  );
-                },
-              ),
+                return ExpansionTile(
+                  title: Text('Trip ${i + 1}'),
+                  subtitle: Text(fmt.format(start)),
+                  childrenPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  children: rows,
+                );
+              },
+            ),
     );
   }
 

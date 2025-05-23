@@ -28,8 +28,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
       body: ListView.separated(
         padding: EdgeInsets.zero,
         itemCount: widget.landmarkList.length,
-        separatorBuilder:
-            (context, index) => const Divider(indent: 50, height: 0),
+        separatorBuilder: (context, index) =>
+            const Divider(indent: 50, height: 0),
         itemBuilder: (context, index) {
           final lmk = widget.landmarkList.elementAt(index);
           return FavoritesItem(landmark: lmk);
@@ -56,14 +56,13 @@ class _FavoritesItemState extends State<FavoritesItem> {
       onTap: () => Navigator.of(context).pop(widget.landmark),
       leading: Container(
         padding: const EdgeInsets.all(8),
-        child:
-            widget.landmark.img.isValid
-                ? Image.memory(
-                  widget.landmark.img.getRenderableImageBytes(
-                    size: Size(50, 50),
-                  )!,
-                )
-                : SizedBox(),
+        child: widget.landmark.img.isValid
+            ? Image.memory(
+                widget.landmark.img.getRenderableImageBytes(
+                  size: Size(50, 50),
+                )!,
+              )
+            : SizedBox(),
       ),
       title: Text(
         widget.landmark.name,

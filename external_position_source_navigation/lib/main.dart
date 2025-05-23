@@ -10,6 +10,7 @@ import 'dart:math';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 import 'package:gem_kit/navigation.dart';
+import 'package:gem_kit/position.dart';
 import 'package:gem_kit/routing.dart';
 import 'package:gem_kit/sense.dart';
 
@@ -265,11 +266,9 @@ class _MyHomePageState extends State<MyHomePage> {
     Coordinates prevCoordinates = route.getCoordinateOnRoute(0);
 
     // Parse route distance
-    for (
-      int currentDistance = 1;
-      currentDistance <= distance;
-      currentDistance += 1
-    ) {
+    for (int currentDistance = 1;
+        currentDistance <= distance;
+        currentDistance += 1) {
       if (!_hasDataSource) return;
 
       // Stop navigation if distance has been parsed
@@ -285,16 +284,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
       // Add each coordinate from route to data source immediately
       _dataSource.pushData(
-        SenseDataFactory.positionFromExternalData(
-          ExternalPositionData(
-            timestamp: DateTime.now().toUtc().millisecondsSinceEpoch,
+        SenseDataFactory.producePosition(
+            acquisitionTime: DateTime.now(),
+            satelliteTime: DateTime.now(),
             latitude: currentCoordinates.latitude,
             longitude: currentCoordinates.longitude,
             altitude: 0,
-            heading: _getHeading(prevCoordinates, currentCoordinates),
+            course: _getHeading(prevCoordinates, currentCoordinates),
             speed: 0,
-          ),
-        ),
+            provider: Provider.gps,
+            fixQuality: PositionQuality.high),
       );
       prevCoordinates = currentCoordinates;
     }
@@ -338,16 +337,16 @@ class _MyHomePageState extends State<MyHomePage> {
       _dataSource.start();
 
       _dataSource.pushData(
-        SenseDataFactory.positionFromExternalData(
-          ExternalPositionData(
-            timestamp: DateTime.now().toUtc().millisecondsSinceEpoch,
+        SenseDataFactory.producePosition(
+            acquisitionTime: DateTime.now(),
+            satelliteTime: DateTime.now(),
             latitude: 38.029467,
             longitude: -117.884985,
             altitude: 0,
-            heading: 0,
+            course: 0,
             speed: 0,
-          ),
-        ),
+            provider: Provider.gps,
+            fixQuality: PositionQuality.high),
       );
       setState(() {
         _hasDataSource = true;

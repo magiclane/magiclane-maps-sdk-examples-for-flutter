@@ -76,8 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           SizedBox(
-            height:
-                (MediaQuery.of(context).size.height -
+            height: (MediaQuery.of(context).size.height -
                     kToolbarHeight -
                     MediaQuery.of(context).padding.bottom -
                     MediaQuery.of(context).padding.top) /
@@ -92,8 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           SizedBox(
-            height:
-                (MediaQuery.of(context).size.height -
+            height: (MediaQuery.of(context).size.height -
                     kToolbarHeight -
                     MediaQuery.of(context).padding.bottom -
                     MediaQuery.of(context).padding.top) /
@@ -169,10 +167,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _showSnackBar(
       context,
-      message:
-          isFirstMap
-              ? 'The first route is calculating.'
-              : 'The second route is calculating.',
+      message: isFirstMap
+          ? 'The first route is calculating.'
+          : 'The second route is calculating.',
     );
 
     // Calling the calculateRoute SDK method.
@@ -216,11 +213,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // If there aren't any errors, we display the routes.
     if (err == GemError.success) {
       // Get the routes collection from map preferences.
-      final routesMap =
-          (isFirstMap
-                  ? _mapController1.preferences
-                  : _mapController2.preferences)
-              .routes;
+      final routesMap = (isFirstMap
+              ? _mapController1.preferences
+              : _mapController2.preferences)
+          .routes;
 
       // Display the routes on map.
       for (final route in routes!) {
@@ -258,8 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance =
-        getTimeDistance().unrestrictedDistanceM +
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;

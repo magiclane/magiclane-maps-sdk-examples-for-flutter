@@ -28,8 +28,7 @@ String convertDuration(int seconds) {
 extension RouteExtension on Route {
   String getMapLabel() {
     // Get total distance and total duration from time distance.
-    final totalDistance =
-        getTimeDistance().unrestrictedDistanceM +
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
@@ -49,8 +48,7 @@ extension RouteExtension on Route {
     final arrivalTime = lastSegment.arrivalTime;
 
     // Calculate total walking distance (first and last segments are typically walking).
-    final totalWalkingDistance =
-        firstSegment.timeDistance.totalDistanceM +
+    final totalWalkingDistance = firstSegment.timeDistance.totalDistanceM +
         lastSegment.timeDistance.totalDistanceM;
 
     String formattedDepartureTime = "";

@@ -90,12 +90,12 @@ class _MyHomePageState extends State<MyHomePage> {
           Positioned.fill(child: Container(color: Colors.white)),
           _screenshotImage != null
               ? Center(
-                child: Image.memory(
-                  _screenshotImage!,
-                  width: MediaQuery.of(context).size.width - 100,
-                  height: 500,
-                ),
-              )
+                  child: Image.memory(
+                    _screenshotImage!,
+                    width: MediaQuery.of(context).size.width - 100,
+                    height: 500,
+                  ),
+                )
               : const SizedBox(),
         ],
       ),

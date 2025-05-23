@@ -39,8 +39,8 @@ class _MapStylesPageState extends State<MapStylesPage> {
             slivers: [
               const SliverToBoxAdapter(child: Text("Local: ")),
               SliverList.separated(
-                separatorBuilder:
-                    (context, index) => const Divider(indent: 20, height: 0),
+                separatorBuilder: (context, index) =>
+                    const Divider(indent: 20, height: 0),
                 itemCount: offlineStyles.length,
                 itemBuilder: (context, index) {
                   final styleItem = offlineStyles.elementAt(index);
@@ -72,8 +72,8 @@ class _MapStylesPageState extends State<MapStylesPage> {
               else
                 SliverList.separated(
                   itemCount: snapshot.data!.length,
-                  separatorBuilder:
-                      (context, index) => const Divider(indent: 50, height: 0),
+                  separatorBuilder: (context, index) =>
+                      const Divider(indent: 50, height: 0),
                   itemBuilder: (context, index) {
                     final styleItem = snapshot.data!.elementAt(index);
                     return Padding(

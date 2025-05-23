@@ -50,8 +50,7 @@ String getCurrentTime({
 // Define an extension for route for calculating the route label which will be displayed on map
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance =
-        getTimeDistance().unrestrictedDistanceM +
+    final totalDistance = getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
@@ -63,15 +62,13 @@ extension RouteExtension on Route {
 // Define an extension for navigation instruction to calculate distance and duration
 extension NavigationInstructionExtension on NavigationInstruction {
   String getFormattedDistanceToNextTurn() {
-    final totalDistanceToTurn =
-        timeDistanceToNextTurn.unrestrictedDistanceM +
+    final totalDistanceToTurn = timeDistanceToNextTurn.unrestrictedDistanceM +
         timeDistanceToNextTurn.restrictedDistanceM;
     return convertDistance(totalDistanceToTurn);
   }
 
   String getFormattedDurationToNextTurn() {
-    final totalDurationToTurn =
-        timeDistanceToNextTurn.unrestrictedTimeS +
+    final totalDurationToTurn = timeDistanceToNextTurn.unrestrictedTimeS +
         timeDistanceToNextTurn.restrictedTimeS;
     return convertDuration(totalDurationToTurn);
   }
@@ -79,20 +76,18 @@ extension NavigationInstructionExtension on NavigationInstruction {
   String getFormattedRemainingDistance() {
     final remainingDistance =
         remainingTravelTimeDistance.unrestrictedDistanceM +
-        remainingTravelTimeDistance.restrictedDistanceM;
+            remainingTravelTimeDistance.restrictedDistanceM;
     return convertDistance(remainingDistance);
   }
 
   String getFormattedRemainingDuration() {
-    final remainingDuration =
-        remainingTravelTimeDistance.unrestrictedTimeS +
+    final remainingDuration = remainingTravelTimeDistance.unrestrictedTimeS +
         remainingTravelTimeDistance.restrictedTimeS;
     return convertDuration(remainingDuration);
   }
 
   String getFormattedETA() {
-    final remainingDuration =
-        remainingTravelTimeDistance.unrestrictedTimeS +
+    final remainingDuration = remainingTravelTimeDistance.unrestrictedTimeS +
         remainingTravelTimeDistance.restrictedTimeS;
     return getCurrentTime(additionalSeconds: remainingDuration);
   }

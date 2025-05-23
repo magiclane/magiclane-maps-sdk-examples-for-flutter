@@ -97,10 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.white,
                 child: Row(
                   // Build a TransitSegment to display data from each segment
-                  children:
-                      _ptSegments!.map((segment) {
-                        return TransitSegment(segment: segment);
-                      }).toList(),
+                  children: _ptSegments!.map((segment) {
+                    return TransitSegment(segment: segment);
+                  }).toList(),
                 ),
               ),
             ),
@@ -240,25 +239,24 @@ class TransitSegment extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child:
-          segment.transitType == TransitType.walk
-              ? Row(
-                children: [
-                  const Icon(Icons.directions_walk, size: 35.0),
-                  Text(convertDuration(segment.timeDistance.totalDistanceM)),
-                ],
-              )
-              : Row(
-                children: [
-                  const Icon(Icons.directions_bus_outlined, size: 35.0),
-                  if (segment.hasWheelchairSupport)
-                    const Icon(Icons.accessible_forward),
-                  Container(
-                    color: Colors.green,
-                    child: Text(segment.shortName),
-                  ),
-                ],
-              ),
+      child: segment.transitType == TransitType.walk
+          ? Row(
+              children: [
+                const Icon(Icons.directions_walk, size: 35.0),
+                Text(convertDuration(segment.timeDistance.totalDistanceM)),
+              ],
+            )
+          : Row(
+              children: [
+                const Icon(Icons.directions_bus_outlined, size: 35.0),
+                if (segment.hasWheelchairSupport)
+                  const Icon(Icons.accessible_forward),
+                Container(
+                  color: Colors.green,
+                  child: Text(segment.shortName),
+                ),
+              ],
+            ),
     );
   }
 }
