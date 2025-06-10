@@ -227,10 +227,11 @@ class _MyHomePageState extends State<MyHomePage> {
         }
         return;
       },
-      // Set auto play sound to true, so that the voice instructions will be played automatically
-      autoPlaySound: true,
       speedMultiplier: 20,
     );
+
+    // Set auto play sound to true, so that the voice instructions will be played automatically
+    SoundPlayingService.canPlaySounds = true;
 
     // Set the camera to follow position.
     _mapController.startFollowingPosition();

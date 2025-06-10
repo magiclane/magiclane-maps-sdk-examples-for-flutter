@@ -3,7 +3,6 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
-import 'package:social_report/image_generator.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 import 'package:gem_kit/routing.dart';
@@ -189,28 +188,17 @@ class _MyHomePageState extends State<MyHomePage> {
     List<SocialReportsOverlayCategory> subcats = cat.overlaySubcategories;
     SocialReportsOverlayCategory subCategory = subcats.first;
 
-    // Create the other required parameters
-    Uint8List image = await ImageGenerator.createReferenceImage(
-      size: const Size(100, 100),
-      format: ImageFileFormat.png,
-    );
-    ParameterList params = ParameterList.create();
-
     // Report
-    GemError res = SocialOverlay.report(
-      idReport,
-      subCategory.uid,
-      "TEST MAGIC LANE",
-      image,
-      ImageFileFormat.png,
-      params,
-    );
-
-    _showSnackBar(
-      // ignore: use_build_context_synchronously
-      context,
-      message: "Successfully added report: $res.",
-      duration: Duration(seconds: 3),
+    SocialOverlay.report(
+      prepareId: idReport,
+      categId: subCategory.uid,
+      onComplete: (error) {
+        _showSnackBar(
+          context,
+          message: "Added report error: $error.",
+          duration: Duration(seconds: 3),
+        );
+      },
     );
   }
 

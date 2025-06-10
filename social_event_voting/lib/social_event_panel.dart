@@ -62,12 +62,15 @@ class SocialEventPanel extends StatelessWidget {
   }
 
   void _onVoteButtonPressed(BuildContext context) {
-    final err = SocialOverlay.confirmReport(overlayItem);
-
-    _showSnackBar(
-      context,
-      message: "Confirmed report with status: ${err.toString()}",
-      duration: Duration(seconds: 3),
+    SocialOverlay.confirmReport(
+      overlayItem,
+      onComplete: (err) {
+        _showSnackBar(
+          context,
+          message: "Confirm report status: $err",
+          duration: Duration(seconds: 3),
+        );
+      },
     );
   }
 

@@ -6,9 +6,10 @@
 import 'package:gem_kit/navigation.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
-import 'package:gem_kit/routing.dart';
+import 'package:gem_kit/routing.dart' hide Route;
 
-import 'package:flutter/material.dart' hide Animation;
+import 'package:flutter/material.dart' hide Animation, Route;
+import 'package:gem_kit/search.dart';
 import 'package:social_event_voting/social_event_panel.dart';
 
 import 'dart:async';
@@ -112,47 +113,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _onBuildRouteButtonPressed(BuildContext context) async {
-    final routeCompleter = Completer<void>();
-    // Define the departure and destination landmarks (make sure they a social report exists between departure and destination).
-    final departureLandmark = Landmark.withLatLng(
-      latitude: 50.82686317226226,
-      longitude: 4.354871401198793,
-    );
-    final destinationLandmark = Landmark.withLatLng(
-      latitude: 50.82793899084363,
-      longitude: 4.3530904551096405,
-    );
+    Route? routeWithReport = await _getRouteWithReport();
 
-    // Define the route preferences.
-    final routePreferences = RoutePreferences();
-    _showSnackBar(context, message: 'The route is calculating.');
-
-    // Calling the calculateRoute SDK method.
-    // (err, results) - is a callback function that gets called when the route computing is finished.
-    // err is an error enum, results is a list of routes.
-    RoutingService.calculateRoute(
-      [departureLandmark, destinationLandmark],
-      routePreferences,
-      (err, routes) async {
-        ScaffoldMessenger.of(context).clearSnackBars();
-
-        if (err == GemError.success) {
-          final routesMap = _mapController.preferences.routes;
-          for (final route in routes) {
-            routesMap.add(route, route == routes.first);
-          }
-          routeCompleter.complete();
-        }
-      },
-    );
-    return routeCompleter.future;
+    if (routeWithReport != null) {
+      _mapController.preferences.routes.add(routeWithReport, true);
+    } else {
+      // ignore: use_build_context_synchronously
+      _showSnackBar(context, message: "No route available");
+    }
   }
 
   Future<void> _startSimulation() async {
     await _onBuildRouteButtonPressed(context);
     final routes = _mapController.preferences.routes;
-
-    _mapController.preferences.routes.clearAllButMainRoute();
 
     if (routes.mainRoute == null) {
       // ignore: use_build_context_synchronously
@@ -164,9 +137,6 @@ class _MyHomePageState extends State<MyHomePage> {
       routes.mainRoute!,
       null,
       onNavigationInstruction: (instruction, events) {},
-      onError: (error) {
-        return;
-      },
       onDestinationReached: (landmark) => _stopSimulation(),
     );
 
@@ -175,7 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _stopSimulation() {
     // Cancel the navigation.
-    NavigationService.cancelNavigation(_navigationHandler!);
+    if (_navigationHandler != null) {
+      NavigationService.cancelNavigation(_navigationHandler!);
+    }
+
     setState(() {
       _navigationHandler = null;
     });
@@ -223,7 +196,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // Set the alarms service with the listener
     _alarmService = AlarmService(_alarmListener!);
 
-    _alarmService!.alarmDistance = 100;
+    _alarmService!.alarmDistance = 400;
+    _alarmService!.monitorWithoutRoute = true;
 
     // Add social reports id in order to receive desired notifications via alarm listener
     _alarmService!.overlays.add(CommonOverlayId.socialReports.id);
@@ -240,4 +214,83 @@ class _MyHomePageState extends State<MyHomePage> {
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+}
+
+// Search a social report on the map
+// Used for computing a route containing a social report
+Future<Landmark?> _getReportFromMap() async {
+  final area = RectangleGeographicArea(
+    topLeft: Coordinates.fromLatLong(52.59310690528571, 7.524257524882292),
+    bottomRight:
+        Coordinates.fromLatLong(48.544623829072655, 12.815748995947535),
+  );
+  Completer<Landmark?> completer = Completer<Landmark?>();
+
+  // Allow to search only for social reports
+  final searchPreferences =
+      SearchPreferences(searchAddresses: false, searchMapPOIs: false);
+  searchPreferences.overlays.add(CommonOverlayId.socialReports.id);
+
+  SearchService.searchInArea(
+    area,
+    Coordinates.fromLatLong(51.02858483954893, 10.29982567727901),
+    (err, results) {
+      if (err == GemError.success) {
+        completer.complete(results.first);
+      } else {
+        completer.complete(null);
+      }
+    },
+    preferences: searchPreferences,
+  );
+
+  return completer.future;
+}
+
+// Get a route which contains a social report as an intermediate waypoint
+// Used for demo, should not be used in a production application
+Future<Route?> _getRouteWithReport() async {
+  // Create an initial route with a social report
+  // This route will stretch accross Germany, containing a social report as an intermediate waypoint
+  // It will be cropped to a few hundred meters around the social report
+  final initalStart = Landmark.withCoordinates(
+      Coordinates.fromLatLong(51.48345483353617, 6.851883736746337));
+  final initalEnd = Landmark.withCoordinates(
+      Coordinates.fromLatLong(49.01867442442069, 12.061988113314802));
+  final report = await _getReportFromMap();
+  if (report == null) {
+    return null;
+  }
+
+  final initialRoute = await _calculateRoute([initalStart, report, initalEnd]);
+  if (initialRoute == null) {
+    return null;
+  }
+
+  // Crop the route to a few hundred meters around the social report
+  final reportDistanceInInitialRoute =
+      initialRoute.getDistanceOnRoute(report.coordinates, true);
+  final newStartCoords =
+      initialRoute.getCoordinateOnRoute(reportDistanceInInitialRoute - 600);
+  final newEndCoords =
+      initialRoute.getCoordinateOnRoute(reportDistanceInInitialRoute + 200);
+
+  final newStart = Landmark.withCoordinates(newStartCoords);
+  final newEnd = Landmark.withCoordinates(newEndCoords);
+
+  // Make a route containing both directions as the report can be on the opposite direction
+  return await _calculateRoute([newStart, report, newEnd, report, newStart]);
+}
+
+Future<Route?> _calculateRoute(List<Landmark> waypoints) async {
+  Completer<Route?> croppedRouteCompleter = Completer<Route?>();
+  RoutingService.calculateRoute(waypoints, RoutePreferences(), (err, routes) {
+    if (err == GemError.success) {
+      croppedRouteCompleter.complete(routes.first);
+    } else {
+      croppedRouteCompleter.complete(null);
+    }
+  });
+
+  return await croppedRouteCompleter.future;
 }

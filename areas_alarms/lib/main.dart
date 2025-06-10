@@ -110,17 +110,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Draw area on map
     final marker = Marker();
-    final circleAreaCoords = generateCircleCoordinates(Coordinates(latitude: 50.92396, longitude: 9.54976), 200);
+    final circleAreaCoords = generateCircleCoordinates(
+        Coordinates(latitude: 50.92396, longitude: 9.54976), 200);
 
     for (final coord in circleAreaCoords) {
       marker.add(coord);
     }
 
-    final markerCollection = MarkerCollection(markerType: MarkerType.polygon, name: "Circle");
+    final markerCollection =
+        MarkerCollection(markerType: MarkerType.polygon, name: "Circle");
     markerCollection.add(marker);
 
     _mapController.preferences.markers.add(markerCollection,
-        settings: MarkerCollectionRenderSettings(polygonFillColor: const Color.fromARGB(111, 210, 104, 102)));
+        settings: MarkerCollectionRenderSettings(
+            polygonFillColor: const Color.fromARGB(111, 210, 104, 102)));
   }
 
   // Custom method for calling calculate route and displaying the results.
@@ -202,7 +205,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _alarmService = AlarmService(_alarmListener!);
 
     _alarmService!.monitorArea(
-        CircleGeographicArea(radius: 200, centerCoordinates: Coordinates(latitude: 50.92396, longitude: 9.54976)),
+        CircleGeographicArea(
+            radius: 200,
+            centerCoordinates:
+                Coordinates(latitude: 50.92396, longitude: 9.54976)),
         id: "Test area");
 
     _navigationHandler = NavigationService.startSimulation(
@@ -290,7 +296,8 @@ class _MyHomePageState extends State<MyHomePage> {
     for (var i = 0; i < numberOfPoints; i++) {
       final angle = 2 * pi * i / numberOfPoints;
       final deltaLat = (radiusMeters / earthRadius) * cos(angle);
-      final deltaLon = (radiusMeters / (earthRadius * cos(centerLatRad))) * sin(angle);
+      final deltaLon =
+          (radiusMeters / (earthRadius * cos(centerLatRad))) * sin(angle);
 
       final pointLat = (centerLatRad + deltaLat) * 180 / pi;
       final pointLon = (centerLonRad + deltaLon) * 180 / pi;
