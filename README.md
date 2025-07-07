@@ -42,6 +42,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Navigate Route](navigate_route) - Calculate & display route. Navigate route.
 * [Offline Routing](offline_routing) - Show how to download maps.
 * [Overlapped Maps](overlapped_maps) - Show two maps overlapped.
+* [Projections](projections) - Display coordinates in multiple geographic coordinate systems.
 * [Public Transit](public_transit) - Calculates a public transit route. Displays the route.
 * [Public Transit Stop Schedule](public_transit_stop_schedule) - Select public transport stations from the map. Display public transport trip information. Show departure times for each public transport trip.
 * [Range Finder](range_finder) - Calculate & display route. Show route ranges panel.

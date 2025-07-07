@@ -47,6 +47,9 @@ class _RecorderBookmarksPageState extends State<RecorderBookmarksPage> {
         separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (context, i) {
           final metadata = widget.recorderBookmarks.getLogMetadata(_logs[i]);
+          if (metadata == null) {
+            return const SizedBox.shrink();
+          }
           return LogItem(
             logMetadata: metadata,
             onDelete: () => _deleteLogAt(i),

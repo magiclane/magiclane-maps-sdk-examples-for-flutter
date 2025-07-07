@@ -185,7 +185,11 @@ class _MyHomePageState extends State<MyHomePage> {
     final logList = bookmarks?.getLogsList();
 
     // Get the LogMetadata to obtain details about recorded session
-    LogMetadata meta = bookmarks!.getLogMetadata(logList!.last);
+    LogMetadata? meta = bookmarks!.getLogMetadata(logList!.last);
+    if (meta == null) {
+      // Handle the case where metadata is not found
+      return;
+    }
     final recorderCoordinates = meta.preciseRoute;
     final duration = convertDuration(meta.durationMillis);
 

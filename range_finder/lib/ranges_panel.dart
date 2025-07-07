@@ -152,6 +152,7 @@ class _RangesPanelState extends State<RangesPanel> {
                                   _rangeValue = 1000;
                                 case RouteType.economic:
                                   _rangeValue = 1000;
+                                default:
                               }
                             }),
                           },
@@ -546,6 +547,7 @@ class RangeValueSlider extends StatelessWidget {
         maxValue = 2000;
         divisions = 199;
         valueToString = convertWh;
+      default:
     }
   }
 

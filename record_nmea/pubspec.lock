@@ -152,7 +152,7 @@ packages:
       path: "plugins/gem_kit"
       relative: true
     source: path
-    version: "2.21.0"
+    version: "2.22.0"
   integration_test:
     dependency: "direct dev"
     description: flutter
