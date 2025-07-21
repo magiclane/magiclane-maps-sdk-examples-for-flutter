@@ -60,10 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Projections',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Projections', style: TextStyle(color: Colors.white)),
       ),
       body: Stack(
         alignment: AlignmentDirectional.bottomStart,
@@ -156,19 +153,22 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<Projection?> convertProjection(
-      Projection projection, ProjectionType type) async {
+    Projection projection,
+    ProjectionType type,
+  ) async {
     final completer = Completer<Projection?>();
 
     ProjectionService.convert(
-        from: projection,
-        toType: type,
-        onCompleteCallback: (err, convertedProjection) {
-          if (err != GemError.success) {
-            completer.complete(null);
-          } else {
-            completer.complete(convertedProjection);
-          }
-        });
+      from: projection,
+      toType: type,
+      onCompleteCallback: (err, convertedProjection) {
+        if (err != GemError.success) {
+          completer.complete(null);
+        } else {
+          completer.complete(convertedProjection);
+        }
+      },
+    );
 
     return await completer.future;
   }

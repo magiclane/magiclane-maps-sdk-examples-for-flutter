@@ -18,8 +18,12 @@ import 'package:flutter/material.dart';
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
 void main() async {
-  // Ensuring that all Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Simulate old maps
+  // delete all maps, all resources and get some old ones
+  // AS A USER YOU NEVER DO THAT
+  await loadOldMaps(rootBundle);
 
   final autoUpdate = AutoUpdateSettings(
     isAutoUpdateForRoadMapEnabled: false,
@@ -31,12 +35,11 @@ void main() async {
     isAutoUpdateForResourcesEnabled: false,
   );
 
-  GemKit.initialize(
+  await GemKit.initialize(
     appAuthorization: projectApiToken,
     autoUpdateSettings: autoUpdate,
-  ).then((value) async {
-    MapsProvider.instance.init(rootBundle);
-  });
+  );
+  await MapsProvider.instance.init();
 
   runApp(const MyApp());
 }
@@ -91,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onMapCreated: onMapCreated,
         appAuthorization: projectApiToken,
       ),
+      // body: Container(),
     );
   }
 

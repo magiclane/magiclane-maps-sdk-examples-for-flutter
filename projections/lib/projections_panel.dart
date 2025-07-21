@@ -15,16 +15,17 @@ class ProjectionsPanel extends StatelessWidget {
   final GKProjection? gkProjection;
   final BNGProjection? bngProjection;
   final VoidCallback onClose;
-  const ProjectionsPanel(
-      {super.key,
-      this.wgsProjection,
-      this.mgrsProjection,
-      this.utmProjection,
-      this.lamProjection,
-      this.w3wProjection,
-      this.gkProjection,
-      this.bngProjection,
-      required this.onClose});
+  const ProjectionsPanel({
+    super.key,
+    this.wgsProjection,
+    this.mgrsProjection,
+    this.utmProjection,
+    this.lamProjection,
+    this.w3wProjection,
+    this.gkProjection,
+    this.bngProjection,
+    required this.onClose,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,11 @@ class ProjectionsPanel extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           child: Padding(
             padding: const EdgeInsets.only(
-                bottom: 50.0, left: 20.0, right: 20.0, top: 10),
+              bottom: 50.0,
+              left: 20.0,
+              right: 20.0,
+              top: 10,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,8 +52,10 @@ class ProjectionsPanel extends StatelessWidget {
                 (bngProjection != null)
                     ? Text(
                         'BNG: ${bngProjection!.easting.toStringAsFixed(4)}, ${bngProjection!.northing.toStringAsFixed(4)}',
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
                       )
                     : const Text(
                         'BNG: Not available',
@@ -57,8 +64,10 @@ class ProjectionsPanel extends StatelessWidget {
                 (utmProjection != null)
                     ? Text(
                         'UTM: ${utmProjection!.x.toStringAsFixed(2)}, ${utmProjection!.y.toStringAsFixed(2)}, zone: ${utmProjection!.zone}, ${utmProjection!.hemisphere}',
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
                       )
                     : const Text(
                         'UTM: Not available',
@@ -67,8 +76,10 @@ class ProjectionsPanel extends StatelessWidget {
                 (mgrsProjection != null)
                     ? Text(
                         'MGRS: ${mgrsProjection!.zone}, ${mgrsProjection!.letters}, ${mgrsProjection!.easting.toStringAsFixed(2)}, ${mgrsProjection!.northing.toStringAsFixed(2)}',
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
                       )
                     : const Text(
                         'MGRS: Not available',
@@ -77,8 +88,10 @@ class ProjectionsPanel extends StatelessWidget {
                 (lamProjection != null)
                     ? Text(
                         'LAM: ${lamProjection!.x.toStringAsFixed(2)}, ${lamProjection!.y.toStringAsFixed(2)}',
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
                       )
                     : const Text(
                         'LAM: Not available',
@@ -87,8 +100,10 @@ class ProjectionsPanel extends StatelessWidget {
                 (w3wProjection != null)
                     ? Text(
                         'W3W: ${w3wProjection!.words}',
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
                       )
                     : const Text(
                         'W3W: Not available',
@@ -97,8 +112,10 @@ class ProjectionsPanel extends StatelessWidget {
                 (gkProjection != null)
                     ? Text(
                         'GK: ${gkProjection!.easting.toStringAsFixed(2)}, ${gkProjection!.northing.toStringAsFixed(2)}, zone: ${gkProjection!.zone}',
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
                       )
                     : const Text(
                         'GK: Not available',

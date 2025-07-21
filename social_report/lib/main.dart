@@ -182,8 +182,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Get the subcategory id
     SocialReportsOverlayInfo info = SocialOverlay.reportsOverlayInfo;
-    List<SocialReportsOverlayCategory> categs =
-        info.getSocialReportsCategories();
+    List<SocialReportsOverlayCategory> categs = info
+        .getSocialReportsCategories();
     SocialReportsOverlayCategory cat = categs.first;
     List<SocialReportsOverlayCategory> subcats = cat.overlaySubcategories;
     SocialReportsOverlayCategory subCategory = subcats.first;

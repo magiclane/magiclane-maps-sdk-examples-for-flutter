@@ -193,6 +193,16 @@ class _MyHomePageState extends State<MyHomePage> {
     final recorderCoordinates = meta.preciseRoute;
     final duration = convertDuration(meta.durationMillis);
 
+    if (recorderCoordinates.isEmpty) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No recorded coordinates.'),
+          duration: Duration(seconds: 5),
+        ),
+      );
+    }
+
     // Create a path entity from coordinates
     final path = Path.fromCoordinates(recorderCoordinates);
 

@@ -119,10 +119,10 @@ class _MyHomePageState extends State<MyHomePage> {
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
               child: NavigationBottomPanel(
-                remainingDistance:
-                    currentInstruction.getFormattedRemainingDistance(),
-                remainingDuration:
-                    currentInstruction.getFormattedRemainingDuration(),
+                remainingDistance: currentInstruction
+                    .getFormattedRemainingDistance(),
+                remainingDuration: currentInstruction
+                    .getFormattedRemainingDuration(),
                 eta: currentInstruction.getFormattedETA(),
               ),
             ),

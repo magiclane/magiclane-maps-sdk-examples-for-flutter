@@ -103,7 +103,8 @@ class _MyHomePageState extends State<MyHomePage> {
         processedLogs.map((log) => log.toString()).join('\n'),
       );
 
-      await Share.shareXFiles([XFile(file.path)], text: 'Debug Logs');
+      await SharePlus.instance
+          .share(ShareParams(text: 'Debug Logs', files: [XFile(file.path)]));
     } catch (e) {
       print('Error sharing logs: $e');
     }

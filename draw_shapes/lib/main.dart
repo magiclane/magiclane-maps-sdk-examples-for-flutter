@@ -138,11 +138,13 @@ class _MyHomePageState extends State<MyHomePage> {
     _showMarkerCollectionOnMap(markerCollection);
   }
 
-  void _showMarkerCollectionOnMap(MarkerCollection markerCollection) {
+  Future<void> _showMarkerCollectionOnMap(
+    MarkerCollection markerCollection,
+  ) async {
     final settings = MarkerCollectionRenderSettings();
 
     // Clear previous markers from the map
-    _mapController.preferences.markers.clear();
+    await _mapController.preferences.markers.clear();
 
     // Show the current marker on map and center on it
     _mapController.preferences.markers.add(

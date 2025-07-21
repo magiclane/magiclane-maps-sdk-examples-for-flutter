@@ -230,6 +230,7 @@ class _CategoryItemState extends State<CategoryItem> {
                 widget.categoryIcon.getRenderableImageBytes(
                   size: Size(50, 50),
                 )!,
+                gaplessPlayback: true,
               )
             : SizedBox(),
       ),
@@ -319,7 +320,8 @@ extension LandmarkExtension on Landmark {
 
     double distance =
         (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) /
-            1000) as double;
+                1000)
+            as double;
     formattedDistance = "${distance.toStringAsFixed(0)}km";
     return formattedDistance;
   }

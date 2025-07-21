@@ -126,8 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
 
-    _routingHandler =
-        RoutingService.calculateRoute(waypoints, routePreferences, (
+    _routingHandler = RoutingService.calculateRoute(waypoints, routePreferences, (
       err,
       routes,
     ) {
@@ -199,7 +198,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+    final totalDistance =
+        getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;

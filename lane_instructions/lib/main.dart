@@ -91,28 +91,28 @@ class _MyHomePageState extends State<MyHomePage> {
             onMapCreated: _onMapCreated,
             appAuthorization: projectApiToken,
           ),
-          if (_isSimulationActive)
+          if (_isSimulationActive && currentInstruction.laneImg.isValid)
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).padding.bottom + 40,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  color: Colors.deepPurple[900],
+                  padding: const EdgeInsets.all(12.0),
+                  margin: const EdgeInsets.all(8.0),
                   // Call getLaneImage on instruction
-                  child: currentInstruction.laneImg.isValid
-                      ? Image.memory(
-                          currentInstruction.laneImg
-                              .getRenderableImage(
-                                size: Size(100, 50),
-                                format: ImageFileFormat.png,
-                                allowResize: true,
-                              )!
-                              .bytes,
-                          gaplessPlayback: true,
-                        )
-                      : SizedBox(),
+                  child: Image.memory(
+                    currentInstruction.laneImg
+                        .getRenderableImage(
+                          size: Size(100, 50),
+                          format: ImageFileFormat.png,
+                          allowResize: true,
+                        )!
+                        .bytes,
+                    gaplessPlayback: true,
+                  ),
                 ),
               ),
             ),
@@ -130,14 +130,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
     final departureLandmark = Landmark.withLatLng(
-      latitude: 45.649572,
-      longitude: 25.628333,
+      latitude: 48.15021176018896,
+      longitude: 11.558610476998183,
     );
 
     // Define the destination.
     final destinationLandmark = Landmark.withLatLng(
-      latitude: 44.4379187,
-      longitude: 26.0122374,
+      latitude: 48.13993582693814,
+      longitude: 11.604079110086362,
     );
 
     // Define the route preferences.

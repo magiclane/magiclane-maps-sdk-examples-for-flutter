@@ -21,9 +21,9 @@ dev_dependencies:
   integration_test:
     sdk: flutter
 
-  flutter_lints: ^5.0.0
-  patrol: ^3.11.1
-  intl: ^0.18.1
+  flutter_lints: ^6.0.0
+  patrol: ^3.17.0
+  intl: ^0.20.2
 
 flutter:
   uses-material-design: true

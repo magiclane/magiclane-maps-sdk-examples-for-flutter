@@ -27,15 +27,8 @@ class MapsProvider {
   MapsProvider._privateConstructor();
   static final MapsProvider instance = MapsProvider._privateConstructor();
 
-  void init(AssetBundle assetBundle) async {
-    // Simulate old maps
-    // delete all maps, all resources and get some old ones
-    // AS A USER YOU NEVER DO THAT
-    await loadOldMaps(assetBundle);
-
-    SdkSettings.setAllowInternetConnection(true);
-
-    // keep track of the new maps status
+  Future<void> init() async {
+    // Keep track of the new maps status
     SdkSettings.offBoardListener.registerOnWorldwideRoadMapSupportStatus((
       status,
     ) async {
@@ -43,9 +36,8 @@ class MapsProvider {
       _currentMapsStatus = CurrentMapsStatus.fromStatus(status);
     });
 
-    // force trying the map update process
-    //The user will be notified via onWorldwideRoadMapSupportStatusCallback
-
+    // Force trying the map update process
+    // The user will be notified via onWorldwideRoadMapSupportStatusCallback
     final code = ContentStore.checkForUpdate(ContentType.roadMap);
     print("MapsProvider: checkForUpdate resolved with code $code");
   }
@@ -67,8 +59,8 @@ class MapsProvider {
     final result = ContentStore.createContentUpdater(ContentType.roadMap);
     // If successfully created a new content updater
     // or one already exists
-    if (result.second == GemError.success || result.second == GemError.exist) {
-      _contentUpdater = result.first;
+    if (result.$2 == GemError.success || result.$2 == GemError.exist) {
+      _contentUpdater = result.$1;
       _onContentUpdaterProgressChanged = onContentUpdaterProgressChanged;
 
       // Call the update method
@@ -110,11 +102,11 @@ class MapsProvider {
       );
     } else {
       print(
-        "MapsProvider: There was an erorr creating the content updater: ${result.second}",
+        "MapsProvider: There was an erorr creating the content updater: ${result.$2}",
       );
     }
 
-    return result.second;
+    return result.$2;
   }
 
   void cancelUpdateMaps() {
@@ -190,10 +182,6 @@ Future<void> loadOldMaps(AssetBundle assetBundle) async {
 
   await _loadAsset(assetBundle, cmap, mapsFilePath);
   await _loadAsset(assetBundle, worldMap, resFilePath);
-
-  // don't use this in production code
-  // only used to illustrate the map update process
-  ContentStore.refresh();
 }
 
 Future<bool> _loadAsset(
@@ -286,12 +274,12 @@ extension ContentStoreItemExtension on ContentStoreItem {
   }
 
   bool get isDownloadingOrWaiting => [
-        ContentStoreItemStatus.downloadQueued,
-        ContentStoreItemStatus.downloadRunning,
-        ContentStoreItemStatus.downloadWaitingNetwork,
-        ContentStoreItemStatus.downloadWaitingFreeNetwork,
-        ContentStoreItemStatus.downloadWaitingNetwork,
-      ].contains(status);
+    ContentStoreItemStatus.downloadQueued,
+    ContentStoreItemStatus.downloadRunning,
+    ContentStoreItemStatus.downloadWaitingNetwork,
+    ContentStoreItemStatus.downloadWaitingFreeNetwork,
+    ContentStoreItemStatus.downloadWaitingNetwork,
+  ].contains(status);
 
   void restartDownloadIfNecessary(
     void Function(GemError err) onCompleteCallback, {

@@ -43,6 +43,10 @@ extension RouteExtension on Route {
     final firstSegment = publicTransitRoute.segments.first.toPTRouteSegment();
     final lastSegment = publicTransitRoute.segments.last.toPTRouteSegment();
 
+    if (firstSegment == null || lastSegment == null) {
+      return "";
+    }
+
     // Get departure and arrival times from the segments.
     final departureTime = firstSegment.departureTime;
     final arrivalTime = lastSegment.arrivalTime;

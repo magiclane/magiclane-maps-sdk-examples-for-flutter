@@ -15,6 +15,7 @@ import 'package:flutter/material.dart' hide Animation, Route;
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await GemKit.initialize(appAuthorization: projectApiToken);
   runApp(const MyApp());
 }
@@ -102,8 +103,8 @@ class _MyHomePageState extends State<MyHomePage> {
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
               child: NavigationBottomPanel(
-                remainingDistance:
-                    _currentInstruction.getFormattedRemainingDistance(),
+                remainingDistance: _currentInstruction
+                    .getFormattedRemainingDistance(),
                 eta: _currentInstruction.getFormattedRemainingDuration(),
                 remainingDuration: _currentInstruction.getFormattedETA(),
               ),

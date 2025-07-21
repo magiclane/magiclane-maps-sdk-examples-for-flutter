@@ -88,8 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
     _showSnackBar(context, message: "Search is in progress.");
 
     // Predefined landmark for Spain.
-    final countryLandmark =
-        GuidedAddressSearchService.getCountryLevelItem('ESP')!;
+    final countryLandmark = GuidedAddressSearchService.getCountryLevelItem(
+      'ESP',
+    )!;
     print('Country: ${countryLandmark.name}');
 
     // Use the address search to get a landmark for a city in Spain (e.g., Barcelona).

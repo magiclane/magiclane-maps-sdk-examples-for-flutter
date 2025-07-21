@@ -93,12 +93,14 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController.preferences.enableCursorRender = true;
 
     // Register touch callback to set cursor to tapped position
-    _mapController.registerTouchCallback((point) {
-      _mapController.setCursorScreenPosition(point);
+    _mapController.registerTouchCallback((point) async {
+      await _mapController.setCursorScreenPosition(point);
+
       final streets = _mapController.cursorSelectionStreets();
       setState(() {
-        _currentStreetName =
-            streets.isEmpty ? "Unnamed street" : streets.first.name;
+        _currentStreetName = streets.isEmpty
+            ? "Unnamed street"
+            : streets.first.name;
       });
     });
   }

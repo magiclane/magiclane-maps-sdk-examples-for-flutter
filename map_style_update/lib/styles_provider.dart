@@ -92,8 +92,8 @@ class StylesProvider {
     );
     // If successfully created a new content updater
     // or one already exists
-    if (result.second == GemError.success || result.second == GemError.exist) {
-      _contentUpdater = result.first;
+    if (result.$2 == GemError.success || result.$2 == GemError.exist) {
+      _contentUpdater = result.$1;
       _onContentUpdaterProgressChanged = onContentUpdaterProgressChanged;
       _onContentUpdaterProgressChanged?.call(0);
 
@@ -136,11 +136,11 @@ class StylesProvider {
       );
     } else {
       print(
-        "StylesProvider: There was an erorr creating the content updater: ${result.second}",
+        "StylesProvider: There was an erorr creating the content updater: ${result.$2}",
       );
     }
 
-    return result.second;
+    return result.$2;
   }
 
   void cancelUpdateStyles() {
@@ -232,17 +232,17 @@ extension VersionExtension on Version {
 extension ContentStoreItemExtension on ContentStoreItem {
   // Map style image preview
   Uint8List? getStyleImage(Size? size) => imgPreview.getRenderableImageBytes(
-        size: size,
-        format: ImageFileFormat.png,
-      );
+    size: size,
+    format: ImageFileFormat.png,
+  );
 
   bool get isDownloadingOrWaiting => [
-        ContentStoreItemStatus.downloadQueued,
-        ContentStoreItemStatus.downloadRunning,
-        ContentStoreItemStatus.downloadWaitingNetwork,
-        ContentStoreItemStatus.downloadWaitingFreeNetwork,
-        ContentStoreItemStatus.downloadWaitingNetwork,
-      ].contains(status);
+    ContentStoreItemStatus.downloadQueued,
+    ContentStoreItemStatus.downloadRunning,
+    ContentStoreItemStatus.downloadWaitingNetwork,
+    ContentStoreItemStatus.downloadWaitingFreeNetwork,
+    ContentStoreItemStatus.downloadWaitingNetwork,
+  ].contains(status);
 }
 
 extension ContentUpdaterStatusExtension on ContentUpdaterStatus {

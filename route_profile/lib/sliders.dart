@@ -99,7 +99,7 @@ class _SlidingSectionState extends State<SlidingSection> {
                 children: List.generate(widget.sections.length, (index) {
                   final sectionWidth =
                       (MediaQuery.of(context).size.width - 40) *
-                          widget.sections[index].percent;
+                      widget.sections[index].percent;
                   return Container(
                     width: sectionWidth,
                     color: getColorBasedOnType(widget.sections[index].type),

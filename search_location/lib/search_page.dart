@@ -211,7 +211,8 @@ extension LandmarkExtension on Landmark {
 
     double distance =
         (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) /
-            1000) as double;
+                1000)
+            as double;
     formattedDistance = "${distance.toStringAsFixed(0)}km";
     return formattedDistance;
   }

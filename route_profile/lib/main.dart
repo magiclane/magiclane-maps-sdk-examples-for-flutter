@@ -237,14 +237,16 @@ class _MyHomePageState extends State<MyHomePage> {
         x: 0,
         y: (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
             .toInt(),
-        width: (MediaQuery.of(context).size.width *
-                MediaQuery.of(context).devicePixelRatio)
-            .toInt(),
-        height: ((MediaQuery.of(context).size.height / 2 -
-                    appbarHeight -
-                    2 * padding * MediaQuery.of(context).devicePixelRatio) *
-                MediaQuery.of(context).devicePixelRatio)
-            .toInt(),
+        width:
+            (MediaQuery.of(context).size.width *
+                    MediaQuery.of(context).devicePixelRatio)
+                .toInt(),
+        height:
+            ((MediaQuery.of(context).size.height / 2 -
+                        appbarHeight -
+                        2 * padding * MediaQuery.of(context).devicePixelRatio) *
+                    MediaQuery.of(context).devicePixelRatio)
+                .toInt(),
       ),
     );
   }
@@ -264,7 +266,8 @@ class _MyHomePageState extends State<MyHomePage> {
 // Define an extension for route for calculating the route label which will be displayed on map.
 extension RouteExtension on Route {
   String getMapLabel() {
-    final totalDistance = getTimeDistance().unrestrictedDistanceM +
+    final totalDistance =
+        getTimeDistance().unrestrictedDistanceM +
         getTimeDistance().restrictedDistanceM;
     final totalDuration =
         getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;

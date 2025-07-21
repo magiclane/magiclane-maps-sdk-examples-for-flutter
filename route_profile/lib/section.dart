@@ -8,7 +8,5 @@ class Section {
   int length;
   double percent;
 
-  Section({required this.type})
-      : length = 0,
-        percent = 0;
+  Section({required this.type}) : length = 0, percent = 0;
 }

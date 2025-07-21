@@ -104,14 +104,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Add one more view on button press
   void _addViewButtonPressed() => setState(() {
-        if (_mapViewsCount < 4) {
-          _mapViewsCount += 1;
-        }
-      });
+    if (_mapViewsCount < 4) {
+      _mapViewsCount += 1;
+    }
+  });
 
   void _removeViewButtonPressed() => setState(() {
-        if (_mapViewsCount > 0) {
-          _mapViewsCount -= 1;
-        }
-      });
+    if (_mapViewsCount > 0) {
+      _mapViewsCount -= 1;
+    }
+  });
 }

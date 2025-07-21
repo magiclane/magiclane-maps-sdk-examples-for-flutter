@@ -15,10 +15,12 @@ extension ConditionExtension on Conditions {
 
   // Formatting the temperature for display
   String getFormattedTemperature() {
-    final tempHigh =
-        params.where((element) => element.type == "TemperatureHigh").first;
-    final tempLow =
-        params.where((element) => element.type == "TemperatureLow").first;
+    final tempHigh = params
+        .where((element) => element.type == "TemperatureHigh")
+        .first;
+    final tempLow = params
+        .where((element) => element.type == "TemperatureLow")
+        .first;
     return '${tempHigh.value.toStringAsFixed(0)}${tempHigh.unit} / ${tempLow.value.toStringAsFixed(0)}${tempLow.unit}';
   }
 

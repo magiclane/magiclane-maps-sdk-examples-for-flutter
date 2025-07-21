@@ -74,6 +74,7 @@ class _VoicesItemState extends State<VoicesItem> {
               child: countryImg.isValid
                   ? Image.memory(
                       countryImg.getRenderableImageBytes(size: Size(80, 80))!,
+                      gaplessPlayback: true,
                     )
                   : SizedBox(),
             ),

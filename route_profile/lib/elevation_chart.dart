@@ -200,9 +200,11 @@ class _LineAreaChartState extends State<LineAreaChart> {
 
     const lerpCoefficient = 0.01;
 
-    final newLeftXInterpolated = _currentLeftX * (1 - lerpCoefficient) +
+    final newLeftXInterpolated =
+        _currentLeftX * (1 - lerpCoefficient) +
         leftXWhenXInMiddle * lerpCoefficient;
-    final newRightXInterpolated = _currentRightX * (1 - lerpCoefficient) +
+    final newRightXInterpolated =
+        _currentRightX * (1 - lerpCoefficient) +
         rightXWhenXInMiddle * lerpCoefficient;
 
     _updatePresentedDomainLimits(newLeftXInterpolated, newRightXInterpolated);
@@ -296,15 +298,16 @@ class _LineAreaChartState extends State<LineAreaChart> {
                           const newPositionWeight = 0.01;
                           _scaleOriginXMovingAverage =
                               newPositionWeight * startScaleXOrigin +
-                                  (1 - newPositionWeight) *
-                                      _scaleOriginXMovingAverage;
+                              (1 - newPositionWeight) *
+                                  _scaleOriginXMovingAverage;
                         }
                         _moveMiddleTowardsX(_scaleOriginXMovingAverage);
 
                         // Scale
                         horizontalScale = 1 / horizontalScale;
                         const lerpCoefficient = 0.01;
-                        horizontalScale = horizontalScale * lerpCoefficient +
+                        horizontalScale =
+                            horizontalScale * lerpCoefficient +
                             (1 - lerpCoefficient);
 
                         final newLength =
@@ -345,7 +348,8 @@ class _LineAreaChartState extends State<LineAreaChart> {
                                 _ChartTooptip(
                                   xOffset: _getTooltipXOffset,
                                   yOffset: _getTooltipYOffset,
-                                  indicatorColor: widget.indicatorColor ??
+                                  indicatorColor:
+                                      widget.indicatorColor ??
                                       Theme.of(context).colorScheme.secondary,
                                   maxWidgetWidth: widgetConstrains.maxWidth,
                                   maxWidgetHeight: widgetConstrains.maxHeight,
@@ -430,8 +434,8 @@ class _ChartTooptipState extends State<_ChartTooptip> {
 
   void _rebindControler() {
     widget.controller.setHighlight = (spot) => setState(() {
-          highlight = spot;
-        });
+      highlight = spot;
+    });
 
     widget.controller.triggerRebuild = () => setState(() {});
   }
@@ -782,7 +786,8 @@ class _ChartGestureDetector extends StatelessWidget {
   final void Function(
     double percentageOfChartWidthStart,
     double horizontalScale,
-  ) onScale;
+  )
+  onScale;
   final Widget child;
   final bool hasGestures;
 

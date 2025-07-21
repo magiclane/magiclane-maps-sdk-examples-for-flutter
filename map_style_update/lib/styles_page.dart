@@ -153,8 +153,8 @@ class _MapStylesUpdatePageState extends State<MapStylesUpdatePage> {
   }
 
   void _showMessage(String message) => ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+    context,
+  ).showSnackBar(SnackBar(content: Text(message)));
 
   void onUpdateProgressChanged(int? value) {
     if (mounted) {

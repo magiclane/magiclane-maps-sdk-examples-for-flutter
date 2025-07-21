@@ -111,8 +111,8 @@ class _MyHomePageState extends State<MyHomePage> {
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
               child: NavigationBottomPanel(
-                remainingDistance:
-                    currentInstruction.getFormattedRemainingDistance(),
+                remainingDistance: currentInstruction
+                    .getFormattedRemainingDistance(),
                 eta: currentInstruction.getFormattedRemainingDuration(),
                 remainingDuration: currentInstruction.getFormattedETA(),
               ),
@@ -131,14 +131,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
     final departureLandmark = Landmark.withLatLng(
-      latitude: 45.6517672,
-      longitude: 25.6271132,
+      latitude: 48.802081763044654,
+      longitude: 2.12978950646124,
     );
 
     // Define the destination.
     final destinationLandmark = Landmark.withLatLng(
-      latitude: 44.4379187,
-      longitude: 26.0122374,
+      latitude: 48.945095985397906,
+      longitude: 2.687421307353545,
     );
 
     // Define the route preferences.

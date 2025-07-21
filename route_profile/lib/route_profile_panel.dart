@@ -193,9 +193,9 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
     // Calculate the distance from the start of the route to every sample.
     double currentDistance = 0;
     List<(double, double)> result = [];
-    for (int i = 0; i < samples.first.length; i++) {
-      result.add((currentDistance, samples.first[i]));
-      currentDistance += samples.second;
+    for (int i = 0; i < samples.$1.length; i++) {
+      result.add((currentDistance, samples.$1[i]));
+      currentDistance += samples.$2;
     }
 
     return result;

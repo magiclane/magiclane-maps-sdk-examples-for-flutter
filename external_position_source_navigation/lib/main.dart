@@ -130,10 +130,10 @@ class _MyHomePageState extends State<MyHomePage> {
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
               child: NavigationBottomPanel(
-                remainingDistance:
-                    currentInstruction.getFormattedRemainingDistance(),
-                remainingDuration:
-                    currentInstruction.getFormattedRemainingDuration(),
+                remainingDistance: currentInstruction
+                    .getFormattedRemainingDistance(),
+                remainingDuration: currentInstruction
+                    .getFormattedRemainingDuration(),
                 eta: currentInstruction.getFormattedETA(),
               ),
             ),
@@ -266,9 +266,11 @@ class _MyHomePageState extends State<MyHomePage> {
     Coordinates prevCoordinates = route.getCoordinateOnRoute(0);
 
     // Parse route distance
-    for (int currentDistance = 1;
-        currentDistance <= distance;
-        currentDistance += 1) {
+    for (
+      int currentDistance = 1;
+      currentDistance <= distance;
+      currentDistance += 1
+    ) {
       if (!_hasDataSource) return;
 
       // Stop navigation if distance has been parsed
@@ -285,15 +287,16 @@ class _MyHomePageState extends State<MyHomePage> {
       // Add each coordinate from route to data source immediately
       _dataSource.pushData(
         SenseDataFactory.producePosition(
-            acquisitionTime: DateTime.now(),
-            satelliteTime: DateTime.now(),
-            latitude: currentCoordinates.latitude,
-            longitude: currentCoordinates.longitude,
-            altitude: 0,
-            course: _getHeading(prevCoordinates, currentCoordinates),
-            speed: 0,
-            provider: Provider.gps,
-            fixQuality: PositionQuality.high),
+          acquisitionTime: DateTime.now(),
+          satelliteTime: DateTime.now(),
+          latitude: currentCoordinates.latitude,
+          longitude: currentCoordinates.longitude,
+          altitude: 0,
+          course: _getHeading(prevCoordinates, currentCoordinates),
+          speed: 0,
+          provider: Provider.gps,
+          fixQuality: PositionQuality.high,
+        ),
       );
       prevCoordinates = currentCoordinates;
     }
@@ -338,15 +341,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
       _dataSource.pushData(
         SenseDataFactory.producePosition(
-            acquisitionTime: DateTime.now(),
-            satelliteTime: DateTime.now(),
-            latitude: 38.029467,
-            longitude: -117.884985,
-            altitude: 0,
-            course: 0,
-            speed: 0,
-            provider: Provider.gps,
-            fixQuality: PositionQuality.high),
+          acquisitionTime: DateTime.now(),
+          satelliteTime: DateTime.now(),
+          latitude: 38.029467,
+          longitude: -117.884985,
+          altitude: 0,
+          course: 0,
+          speed: 0,
+          provider: Provider.gps,
+          fixQuality: PositionQuality.high,
+        ),
       );
       setState(() {
         _hasDataSource = true;

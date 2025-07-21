@@ -69,10 +69,10 @@ class _RangesPanelState extends State<RangesPanel> {
                           itemCount: routeRanges.length,
                           itemBuilder: (BuildContext context, int index) =>
                               RouteRangeChip(
-                            range: routeRanges[index],
-                            onDelete: () => _deleteRouteRange(index),
-                            onTap: () => _toggleRouteRange(index),
-                          ),
+                                range: routeRanges[index],
+                                onDelete: () => _deleteRouteRange(index),
+                                onTap: () => _toggleRouteRange(index),
+                              ),
                           separatorBuilder: (BuildContext context, int index) =>
                               const SizedBox(width: 10),
                         ),
@@ -394,8 +394,8 @@ class _RangesPanelState extends State<RangesPanel> {
     final String valueString = (_routeType == RouteType.fastest)
         ? convertDuration(_rangeValue)
         : (_routeType == RouteType.economic)
-            ? convertWh(_rangeValue)
-            : convertDistance(_rangeValue);
+        ? convertWh(_rangeValue)
+        : convertDistance(_rangeValue);
     return valueString;
   }
 
@@ -430,14 +430,16 @@ class _RangesPanelState extends State<RangesPanel> {
         x: 0,
         y: (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
             .toInt(),
-        width: (MediaQuery.of(context).size.width *
-                MediaQuery.of(context).devicePixelRatio)
-            .toInt(),
-        height: ((MediaQuery.of(context).size.height / 2 -
-                    appbarHeight -
-                    2 * padding * MediaQuery.of(context).devicePixelRatio) *
-                MediaQuery.of(context).devicePixelRatio)
-            .toInt(),
+        width:
+            (MediaQuery.of(context).size.width *
+                    MediaQuery.of(context).devicePixelRatio)
+                .toInt(),
+        height:
+            ((MediaQuery.of(context).size.height / 2 -
+                        appbarHeight -
+                        2 * padding * MediaQuery.of(context).devicePixelRatio) *
+                    MediaQuery.of(context).devicePixelRatio)
+                .toInt(),
       ),
     );
   }
@@ -510,7 +512,10 @@ class SwitchItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text(title), Switch(value: value, onChanged: onChanged)],
+        children: [
+          Text(title),
+          Switch(value: value, onChanged: onChanged),
+        ],
       ),
     );
   }

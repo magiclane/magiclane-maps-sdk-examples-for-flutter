@@ -14,7 +14,6 @@ import 'package:gem_kit/routing.dart';
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
 void main() async {
-  await GemKit.initialize(appAuthorization: projectApiToken);
   runApp(const MyApp());
 }
 
@@ -124,11 +123,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
 
                 // In case of error, show snackbar
-                if (roadblockResult.second != GemError.success) {
+                if (roadblockResult.$2 != GemError.success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        'Error ${roadblockResult.second} when adding roadblock.',
+                        'Error ${roadblockResult.$2} when adding roadblock.',
                       ),
                       backgroundColor: Colors.red,
                       duration: Duration(seconds: 3),

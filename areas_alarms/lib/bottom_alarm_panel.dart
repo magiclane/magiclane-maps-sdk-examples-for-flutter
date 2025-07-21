@@ -8,10 +8,7 @@ import 'package:flutter/material.dart';
 class BottomAlarmPanel extends StatelessWidget {
   final String? alarmNotification;
 
-  const BottomAlarmPanel({
-    super.key,
-    required this.alarmNotification,
-  });
+  const BottomAlarmPanel({super.key, required this.alarmNotification});
 
   @override
   @override
@@ -34,14 +31,15 @@ class BottomAlarmPanel extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 10),
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Center(
-          child: Text(
-        alarmNotification!,
-        style: const TextStyle(
-          color: Colors.black,
-          fontSize: 24,
-          fontWeight: FontWeight.w500,
+        child: Text(
+          alarmNotification!,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-      )),
+      ),
     );
   }
 }

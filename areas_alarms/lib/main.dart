@@ -111,19 +111,26 @@ class _MyHomePageState extends State<MyHomePage> {
     // Draw area on map
     final marker = Marker();
     final circleAreaCoords = generateCircleCoordinates(
-        Coordinates(latitude: 50.92396, longitude: 9.54976), 200);
+      Coordinates(latitude: 50.92396, longitude: 9.54976),
+      200,
+    );
 
     for (final coord in circleAreaCoords) {
       marker.add(coord);
     }
 
-    final markerCollection =
-        MarkerCollection(markerType: MarkerType.polygon, name: "Circle");
+    final markerCollection = MarkerCollection(
+      markerType: MarkerType.polygon,
+      name: "Circle",
+    );
     markerCollection.add(marker);
 
-    _mapController.preferences.markers.add(markerCollection,
-        settings: MarkerCollectionRenderSettings(
-            polygonFillColor: const Color.fromARGB(111, 210, 104, 102)));
+    _mapController.preferences.markers.add(
+      markerCollection,
+      settings: MarkerCollectionRenderSettings(
+        polygonFillColor: const Color.fromARGB(111, 210, 104, 102),
+      ),
+    );
   }
 
   // Custom method for calling calculate route and displaying the results.
@@ -205,11 +212,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _alarmService = AlarmService(_alarmListener!);
 
     _alarmService!.monitorArea(
-        CircleGeographicArea(
-            radius: 200,
-            centerCoordinates:
-                Coordinates(latitude: 50.92396, longitude: 9.54976)),
-        id: "Test area");
+      CircleGeographicArea(
+        radius: 200,
+        centerCoordinates: Coordinates(latitude: 50.92396, longitude: 9.54976),
+      ),
+      id: "Test area",
+    );
 
     _navigationHandler = NavigationService.startSimulation(
       routes.mainRoute!,

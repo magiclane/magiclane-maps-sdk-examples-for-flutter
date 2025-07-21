@@ -116,7 +116,17 @@ class _MyHomePageState extends State<MyHomePage> {
     Route? routeWithReport = await _getRouteWithReport();
 
     if (routeWithReport != null) {
-      _mapController.preferences.routes.add(routeWithReport, true);
+      _mapController.preferences.routes.add(
+        routeWithReport,
+        true,
+        // Do not show intermediate waypoints as they may cover the report displayed on the map
+        routeRenderSettings: RouteRenderSettings(
+          options: {
+            RouteRenderOptions.showTraffic,
+            RouteRenderOptions.showHighlights,
+          },
+        ),
+      );
     } else {
       // ignore: use_build_context_synchronously
       _showSnackBar(context, message: "No route available");
@@ -221,14 +231,18 @@ class _MyHomePageState extends State<MyHomePage> {
 Future<Landmark?> _getReportFromMap() async {
   final area = RectangleGeographicArea(
     topLeft: Coordinates.fromLatLong(52.59310690528571, 7.524257524882292),
-    bottomRight:
-        Coordinates.fromLatLong(48.544623829072655, 12.815748995947535),
+    bottomRight: Coordinates.fromLatLong(
+      48.544623829072655,
+      12.815748995947535,
+    ),
   );
   Completer<Landmark?> completer = Completer<Landmark?>();
 
   // Allow to search only for social reports
-  final searchPreferences =
-      SearchPreferences(searchAddresses: false, searchMapPOIs: false);
+  final searchPreferences = SearchPreferences(
+    searchAddresses: false,
+    searchMapPOIs: false,
+  );
   searchPreferences.overlays.add(CommonOverlayId.socialReports.id);
 
   SearchService.searchInArea(
@@ -254,9 +268,11 @@ Future<Route?> _getRouteWithReport() async {
   // This route will stretch accross Germany, containing a social report as an intermediate waypoint
   // It will be cropped to a few hundred meters around the social report
   final initalStart = Landmark.withCoordinates(
-      Coordinates.fromLatLong(51.48345483353617, 6.851883736746337));
+    Coordinates.fromLatLong(51.48345483353617, 6.851883736746337),
+  );
   final initalEnd = Landmark.withCoordinates(
-      Coordinates.fromLatLong(49.01867442442069, 12.061988113314802));
+    Coordinates.fromLatLong(49.01867442442069, 12.061988113314802),
+  );
   final report = await _getReportFromMap();
   if (report == null) {
     return null;
@@ -268,12 +284,16 @@ Future<Route?> _getRouteWithReport() async {
   }
 
   // Crop the route to a few hundred meters around the social report
-  final reportDistanceInInitialRoute =
-      initialRoute.getDistanceOnRoute(report.coordinates, true);
-  final newStartCoords =
-      initialRoute.getCoordinateOnRoute(reportDistanceInInitialRoute - 600);
-  final newEndCoords =
-      initialRoute.getCoordinateOnRoute(reportDistanceInInitialRoute + 200);
+  final reportDistanceInInitialRoute = initialRoute.getDistanceOnRoute(
+    report.coordinates,
+    true,
+  );
+  final newStartCoords = initialRoute.getCoordinateOnRoute(
+    reportDistanceInInitialRoute - 600,
+  );
+  final newEndCoords = initialRoute.getCoordinateOnRoute(
+    reportDistanceInInitialRoute + 200,
+  );
 
   final newStart = Landmark.withCoordinates(newStartCoords);
   final newEnd = Landmark.withCoordinates(newEndCoords);
