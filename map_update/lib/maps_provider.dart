@@ -92,7 +92,7 @@ class MapsProvider {
           _onContentUpdaterProgressChanged?.call(progress);
           print('Progress: $progress');
         },
-        onCompleteCallback: (error) {
+        onComplete: (error) {
           if (error == GemError.success) {
             print('MapsProvider: Successful uupdate');
           } else {

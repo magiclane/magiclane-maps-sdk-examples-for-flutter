@@ -11,6 +11,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Better Route Notification](better_route_notification) - Show detailed insights on calculated routes.
 * [Calculate Bike Route](calculate_bike_route) - Calculate a bike route & display on a map.
 * [Calculate Route](calculate_route) - Calculate & display route on a map.
+* [Camera Feed](camera_feed) - Show how to set live datasource & `startFollowingPosition` and sensor data recording. Display recorded path on map.
 * [Center Area](center_area) - Center the camera on a specific geographic area.
 * [Center Coordinates](center_coordinates) - Show how to center the map on coordinates.
 * [Center Traffic](center_traffic) - Center the camera on traffic.

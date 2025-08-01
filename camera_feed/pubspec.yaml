@@ -1,0 +1,40 @@
+name: camera_feed
+description: A Flutter example using Maps SDK for Flutter.
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.5 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  gem_kit:
+    path: plugins/gem_kit
+
+  cupertino_icons: ^1.0.8
+  permission_handler: ^12.0.1
+  path_provider: ^2.1.5
+  path: ^1.9.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  patrol: ^3.17.0
+
+flutter:
+  uses-material-design: true
+patrol:
+  app_name: My App
+
+  android:
+    package_name: com.magiclane.gem_kit.examples.camera_feed
+  ios:
+    bundle_id: com.example.MyApp

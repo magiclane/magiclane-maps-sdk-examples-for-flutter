@@ -605,9 +605,9 @@ class _ChartState extends State<_Chart> {
 
 class _TitleBarController {
   void Function(double start, double end) verticalAxisViewportChanged =
-      (_, __) {};
+      (_, _) {};
   void Function(double start, double end) horizontalAxisViewportChanged =
-      (_, __) {};
+      (_, _) {};
 }
 
 class _LeftTitleBar extends StatefulWidget {

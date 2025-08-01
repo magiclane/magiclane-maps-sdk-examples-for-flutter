@@ -16,7 +16,7 @@ Future<DateTime> getLocalTime(Coordinates referenceCoords) async {
   TimezoneService.getTimezoneInfoFromCoordinates(
     coords: referenceCoords,
     time: DateTime.now(),
-    onCompleteCallback: (error, result) {
+    onComplete: (error, result) {
       if (error == GemError.success) completer.complete(result);
     },
   );

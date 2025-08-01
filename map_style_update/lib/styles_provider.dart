@@ -126,7 +126,7 @@ class StylesProvider {
           _onContentUpdaterProgressChanged?.call(progress);
           print('Progress: $progress');
         },
-        onCompleteCallback: (error) {
+        onComplete: (error) {
           if (error == GemError.success) {
             print('StylesProvider: Successful update');
           } else {

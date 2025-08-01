@@ -161,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ProjectionService.convert(
       from: projection,
       toType: type,
-      onCompleteCallback: (err, convertedProjection) {
+      onComplete: (err, convertedProjection) {
         if (err != GemError.success) {
           completer.complete(null);
         } else {

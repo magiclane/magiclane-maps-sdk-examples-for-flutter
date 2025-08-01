@@ -157,7 +157,7 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
 
     WeatherService.getCurrent(
       coords: [locationCoordinates],
-      onCompleteCallback: (err, result) async {
+      onComplete: (err, result) async {
         weatherCurrentCompleter.complete(result);
       },
     );
@@ -177,7 +177,7 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
     WeatherService.getHourlyForecast(
       hours: 24,
       coords: [locationCoordinates],
-      onCompleteCallback: (err, result) async {
+      onComplete: (err, result) async {
         weatherHourlyCompleter.complete(result);
       },
     );
@@ -197,7 +197,7 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
     WeatherService.getDailyForecast(
       days: 10,
       coords: [locationCoordinates],
-      onCompleteCallback: (err, result) async {
+      onComplete: (err, result) async {
         weatherDailyCompleter.complete(result);
       },
     );
