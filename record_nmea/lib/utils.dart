@@ -23,12 +23,13 @@ Future<String> getDirectoryPath(String dirName) async {
 
 // Utility function to convert the seconds duration into a suitable format
 String convertDuration(int milliseconds) {
-  int seconds = (milliseconds / 1000).floor();
-  int hours = seconds ~/ 3600; // Number of whole hours
-  int minutes = (seconds % 3600) ~/ 60; // Number of whole minutes
+  int totalSeconds = (milliseconds / 1000).floor();
+  int hours = totalSeconds ~/ 3600;
+  int minutes = (totalSeconds % 3600) ~/ 60;
+  int seconds = totalSeconds % 60;
 
-  String hoursText = (hours > 0) ? '$hours h ' : ''; // Hours text
-  String minutesText = (minutes > 0) ? '$minutes min ' : ''; // Minutes text
+  String hoursText = (hours > 0) ? '$hours h ' : '';
+  String minutesText = (minutes > 0) ? '$minutes min ' : '';
   String secondsText = '$seconds sec';
 
   return hoursText + minutesText + secondsText;

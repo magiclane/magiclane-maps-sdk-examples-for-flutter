@@ -19,14 +19,17 @@ String convertDistance(int meters) {
 }
 
 // Utility function to convert the seconds duration into a suitable format
-String convertDuration(int seconds) {
-  int hours = seconds ~/ 3600; // Number of whole hours
-  int minutes = (seconds % 3600) ~/ 60; // Number of whole minutes
+String convertDuration(int milliseconds) {
+  int totalSeconds = (milliseconds / 1000).floor();
+  int hours = totalSeconds ~/ 3600;
+  int minutes = (totalSeconds % 3600) ~/ 60;
+  int seconds = totalSeconds % 60;
 
-  String hoursText = (hours > 0) ? '$hours h ' : ''; // Hours text
-  String minutesText = '$minutes min'; // Minutes text
+  String hoursText = (hours > 0) ? '$hours h ' : '';
+  String minutesText = (minutes > 0) ? '$minutes min ' : '';
+  String secondsText = '$seconds sec';
 
-  return hoursText + minutesText;
+  return hoursText + minutesText + secondsText;
 }
 
 // Utility function to add the given additional time to current time

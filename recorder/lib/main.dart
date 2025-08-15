@@ -97,32 +97,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _onFollowPositionButtonPressed() async {
     if (kIsWeb) {
-      // On web platform permission are handled differently than other platforms.
-      // The SDK handles the request of permission for location.
       final locationPermssionWeb =
           await PositionService.requestLocationPermission();
-      if (locationPermssionWeb == true) {
-        _locationPermissionStatus = PermissionStatus.granted;
-      } else {
-        _locationPermissionStatus = PermissionStatus.denied;
-      }
+      _locationPermissionStatus = locationPermssionWeb == true
+          ? PermissionStatus.granted
+          : PermissionStatus.denied;
     } else {
-      // For Android & iOS platforms, permission_handler package is used to ask for permissions.
-      _locationPermissionStatus = await Permission.locationWhenInUse.request();
+      // Request WhenInUse permission first
+      final whenInUseStatus = await Permission.locationWhenInUse.request();
+
+      if (whenInUseStatus == PermissionStatus.granted) {
+        // Then request Always permission
+        _locationPermissionStatus = await Permission.locationAlways.request();
+      } else {
+        _locationPermissionStatus = whenInUseStatus; // denied or restricted
+      }
     }
 
     if (_locationPermissionStatus == PermissionStatus.granted) {
-      // After the permission was granted, we can set the live data source (in most cases the GPS).
-      // The data source should be set only once, otherwise we'll get -5 error.
       if (!_hasLiveDataSource) {
         PositionService.instance.setLiveDataSource();
         _hasLiveDataSource = true;
       }
 
-      // Optionally, we can set an animation
       final animation = GemAnimation(type: AnimationType.linear);
-
-      // Calling the start following position SDK method.
       _mapController.startFollowingPosition(animation: animation);
 
       setState(() {});
@@ -133,9 +131,15 @@ class _MyHomePageState extends State<MyHomePage> {
     // Helper function that returns path to the Tracks directory
     final logsDir = await getDirectoryPath("Tracks");
 
+    final dataSource = DataSource.createLiveDataSource()!;
+    final config = dataSource.getConfiguration(DataType.position);
+    config.allowsBackgroundLocationUpdates = true;
+
+    dataSource.setConfiguration(type: DataType.position, config: config);
+
     final recorder = Recorder.create(
       RecorderConfiguration(
-        dataSource: DataSource.createLiveDataSource()!,
+        dataSource: dataSource,
         logsDir: logsDir,
         recordedTypes: [DataType.position],
         minDurationSeconds: 0,

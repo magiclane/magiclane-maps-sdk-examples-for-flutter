@@ -28,6 +28,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [GPX Thumbnail Image](gpx_thumbnail_image) - Display the gpx record as a Path on map. Take a screenshot of presented Path.
 * [Hello Map](hello_map) - Display a map.
 * [Human Voices](human_voices) - Calculate & display route. Simulate route navigation. Listen to voice instructions.
+* [Import Custom Landmarks](import_custom_landmarks) - Import custom landmarks. Display and interact with custom landmarks.
 * [Lane Instructions](lane_instructions) - Start a navigation. Display lane instructions.
 * [Location Wikipedia](location_wikipedia) - Show Wikipedia information about a landmark. Show how to search for a landmark and obtain details from wikipedia.
 * [Map Compass](map_compass) - Display a map. Show compass.

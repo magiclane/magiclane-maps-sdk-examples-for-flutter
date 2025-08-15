@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.0"><Document>
+<Folder>
+  <!-- United Kingdom & Ireland -->
+  <Placemark><name>London LHR</name><Point><coordinates>-0.4543,51.4700,0</coordinates></Point></Placemark>
+  <Placemark><name>London LGW</name><Point><coordinates>-0.1821,51.1537,0</coordinates></Point></Placemark>
+  <Placemark><name>London STN</name><Point><coordinates>0.2350,51.8850,0</coordinates></Point></Placemark>
+  <Placemark><name>London LTN</name><Point><coordinates>-0.3760,51.8740,0</coordinates></Point></Placemark>
+  <Placemark><name>London LCY</name><Point><coordinates>0.0540,51.5050,0</coordinates></Point></Placemark>
+  <Placemark><name>London SEN</name><Point><coordinates>0.7010,51.5710,0</coordinates></Point></Placemark>
+  <Placemark><name>Manchester MAN</name><Point><coordinates>-2.2760,53.3650,0</coordinates></Point></Placemark>
+  <Placemark><name>Birmingham BHX</name><Point><coordinates>-1.7480,52.4530,0</coordinates></Point></Placemark>
+  <Placemark><name>Edinburgh EDI</name><Point><coordinates>-3.3640,55.9500,0</coordinates></Point></Placemark>
+  <Placemark><name>Glasgow GLA</name><Point><coordinates>-4.4330,55.8710,0</coordinates></Point></Placemark>
+  <Placemark><name>Newcastle NCL</name><Point><coordinates>-1.6910,55.0370,0</coordinates></Point></Placemark>
+  <Placemark><name>Leeds LBA</name><Point><coordinates>-1.6600,53.8650,0</coordinates></Point></Placemark>
+  <Placemark><name>East Midlands EMA</name><Point><coordinates>-1.3280,52.8310,0</coordinates></Point></Placemark>
+  <Placemark><name>Bristol BRS</name><Point><coordinates>-2.7190,51.3820,0</coordinates></Point></Placemark>
+  <Placemark><name>Liverpool LPL</name><Point><coordinates>-2.8550,53.3330,0</coordinates></Point></Placemark>
+  <Placemark><name>Belfast BFS</name><Point><coordinates>-6.2150,54.6580,0</coordinates></Point></Placemark>
+  <Placemark><name>Belfast BHD</name><Point><coordinates>-5.8720,54.6180,0</coordinates></Point></Placemark>
+  <Placemark><name>Dublin DUB</name><Point><coordinates>-6.2700,53.4270,0</coordinates></Point></Placemark>
+  <Placemark><name>Cork ORK</name><Point><coordinates>-8.4890,51.8410,0</coordinates></Point></Placemark>
+  <Placemark><name>Shannon SNN</name><Point><coordinates>-8.9240,52.7010,0</coordinates></Point></Placemark>
+  <Placemark><name>Cardiff CWL</name><Point><coordinates>-3.3430,51.3980,0</coordinates></Point></Placemark>
+  <Placemark><name>Aberdeen ABZ</name><Point><coordinates>-2.1970,57.2010,0</coordinates></Point></Placemark>
+  <Placemark><name>Inverness INV</name><Point><coordinates>-4.0500,57.5420,0</coordinates></Point></Placemark>
+
+  <!-- France -->
+  <Placemark><name>Paris CDG</name><Point><coordinates>2.5500,49.0097,0</coordinates></Point></Placemark>
+  <Placemark><name>Paris ORY</name><Point><coordinates>2.3790,48.7260,0</coordinates></Point></Placemark>
+  <Placemark><name>Paris BVA</name><Point><coordinates>2.1120,49.4540,0</coordinates></Point></Placemark>
+  <Placemark><name>Nice NCE</name><Point><coordinates>7.2150,43.6650,0</coordinates></Point></Placemark>
+  <Placemark><name>Marseille MRS</name><Point><coordinates>5.2150,43.4390,0</coordinates></Point></Placemark>
+  <Placemark><name>Lyon LYS</name><Point><coordinates>5.0900,45.7250,0</coordinates></Point></Placemark>
+  <Placemark><name>Toulouse TLS</name><Point><coordinates>1.3670,43.6290,0</coordinates></Point></Placemark>
+  <Placemark><name>Bordeaux BOD</name><Point><coordinates>-0.7150,44.8280,0</coordinates></Point></Placemark>
+  <Placemark><name>Nantes NTE</name><Point><coordinates>-1.6090,47.1570,0</coordinates></Point></Placemark>
+  <Placemark><name>Lille LIL</name><Point><coordinates>3.0890,50.5710,0</coordinates></Point></Placemark>
+  <Placemark><name>Montpellier MPL</name><Point><coordinates>3.9630,43.5760,0</coordinates></Point></Placemark>
+  <Placemark><name>Bastia BIA</name><Point><coordinates>9.4840,42.5490,0</coordinates></Point></Placemark>
+  <Placemark><name>Ajaccio AJA</name><Point><coordinates>8.7930,41.9230,0</coordinates></Point></Placemark>
+
+  <!-- Netherlands -->
+  <Placemark><name>Amsterdam AMS</name><Point><coordinates>4.7634,52.3086,0</coordinates></Point></Placemark>
+  <Placemark><name>Eindhoven EIN</name><Point><coordinates>5.3740,51.4500,0</coordinates></Point></Placemark>
+  <Placemark><name>Rotterdam RTM</name><Point><coordinates>4.4370,51.9560,0</coordinates></Point></Placemark>
+  <Placemark><name>Groningen GRQ</name><Point><coordinates>6.5790,53.1200,0</coordinates></Point></Placemark>
+  <Placemark><name>Maastricht MST</name><Point><coordinates>5.7700,50.9110,0</coordinates></Point></Placemark>
+
+  <!-- Belgium & Luxembourg -->
+  <Placemark><name>Brussels BRU</name><Point><coordinates>4.4840,50.9010,0</coordinates></Point></Placemark>
+  <Placemark><name>Charleroi CRL</name><Point><coordinates>4.4530,50.4590,0</coordinates></Point></Placemark>
+  <Placemark><name>Liège LGG</name><Point><coordinates>5.4430,50.6370,0</coordinates></Point></Placemark>
+  <Placemark><name>Antwerp ANR</name><Point><coordinates>4.4560,51.1890,0</coordinates></Point></Placemark>
+  <Placemark><name>Luxembourg LUX</name><Point><coordinates>6.2130,49.6230,0</coordinates></Point></Placemark>
+
+  <!-- Germany -->
+  <Placemark><name>Frankfurt FRA</name><Point><coordinates>8.5706,50.0379,0</coordinates></Point></Placemark>
+  <Placemark><name>Munich MUC</name><Point><coordinates>11.7861,48.3538,0</coordinates></Point></Placemark>
+  <Placemark><name>Berlin BER</name><Point><coordinates>13.5030,52.3660,0</coordinates></Point></Placemark>
+  <Placemark><name>Düsseldorf DUS</name><Point><coordinates>6.7650,51.2890,0</coordinates></Point></Placemark>
+  <Placemark><name>Cologne CGN</name><Point><coordinates>7.1420,50.8650,0</coordinates></Point></Placemark>
+  <Placemark><name>Hamburg HAM</name><Point><coordinates>9.9880,53.6330,0</coordinates></Point></Placemark>
+  <Placemark><name>Stuttgart STR</name><Point><coordinates>9.2210,48.6900,0</coordinates></Point></Placemark>
+  <Placemark><name>Hanover HAJ</name><Point><coordinates>9.6850,52.4610,0</coordinates></Point></Placemark>
+  <Placemark><name>Nuremberg NUE</name><Point><coordinates>11.0750,49.4980,0</coordinates></Point></Placemark>
+  <Placemark><name>Bremen BRE</name><Point><coordinates>8.7860,53.0480,0</coordinates></Point></Placemark>
+  <Placemark><name>Leipzig LEJ</name><Point><coordinates>12.2360,51.4230,0</coordinates></Point></Placemark>
+  <Placemark><name>Dresden DRS</name><Point><coordinates>13.7670,51.1340,0</coordinates></Point></Placemark>
+  <Placemark><name>Baden-Baden FKB</name><Point><coordinates>8.0800,48.7790,0</coordinates></Point></Placemark>
+  <Placemark><name>Memmingen FMM</name><Point><coordinates>10.2390,47.9880,0</coordinates></Point></Placemark>
+  <Placemark><name>Münster FMO</name><Point><coordinates>7.6850,52.1340,0</coordinates></Point></Placemark>
+  <Placemark><name>Saarbrücken SCN</name><Point><coordinates>7.1090,49.2150,0</coordinates></Point></Placemark>
+
+  <!-- Spain & Portugal -->
+  <Placemark><name>Madrid MAD</name><Point><coordinates>-3.5630,40.4720,0</coordinates></Point></Placemark>
+  <Placemark><name>Barcelona BCN</name><Point><coordinates>2.0740,41.2970,0</coordinates></Point></Placemark>
+  <Placemark><name>Valencia VLC</name><Point><coordinates>-0.4620,39.4890,0</coordinates></Point></Placemark>
+  <Placemark><name>Seville SVQ</name><Point><coordinates>-5.8990,37.4180,0</coordinates></Point></Placemark>
+  <Placemark><name>Malaga AGP</name><Point><coordinates>-4.4990,36.6740,0</coordinates></Point></Placemark>
+  <Placemark><name>Palma PMI</name><Point><coordinates>2.7270,39.5510,0</coordinates></Point></Placemark>
+  <Placemark><name>Ibiza IBZ</name><Point><coordinates>1.3670,38.8720,0</coordinates></Point></Placemark>
+  <Placemark><name>Gran Canaria LPA</name><Point><coordinates>-15.3870,27.9320,0</coordinates></Point></Placemark>
+  <Placemark><name>Tenerife South TFS</name><Point><coordinates>-16.5750,28.0440,0</coordinates></Point></Placemark>
+  <Placemark><name>Lanzarote ACE</name><Point><coordinates>-13.6050,28.9450,0</coordinates></Point></Placemark>
+  <Placemark><name>Fuerteventura FUE</name><Point><coordinates>-13.8630,28.4520,0</coordinates></Point></Placemark>
+  <Placemark><name>Bilbao BIO</name><Point><coordinates>-2.9050,43.3010,0</coordinates></Point></Placemark>
+  <Placemark><name>Alicante ALC</name><Point><coordinates>-0.5580,38.2820,0</coordinates></Point></Placemark>
+  <Placemark><name>Santiago SCQ</name><Point><coordinates>-8.4150,42.8960,0</coordinates></Point></Placemark>
+  <Placemark><name>Menorca MAH</name><Point><coordinates>4.2220,39.8630,0</coordinates></Point></Placemark>
+  <Placemark><name>Girona GRO</name><Point><coordinates>2.7650,41.9010,0</coordinates></Point></Placemark>
+  <Placemark><name>Reus REU</name><Point><coordinates>1.1670,41.1470,0</coordinates></Point></Placemark>
+  <Placemark><name>Zaragoza ZAZ</name><Point><coordinates>-1.0040,41.6660,0</coordinates></Point></Placemark>
+  <Placemark><name>Lisbon LIS</name><Point><coordinates>-9.1350,38.7740,0</coordinates></Point></Placemark>
+  <Placemark><name>Porto OPO</name><Point><coordinates>-8.6810,41.2480,0</coordinates></Point></Placemark>
+  <Placemark><name>Faro FAO</name><Point><coordinates>-7.9690,37.0140,0</coordinates></Point></Placemark>
+  <Placemark><name>Madeira FNC</name><Point><coordinates>-16.7750,32.6970,0</coordinates></Point></Placemark>
+  <Placemark><name>Ponta Delgada PDL</name><Point><coordinates>-25.6970,37.7410,0</coordinates></Point></Placemark>
+
+  <!-- Italy -->
+  <Placemark><name>Rome FCO</name><Point><coordinates>12.2508,41.8003,0</coordinates></Point></Placemark>
+  <Placemark><name>Rome CIA</name><Point><coordinates>12.5940,41.7990,0</coordinates></Point></Placemark>
+  <Placemark><name>Milan MXP</name><Point><coordinates>8.7280,45.6300,0</coordinates></Point></Placemark>
+  <Placemark><name>Milan LIN</name><Point><coordinates>9.2790,45.4450,0</coordinates></Point></Placemark>
+  <Placemark><name>Bergamo BGY</name><Point><coordinates>9.7030,45.6680,0</coordinates></Point></Placemark>
+  <Placemark><name>Venice VCE</name><Point><coordinates>12.3519,45.5053,0</coordinates></Point></Placemark>
+  <Placemark><name>Verona VRN</name><Point><coordinates>10.8890,45.3950,0</coordinates></Point></Placemark>
+  <Placemark><name>Naples NAP</name><Point><coordinates>14.2910,40.8860,0</coordinates></Point></Placemark>
+  <Placemark><name>Pisa PSA</name><Point><coordinates>10.3930,43.6830,0</coordinates></Point></Placemark>
+  <Placemark><name>Florence FLR</name><Point><coordinates>11.2050,43.8090,0</coordinates></Point></Placemark>
+  <Placemark><name>Bologna BLQ</name><Point><coordinates>11.2880,44.5350,0</coordinates></Point></Placemark>
+  <Placemark><name>Turin TRN</name><Point><coordinates>7.6490,45.2010,0</coordinates></Point></Placemark>
+  <Placemark><name>Catania CTA</name><Point><coordinates>15.0660,37.4660,0</coordinates></Point></Placemark>
+  <Placemark><name>Palermo PMO</name><Point><coordinates>13.0910,38.1760,0</coordinates></Point></Placemark>
+  <Placemark><name>Cagliari CAG</name><Point><coordinates>9.0600,39.2510,0</coordinates></Point></Placemark>
+</Folder></Document></kml>

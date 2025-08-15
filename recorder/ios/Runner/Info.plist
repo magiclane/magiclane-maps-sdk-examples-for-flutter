@@ -28,6 +28,10 @@
 	<string>Location is needed for map localization and navigation</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location is needed for map localization and navigation</string>
+	<key>UIBackgroundModes</key>
+	<array>
+	<string>location</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
