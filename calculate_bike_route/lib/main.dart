@@ -145,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
             routesMap.add(
               route,
               route == routes.first,
-              label: route.getMapLabel(),
+              label: getMapLabel(route),
             );
           }
 
@@ -237,38 +237,29 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// Define an extension for route for calculating the route label which will be displayed on map.
-extension RouteExtension on Route {
-  String getMapLabel() {
-    final totalDistance =
-        getTimeDistance().unrestrictedDistanceM +
-        getTimeDistance().restrictedDistanceM;
-    final totalDuration =
-        getTimeDistance().unrestrictedTimeS + getTimeDistance().restrictedTimeS;
+String getMapLabel(Route route) {
+  return '${convertDistance(route.getTimeDistance().totalDistanceM)} \n${convertDuration(route.getTimeDistance().totalTimeS)}';
+}
 
-    return '${_convertDistance(totalDistance)} \n${_convertDuration(totalDuration)}';
+// Utility function to convert the meters distance into a suitable format.
+String convertDistance(int meters) {
+  if (meters >= 1000) {
+    double kilometers = meters / 1000;
+    return '${kilometers.toStringAsFixed(1)} km';
+  } else {
+    return '${meters.toString()} m';
   }
+}
 
-  // Utility function to convert the meters distance into a suitable format.
-  String _convertDistance(int meters) {
-    if (meters >= 1000) {
-      double kilometers = meters / 1000;
-      return '${kilometers.toStringAsFixed(1)} km';
-    } else {
-      return '${meters.toString()} m';
-    }
-  }
+// Utility function to convert the seconds duration into a suitable format.
+String convertDuration(int seconds) {
+  int hours = seconds ~/ 3600; // Number of whole hours
+  int minutes = (seconds % 3600) ~/ 60; // Number of whole minutes
 
-  // Utility function to convert the seconds duration into a suitable format.
-  String _convertDuration(int seconds) {
-    int hours = seconds ~/ 3600; // Number of whole hours
-    int minutes = (seconds % 3600) ~/ 60; // Number of whole minutes
+  String hoursText = (hours > 0) ? '$hours h ' : ''; // Hours text
+  String minutesText = '$minutes min'; // Minutes text
 
-    String hoursText = (hours > 0) ? '$hours h ' : ''; // Hours text
-    String minutesText = '$minutes min'; // Minutes text
-
-    return hoursText + minutesText;
-  }
+  return hoursText + minutesText;
 }
 
 enum EBikeType { city, cross, mountain, road }

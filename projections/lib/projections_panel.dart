@@ -46,7 +46,7 @@ class ProjectionsPanel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'WGS84: ${wgsProjection!.coordinates!.latitude.toStringAsFixed(6)}, ${wgsProjection!.coordinates!.longitude.toStringAsFixed(6)}',
+                  'WGS84: ${wgsProjection!.coordinates.latitude.toStringAsFixed(6)}, ${wgsProjection!.coordinates.longitude.toStringAsFixed(6)}',
                   style: const TextStyle(color: Colors.black, fontSize: 16),
                 ),
                 (bngProjection != null)

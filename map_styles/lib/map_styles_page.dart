@@ -123,7 +123,7 @@ class _StyleItemState extends State<StyleItem> {
 
     // If the style is downloading pause and start downloading again
     // so the progress indicator updates value from callback
-    if (styleItem.isDownloadingOrWaiting) {
+    if (getIsDownloadingOrWaiting(styleItem)) {
       final errCode = styleItem.pauseDownload();
 
       if (errCode == GemError.success) {
@@ -148,7 +148,7 @@ class _StyleItemState extends State<StyleItem> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Image.memory(
-            styleItem.getStyleImage(Size(400, 300))!,
+            getStyleImage(styleItem, Size(400, 300))!,
             width: 175,
             gaplessPlayback: true,
           ),
@@ -177,7 +177,7 @@ class _StyleItemState extends State<StyleItem> {
                         Icons.download_done,
                         color: Colors.green,
                       );
-                    } else if (styleItem.isDownloadingOrWaiting) {
+                    } else if (getIsDownloadingOrWaiting(styleItem)) {
                       return SizedBox(
                         height: 10,
                         child: CircularProgressIndicator(
@@ -209,7 +209,7 @@ class _StyleItemState extends State<StyleItem> {
       Navigator.of(context).pop(item);
     }
 
-    if (item.isDownloadingOrWaiting) {
+    if (getIsDownloadingOrWaiting(item)) {
       // Pause the download.
       item.pauseDownload();
       setState(() {});

@@ -51,7 +51,7 @@ class NavigationInstructionPanel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  instruction.getFormattedDistanceToNextTurn(),
+                  getFormattedDistanceToNextTurn(instruction),
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     color: Colors.white,

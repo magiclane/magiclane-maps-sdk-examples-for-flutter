@@ -6,13 +6,16 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
 import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
-// Singleton class for persisting update related state and logic between instances of MapsPage
+// Singleton class for persisting update related state and logic between instances of StylesPage
 class StylesProvider {
   CurrentStylesStatus _currentStylesStatus = CurrentStylesStatus.unknown;
 
@@ -31,7 +34,7 @@ class StylesProvider {
     SdkSettings.offBoardListener.registerOnWorldwideRoadMapSupportStatus((
       status,
     ) async {
-      print("MapsProvider: Maps status updated: $status");
+      print("StylesProvider: Styles status updated: $status");
     });
 
     SdkSettings.offBoardListener.registerOnAvailableContentUpdate((
@@ -47,28 +50,10 @@ class StylesProvider {
       }
     });
 
-    // // Keep track of the new styles status - deprecated
-    // SdkSettings.setAllowConnection(
-    //   true,
-    //   onWorldwideRoadMapSupportStatusCallback: (status) async {
-    //     print("MapsProvider: Maps status updated: $status");
-    //   },
-    //   onAvailableContentUpdateCallback: (type, status) {
-    //     if (type == ContentType.viewStyleHighRes ||
-    //         type == ContentType.viewStyleLowRes) {
-    //       _currentStylesStatus = CurrentStylesStatus.fromStatus(status);
-    //     }
-    //     if (!completer.isCompleted) {
-    //       completer.complete();
-    //     }
-    //   },
-    // );
-
     // Force trying the style update process
     // The user will be notified via onAvailableContentUpdateCallback
-
     final code = ContentStore.checkForUpdate(ContentType.viewStyleHighRes);
-    print("MapsProvider: checkForUpdate resolved with code $code");
+    print("StylesProvider: checkForUpdate resolved with code $code");
 
     return completer.future;
   }
@@ -102,12 +87,12 @@ class StylesProvider {
         true,
         onStatusUpdated: (status) {
           print("StylesProvider: onNotifyStatusChanged with code $status");
-          // fully ready - for all old maps the new styles are downloaded
+          // fully ready - for all old styles the new styles are downloaded
           // partially ready - only a part of the new styles were downloaded because of memory constraints
-          if (status.isReady) {
-            // newer maps are downloaded and everything is set to
-            // - delete old maps and keep the new ones
-            // - update map version to the new version
+          if (isReady(status)) {
+            // newer styles are downloaded and everything is set to
+            // - delete old styles and keep the new ones
+            // - update style version to the new version
             final err = _contentUpdater!.apply();
             print("StylesProvider: apply resolved with code ${err.code}");
 
@@ -136,7 +121,7 @@ class StylesProvider {
       );
     } else {
       print(
-        "StylesProvider: There was an erorr creating the content updater: ${result.$2}",
+        "StylesProvider: There was an error creating the content updater: ${result.$2}",
       );
     }
 
@@ -179,9 +164,9 @@ class StylesProvider {
 
     final result = <ContentStoreItem>[];
 
-    for (final map in localStyles) {
-      if (map.status == ContentStoreItemStatus.completed) {
-        result.add(map);
+    for (final style in localStyles) {
+      if (style.status == ContentStoreItemStatus.completed) {
+        result.add(style);
       }
     }
 
@@ -196,10 +181,10 @@ class StylesProvider {
 
     int sum = 0;
 
-    for (final localMap in localStyles) {
-      if (localMap.isUpdatable &&
-          localMap.status == ContentStoreItemStatus.completed) {
-        sum += localMap.updateSize;
+    for (final localStyle in localStyles) {
+      if (localStyle.isUpdatable &&
+          localStyle.status == ContentStoreItemStatus.completed) {
+        sum += localStyle.updateSize;
       }
     }
 
@@ -209,8 +194,8 @@ class StylesProvider {
 
 enum CurrentStylesStatus {
   expiredData, // more than one version behind
-  oldData, // one version behind maps
-  upToDate, // updated maps
+  oldData, // one version behind
+  upToDate, // updated
   unknown; // not received any notification yet
 
   static CurrentStylesStatus fromStatus(MapStatus status) {
@@ -225,28 +210,90 @@ enum CurrentStylesStatus {
   }
 }
 
-extension VersionExtension on Version {
-  String get str => '$major.$minor';
+String getString(Version version) => '${version.major}.${version.minor}';
+
+// Map style image preview
+Uint8List? getStyleImage(ContentStoreItem contentItem, Size? size) =>
+    contentItem.imgPreview.getRenderableImageBytes(
+      size: size,
+      format: ImageFileFormat.png,
+    );
+
+bool getIsDownloadingOrWaiting(ContentStoreItem contentItem) => [
+  ContentStoreItemStatus.downloadQueued,
+  ContentStoreItemStatus.downloadRunning,
+  ContentStoreItemStatus.downloadWaitingNetwork,
+  ContentStoreItemStatus.downloadWaitingFreeNetwork,
+  ContentStoreItemStatus.downloadWaitingNetwork,
+].contains(contentItem.status);
+
+bool isReady(ContentUpdaterStatus updaterStatus) =>
+    updaterStatus == ContentUpdaterStatus.partiallyReady ||
+    updaterStatus == ContentUpdaterStatus.fullyReady;
+
+Future<void> loadOldStyles(AssetBundle assetBundle) async {
+  const style = 'Basic_1_Oldtime-1_21_656.style';
+
+  final dirPath = await _getDirPath();
+  final resFilePath = path.joinAll([dirPath.path, "Data", "SceneRes"]);
+
+  await _deleteAssets(resFilePath, RegExp(r'Basic_1_Oldtime.+\.style'));
+  await _loadAsset(assetBundle, style, resFilePath);
 }
 
-extension ContentStoreItemExtension on ContentStoreItem {
-  // Map style image preview
-  Uint8List? getStyleImage(Size? size) => imgPreview.getRenderableImageBytes(
-    size: size,
-    format: ImageFileFormat.png,
+Future<bool> _loadAsset(
+  AssetBundle assetBundle,
+  String assetName,
+  String destinationDirectoryPath,
+) async {
+  final destinationFilePath = path.join(destinationDirectoryPath, assetName);
+
+  File file = File(destinationFilePath);
+  if (await file.exists()) {
+    return false;
+  }
+
+  await file.create();
+
+  final asset = await assetBundle.load('assets/$assetName');
+  final buffer = asset.buffer;
+  await file.writeAsBytes(
+    buffer.asUint8List(asset.offsetInBytes, asset.lengthInBytes),
+    flush: true,
   );
+  print('INFO: Copied asset $destinationFilePath.');
 
-  bool get isDownloadingOrWaiting => [
-    ContentStoreItemStatus.downloadQueued,
-    ContentStoreItemStatus.downloadRunning,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-    ContentStoreItemStatus.downloadWaitingFreeNetwork,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-  ].contains(status);
+  return true;
 }
 
-extension ContentUpdaterStatusExtension on ContentUpdaterStatus {
-  bool get isReady =>
-      this == ContentUpdaterStatus.partiallyReady ||
-      this == ContentUpdaterStatus.fullyReady;
+Future<Directory> _getDirPath() async {
+  if (Platform.isAndroid) {
+    return (await getExternalStorageDirectory())!;
+  } else if (Platform.isIOS) {
+    return await getApplicationDocumentsDirectory();
+  } else {
+    throw Exception('Platform not supported');
+  }
+}
+
+Future<void> _deleteAssets(String directoryPath, RegExp pattern) async {
+  final directory = Directory(directoryPath);
+
+  if (!directory.existsSync()) {
+    print('WARNING: Directory $directoryPath not found.');
+  }
+
+  for (final file in directory.listSync()) {
+    final filename = path.basename(file.path);
+    if (pattern.hasMatch(filename)) {
+      try {
+        print('INFO DELETE ASSETS: deleting file ${file.path}');
+        file.deleteSync();
+      } catch (e) {
+        print(
+          'WARNING: Deleting file ${file.path} failed. Reason:\n${e.toString()}.',
+        );
+      }
+    }
+  }
 }

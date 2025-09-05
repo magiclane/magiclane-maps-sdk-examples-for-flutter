@@ -15,6 +15,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Center Area](center_area) - Center the camera on a specific geographic area.
 * [Center Coordinates](center_coordinates) - Show how to center the map on coordinates.
 * [Center Traffic](center_traffic) - Center the camera on traffic.
+* [Create Custom Overlay](create_custom_overlay) - Create a style with custom dataset. Display and interact with overlay items from the dataset.
 * [Custom Position Icon](custom_position_icon) - Show how to set a custom icon for the position tracker.
 * [Display Cursor Street Name](display_cursor_street_name) - Show street name based on tapped street.
 * [Draw Roadblock](draw_roadblock) - Draw and upload roadblocks.

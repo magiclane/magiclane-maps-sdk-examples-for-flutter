@@ -13,10 +13,10 @@ import 'package:gem_kit/landmark_store.dart';
 import 'package:gem_kit/map.dart';
 
 import 'package:flutter/material.dart' hide Route;
+import 'package:flutter/services.dart' show Uint8List, rootBundle;
 import 'package:gem_kit/search.dart';
 import 'package:import_custom_landmarks/landmark_panel.dart';
 import 'package:import_custom_landmarks/search_page.dart';
-import 'package:import_custom_landmarks/utils.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
@@ -264,5 +264,10 @@ class _MyHomePageState extends State<MyHomePage> {
       // Centering the map on the desired coordinates
       _mapController.centerOnCoordinates(result.coordinates, zoomLevel: 70);
     }
+  }
+
+  Future<Uint8List> assetToUint8List(String assetPath) async {
+    final byteData = await rootBundle.load(assetPath);
+    return byteData.buffer.asUint8List();
   }
 }

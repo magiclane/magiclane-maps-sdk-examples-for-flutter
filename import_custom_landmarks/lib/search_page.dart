@@ -144,7 +144,7 @@ class _SearchResultItemState extends State<SearchResultItem> {
         maxLines: 2,
       ),
       subtitle: Text(
-        '${widget.landmark.getFormattedDistance()} ${widget.landmark.getAddress()}',
+        '${getFormattedDistance(widget.landmark)} ${getAddress(widget.landmark)}',
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(
           color: Colors.black,
@@ -156,25 +156,24 @@ class _SearchResultItemState extends State<SearchResultItem> {
   }
 }
 
-// Define an extension for landmark for formatting the address and the distance.
-extension LandmarkExtension on Landmark {
-  String getAddress() {
-    final addressInfo = address;
-    final street = addressInfo.getField(AddressField.streetName);
-    final city = addressInfo.getField(AddressField.city);
-    final country = addressInfo.getField(AddressField.country);
+String getAddress(Landmark landmark) {
+  final addressInfo = landmark.address;
+  final street = addressInfo.getField(AddressField.streetName);
+  final city = addressInfo.getField(AddressField.city);
+  final country = addressInfo.getField(AddressField.country);
 
-    return " ${street ?? ""} ${city ?? ""} ${country ?? ""}";
-  }
+  return " ${street ?? ""} ${city ?? ""} ${country ?? ""}";
+}
 
-  String getFormattedDistance() {
-    String formattedDistance = '';
+String getFormattedDistance(Landmark landmark) {
+  String formattedDistance = '';
 
-    double distance =
-        (extraInfo.getByKey(PredefinedExtraInfoKey.gmSearchResultDistance) /
-                1000)
-            as double;
-    formattedDistance = "${distance.toStringAsFixed(0)}km";
-    return formattedDistance;
-  }
+  double distance =
+      (landmark.extraInfo.getByKey(
+                PredefinedExtraInfoKey.gmSearchResultDistance,
+              ) /
+              1000)
+          as double;
+  formattedDistance = "${distance.toStringAsFixed(0)}km";
+  return formattedDistance;
 }

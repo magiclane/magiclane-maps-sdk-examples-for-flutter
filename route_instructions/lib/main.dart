@@ -143,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
             routesMap.add(
               route,
               route == routes.first,
-              label: route.getMapLabel(),
+              label: getMapLabel(route),
             );
           }
 

@@ -46,7 +46,7 @@ class _SliderItemState extends State<SliderItem> {
           Text(widget.title),
           SlidingSection(
             sections: widget.sections,
-            distance: widget.route.totalDistance(),
+            distance: totalDistance(widget.route),
             onSelectionChanged: (section) {
               widget.onSelectionChanged(section.type);
             },

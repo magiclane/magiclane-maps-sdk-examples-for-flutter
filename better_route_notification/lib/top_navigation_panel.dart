@@ -3,10 +3,9 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
+import 'package:better_route_notification/utility.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/navigation.dart';
-
-import 'utility.dart';
 
 import 'package:flutter/material.dart';
 
@@ -51,7 +50,7 @@ class NavigationInstructionPanel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  instruction.getFormattedDistanceToNextTurn(),
+                  getFormattedDistanceToNextTurn(instruction),
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     color: Colors.white,

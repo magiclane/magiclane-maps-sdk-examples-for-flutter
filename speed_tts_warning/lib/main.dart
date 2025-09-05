@@ -7,7 +7,6 @@ import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 import 'package:gem_kit/navigation.dart';
 import 'package:gem_kit/routing.dart';
-import 'package:speed_tts_warning/tts_engine.dart';
 
 import 'bottom_alarm_panel.dart';
 
@@ -40,7 +39,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
-  late TTSEngine _ttsEngine;
 
   bool _areRoutesBuilt = false;
   bool _isSimulationActive = false;
@@ -59,9 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    _ttsEngine = TTSEngine();
-    _ttsEngine.initTts();
-
     super.initState();
   }
 
@@ -181,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     _alarmListener = AlarmListener(
-      onSpeedLimit: (speed, limit, insideCityArea) async {
+      onSpeedLimit: (speed, limit, insideCityArea) {
         final speedLimitConverted = (limit * 3.6).toInt();
 
         if (_currentSpeed != speedLimitConverted) {
@@ -190,7 +185,8 @@ class _MyHomePageState extends State<MyHomePage> {
           });
 
           final speedWarning = "Current speed limit: $speedLimitConverted";
-          await _ttsEngine.speakText(speedWarning);
+
+          SoundPlayingService.playText(speedWarning);
         }
       },
     );

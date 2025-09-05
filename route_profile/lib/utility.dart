@@ -117,10 +117,6 @@ Color getGradeColor(ClimbSection section) {
   }
 }
 
-// Define an extension for route for calculating the total distance of the route.
-extension RouteExtension on Route {
-  int totalDistance() {
-    return getTimeDistance().unrestrictedDistanceM +
-        getTimeDistance().restrictedDistanceM;
-  }
+int totalDistance(Route route) {
+  return route.getTimeDistance().totalDistanceM;
 }

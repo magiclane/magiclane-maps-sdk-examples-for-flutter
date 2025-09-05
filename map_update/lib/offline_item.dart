@@ -42,8 +42,8 @@ class _OfflineItemState extends State<OfflineItem> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               width: 50,
-              child: mapItem.image != null
-                  ? Image.memory(mapItem.image!)
+              child: getImage(mapItem) != null
+                  ? Image.memory(getImage(mapItem)!)
                   : SizedBox(),
             ),
             title: Text(
@@ -61,9 +61,9 @@ class _OfflineItemState extends State<OfflineItem> {
                   "${(mapItem.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
                   style: const TextStyle(color: Colors.black, fontSize: 16),
                 ),
-                Text("Current Version: ${_clientVersion.str}"),
+                Text("Current Version: ${getString(_clientVersion)}"),
                 if (_updateVersion.major != 0 && _updateVersion.minor != 0)
-                  Text("New version available: ${_updateVersion.str}")
+                  Text("New version available: ${getString(_updateVersion)}")
                 else
                   const Text("Version up to date"),
               ],

@@ -41,7 +41,7 @@ class _OfflineItemState extends State<OfflineItem> {
       child: Row(
         children: [
           Image.memory(
-            styleItem.getStyleImage(Size(400, 300))!,
+            getStyleImage(styleItem, Size(400, 300))!,
             width: 175,
             gaplessPlayback: true,
           ),
@@ -62,9 +62,9 @@ class _OfflineItemState extends State<OfflineItem> {
                     "${(styleItem.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB",
                     style: const TextStyle(color: Colors.black, fontSize: 16),
                   ),
-                  Text("Current Version: ${_clientVersion.str}"),
+                  Text("Current Version: ${getString(_clientVersion)}"),
                   if (_updateVersion.major != 0 && _updateVersion.minor != 0)
-                    Text("New version available: ${_updateVersion.str}")
+                    Text("New version available: ${getString(_updateVersion)}")
                   else
                     const Text("Version up to date"),
                 ],
@@ -79,7 +79,7 @@ class _OfflineItemState extends State<OfflineItem> {
     );
   }
 
-  // Method that downloads the current map
+  // Method that downloads the current style
   Future<void> _onStyleTap() async {
     final item = widget.styleItem;
 
@@ -89,12 +89,12 @@ class _OfflineItemState extends State<OfflineItem> {
       Navigator.of(context).pop(item);
     }
 
-    if (item.isDownloadingOrWaiting) {
+    if (getIsDownloadingOrWaiting(item)) {
       // Pause the download.
       item.pauseDownload();
       setState(() {});
     } else {
-      // Download the map.
+      // Download the style.
       _startStyleDownload(item);
     }
   }

@@ -26,7 +26,8 @@ class _MapsItemState extends State<MapsItem> {
   void initState() {
     super.initState();
 
-    mapItem.restartDownloadIfNecessary(
+    restartDownloadIfNecessary(
+      mapItem,
       _onMapDownloadFinished,
       onProgressCallback: _onMapDownloadProgressUpdated,
     );
@@ -42,8 +43,8 @@ class _MapsItemState extends State<MapsItem> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               width: 50,
-              child: mapItem.image != null
-                  ? Image.memory(mapItem.image!)
+              child: getImage(mapItem) != null
+                  ? Image.memory(getImage(mapItem)!)
                   : SizedBox(),
             ),
             title: Text(
@@ -64,7 +65,7 @@ class _MapsItemState extends State<MapsItem> {
                 builder: (context) {
                   if (mapItem.isCompleted) {
                     return const Icon(Icons.download_done, color: Colors.green);
-                  } else if (mapItem.isDownloadingOrWaiting) {
+                  } else if (getIsDownloadingOrWaiting(mapItem)) {
                     return SizedBox(
                       height: 10,
                       child: CircularProgressIndicator(
@@ -98,7 +99,7 @@ class _MapsItemState extends State<MapsItem> {
 
   void _onTileTap() {
     if (!mapItem.isCompleted) {
-      if (mapItem.isDownloadingOrWaiting) {
+      if (getIsDownloadingOrWaiting(mapItem)) {
         _pauseDownload();
       } else {
         _downloadMap();

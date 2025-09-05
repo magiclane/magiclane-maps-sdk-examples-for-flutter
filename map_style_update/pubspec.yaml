@@ -16,6 +16,8 @@ dependencies:
     path: plugins/gem_kit
 
   cupertino_icons: ^1.0.8
+  path: ^1.9.1
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -27,3 +29,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/

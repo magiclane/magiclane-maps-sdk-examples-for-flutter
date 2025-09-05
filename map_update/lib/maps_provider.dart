@@ -70,7 +70,7 @@ class MapsProvider {
           print("MapsProvider: onNotifyStatusChanged with code $status");
           // fully ready - for all old maps the new maps are downloaded
           // partially ready - only a part of the new maps were downloaded because of memory constraints
-          if (status.isReady) {
+          if (isReady(status)) {
             // newer maps are downloaded and everything is set to
             // - delete old maps and keep the new ones
             // - update map version to the new version
@@ -204,6 +204,7 @@ Future<bool> _loadAsset(
     buffer.asUint8List(asset.offsetInBytes, asset.lengthInBytes),
     flush: true,
   );
+  print('INFO: Copied asset $destinationFilePath.');
 
   return true;
 }
@@ -222,9 +223,7 @@ Future<void> _deleteAssets(String directoryPath, RegExp pattern) async {
   final directory = Directory(directoryPath);
 
   if (!directory.existsSync()) {
-    print(
-      '\x1B[31mWARNING: Directory $directoryPath not found. Test might fail.\x1B[0m',
-    );
+    print('WARNING: Directory $directoryPath not found.');
   }
 
   for (final file in directory.listSync()) {
@@ -235,7 +234,7 @@ Future<void> _deleteAssets(String directoryPath, RegExp pattern) async {
         file.deleteSync();
       } catch (e) {
         print(
-          '\x1B[31mWARNING: Deleting file ${file.path} failed. Test might fail. Reason:\n${e.toString()}\x1B[0m',
+          'WARNING: Deleting file ${file.path} failed. Reason:\n${e.toString()}.',
         );
       }
     }
@@ -260,68 +259,70 @@ enum CurrentMapsStatus {
   }
 }
 
-extension VersionExtension on Version {
-  String get str => '$major.$minor';
+String getString(Version version) => '${version.major}.${version.minor}';
+
+// Method that returns the image of the country associated with the road map item
+Uint8List? getImage(ContentStoreItem contentItem) {
+  Img? img = MapDetails.getCountryFlagImg(contentItem.countryCodes[0]);
+  if (img == null) return null;
+  if (!img.isValid) return null;
+  return img.getRenderableImageBytes(size: Size(100, 100));
 }
 
-extension ContentStoreItemExtension on ContentStoreItem {
-  // Method that returns the image of the country associated with the road map item
-  Uint8List? get image {
-    Img? img = MapDetails.getCountryFlagImg(countryCodes[0]);
-    if (img == null) return null;
-    if (!img.isValid) return null;
-    return img.getRenderableImageBytes(size: Size(100, 100));
-  }
+bool getIsDownloadingOrWaiting(ContentStoreItem contentItem) => [
+  ContentStoreItemStatus.downloadQueued,
+  ContentStoreItemStatus.downloadRunning,
+  ContentStoreItemStatus.downloadWaitingNetwork,
+  ContentStoreItemStatus.downloadWaitingFreeNetwork,
+  ContentStoreItemStatus.downloadWaitingNetwork,
+].contains(contentItem.status);
 
-  bool get isDownloadingOrWaiting => [
-    ContentStoreItemStatus.downloadQueued,
-    ContentStoreItemStatus.downloadRunning,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-    ContentStoreItemStatus.downloadWaitingFreeNetwork,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-  ].contains(status);
-
-  void restartDownloadIfNecessary(
-    void Function(GemError err) onCompleteCallback, {
-    void Function(int progress)? onProgressCallback,
-  }) {
-    //If the map is downloading pause and start downloading again
-    //so the progress indicator updates value from callback
-    if (isDownloadingOrWaiting) {
-      _pauseAndRestartDownload(
-        onCompleteCallback,
-        onProgressCallback: onProgressCallback,
-      );
-    }
-  }
-
-  void _pauseAndRestartDownload(
-    void Function(GemError err) onCompleteCallback, {
-    void Function(int progress)? onProgressCallback,
-  }) {
-    final errCode = pauseDownload(
-      onComplete: (err) {
-        if (err == GemError.success) {
-          // Download the map.
-          asyncDownload(
-            onCompleteCallback,
-            onProgressCallback: onProgressCallback,
-            allowChargedNetworks: true,
-          );
-        } else {
-          print("Download pause for item $id failed with code $err");
-        }
-      },
+void restartDownloadIfNecessary(
+  ContentStoreItem contentItem,
+  void Function(GemError err) onCompleteCallback, {
+  void Function(int progress)? onProgressCallback,
+}) {
+  //If the map is downloading pause and start downloading again
+  //so the progress indicator updates value from callback
+  if (getIsDownloadingOrWaiting(contentItem)) {
+    _pauseAndRestartDownload(
+      contentItem,
+      onCompleteCallback,
+      onProgressCallback: onProgressCallback,
     );
-
-    if (errCode != GemError.success) {
-      print("Download pause for item $id failed with code $errCode");
-    }
   }
 }
 
-extension ContentUpdaterStatusExtension on ContentUpdaterStatus {
-  bool get isReady =>
-      this == ContentUpdaterStatus.partiallyReady ||
-      this == ContentUpdaterStatus.fullyReady;
+void _pauseAndRestartDownload(
+  ContentStoreItem contentItem,
+
+  void Function(GemError err) onCompleteCallback, {
+  void Function(int progress)? onProgressCallback,
+}) {
+  final errCode = contentItem.pauseDownload(
+    onComplete: (err) {
+      if (err == GemError.success) {
+        // Download the map.
+        contentItem.asyncDownload(
+          onCompleteCallback,
+          onProgressCallback: onProgressCallback,
+          allowChargedNetworks: true,
+        );
+      } else {
+        print(
+          "Download pause for item ${contentItem.id} failed with code $err",
+        );
+      }
+    },
+  );
+
+  if (errCode != GemError.success) {
+    print(
+      "Download pause for item ${contentItem.id} failed with code $errCode",
+    );
+  }
 }
+
+bool isReady(ContentUpdaterStatus status) =>
+    status == ContentUpdaterStatus.partiallyReady ||
+    status == ContentUpdaterStatus.fullyReady;

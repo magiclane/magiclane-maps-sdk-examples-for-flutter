@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/weather.dart';
-import 'package:weather_forecast/extensions.dart';
+import 'package:weather_forecast/utils.dart';
 
 class ForecastHourlyPage extends StatelessWidget {
   final List<LocationForecast> locationForecasts;
@@ -56,8 +56,8 @@ class WeatherForecastHourlyItem extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(condition.getFormattedHour()),
-              Text(condition.getFormattedDate()),
+              Text(getFormattedHour(condition)),
+              Text(getFormattedDate(condition)),
             ],
           ),
           conditionImage.isValid

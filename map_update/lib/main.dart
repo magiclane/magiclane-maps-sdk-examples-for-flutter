@@ -20,6 +20,12 @@ const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // A init is required to create the assets directory structure where the
+  // road map files are located. The SDK needs to be released before copying
+  // the old map files into the assets directory.
+  await GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.release();
+
   // Simulate old maps
   // delete all maps, all resources and get some old ones
   // AS A USER YOU NEVER DO THAT

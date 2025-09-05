@@ -53,18 +53,16 @@ class StylesProvider {
   }
 }
 
-extension ContentStoreItemExtension on ContentStoreItem {
-  // The first image associated to a map
-  Uint8List? getStyleImage(Size? size) => imgPreview.getRenderableImageBytes(
-    size: size,
-    format: ImageFileFormat.png,
-  );
+Uint8List? getStyleImage(ContentStoreItem contentItem, Size? size) =>
+    contentItem.imgPreview.getRenderableImageBytes(
+      size: size,
+      format: ImageFileFormat.png,
+    );
 
-  bool get isDownloadingOrWaiting => [
-    ContentStoreItemStatus.downloadQueued,
-    ContentStoreItemStatus.downloadRunning,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-    ContentStoreItemStatus.downloadWaitingFreeNetwork,
-    ContentStoreItemStatus.downloadWaitingNetwork,
-  ].contains(status);
-}
+bool getIsDownloadingOrWaiting(ContentStoreItem contentItem) => [
+  ContentStoreItemStatus.downloadQueued,
+  ContentStoreItemStatus.downloadRunning,
+  ContentStoreItemStatus.downloadWaitingNetwork,
+  ContentStoreItemStatus.downloadWaitingFreeNetwork,
+  ContentStoreItemStatus.downloadWaitingNetwork,
+].contains(contentItem.status);

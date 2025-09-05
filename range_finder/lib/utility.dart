@@ -4,17 +4,18 @@
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
 // Utility function to convert the seconds duration into a suitable format.
-String convertDuration(int milliseconds) {
-  int totalSeconds = (milliseconds / 1000).floor();
-  int hours = totalSeconds ~/ 3600;
-  int minutes = (totalSeconds % 3600) ~/ 60;
-  int seconds = totalSeconds % 60;
+String convertDuration(int seconds) {
+  int hours = seconds ~/ 3600;
+  int minutes = (seconds % 3600) ~/ 60;
+  int remainingSeconds = seconds % 60;
 
   String hoursText = (hours > 0) ? '$hours h ' : '';
   String minutesText = (minutes > 0) ? '$minutes min ' : '';
-  String secondsText = '$seconds sec';
+  String secondsText = (hours == 0 && minutes == 0)
+      ? '$remainingSeconds sec'
+      : '';
 
-  return hoursText + minutesText + secondsText;
+  return (hoursText + minutesText + secondsText).trim();
 }
 
 // Utility function to convert the value into a suitable format.

@@ -164,7 +164,7 @@ class _MapsPageState extends State<MapsPage> {
   }
 
   void onUpdateStatusChanged(ContentUpdaterStatus status) {
-    if (mounted && status.isReady) {
+    if (mounted && isReady(status)) {
       showDialog<dynamic>(
         context: context,
         builder: (context) {

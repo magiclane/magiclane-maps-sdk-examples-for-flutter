@@ -131,7 +131,7 @@ class _MapStylesUpdatePageState extends State<MapStylesUpdatePage> {
         return CustomDialog(
           title: "Update available",
           content:
-              "New world map available.\nSize: ${(StylesProvider.computeUpdateSize() / (1024.0 * 1024.0)).toStringAsFixed(2)} MB\nDo you wish to update?",
+              "New style update available.\nSize: ${(StylesProvider.computeUpdateSize() / (1024.0 * 1024.0)).toStringAsFixed(2)} MB\nDo you wish to update?",
           positiveButtonText: "Update",
           negativeButtonText: "Later",
           onPositivePressed: () {
@@ -165,7 +165,7 @@ class _MapStylesUpdatePageState extends State<MapStylesUpdatePage> {
   }
 
   void onUpdateStatusChanged(ContentUpdaterStatus status) {
-    if (mounted && status.isReady) {
+    if (mounted && isReady(status)) {
       showDialog<dynamic>(
         context: context,
         builder: (context) {

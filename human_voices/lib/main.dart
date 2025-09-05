@@ -119,11 +119,13 @@ class _MyHomePageState extends State<MyHomePage> {
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
               child: NavigationBottomPanel(
-                remainingDistance: currentInstruction
-                    .getFormattedRemainingDistance(),
-                remainingDuration: currentInstruction
-                    .getFormattedRemainingDuration(),
-                eta: currentInstruction.getFormattedETA(),
+                remainingDistance: getFormattedRemainingDistance(
+                  currentInstruction,
+                ),
+                remainingDuration: getFormattedRemainingDistance(
+                  currentInstruction,
+                ),
+                eta: getFormattedETA(currentInstruction),
               ),
             ),
         ],
@@ -185,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
             routesMap.add(
               route,
               route == routes.first,
-              label: route.getMapLabel(),
+              label: getMapLabel(route),
             );
           }
 

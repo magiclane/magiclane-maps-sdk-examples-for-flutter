@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/weather.dart';
-import 'package:weather_forecast/extensions.dart';
+import 'package:weather_forecast/utils.dart';
 
 class ForecastNowPage extends StatelessWidget {
   /// Holds the weather condition and forecast data.
@@ -47,7 +47,7 @@ class ForecastNowPage extends StatelessWidget {
                 Column(
                   children: [
                     Text(landmarkName, style: TextStyle(fontSize: 20.0)),
-                    Text("Updated at ${condition.getFormattedHour()}"),
+                    Text("Updated at ${getFormattedHouForecast(condition)}"),
                   ],
                 ),
                 for (final param in condition.forecast.first.params)
@@ -61,7 +61,7 @@ class ForecastNowPage extends StatelessWidget {
                           children: [
                             Text(
                               param.type == "Sunrise" || param.type == "Sunset"
-                                  ? param.getFormattedHour()
+                                  ? getFormattedHourWithParam(param)
                                   : param.value.toString(),
                             ),
                             Text(param.unit),

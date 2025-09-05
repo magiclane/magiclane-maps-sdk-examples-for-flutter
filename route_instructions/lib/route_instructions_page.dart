@@ -90,7 +90,7 @@ class _InstructionsItemState extends State<InstructionsItem> {
         maxLines: 2,
       ),
       trailing: Text(
-        widget.instruction.getFormattedDistanceUntilInstruction(),
+        getFormattedDistanceUntilInstruction(widget.instruction),
         overflow: TextOverflow.fade,
         style: const TextStyle(
           color: Colors.black,

@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/weather.dart';
-import 'package:weather_forecast/extensions.dart';
+import 'package:weather_forecast/utils.dart';
 
 class ForecastDailyPage extends StatelessWidget {
   final List<LocationForecast> locationForecasts;
@@ -52,13 +52,13 @@ class WeatherForecastDailyItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(_getWeekdayString(condition.stamp.weekday)),
-              Text(condition.getFormattedDate()),
+              Text(getFormattedDate(condition)),
             ],
           ),
           conditionImage.isValid
               ? Image.memory(conditionImage.getRenderableImageBytes()!)
               : SizedBox(),
-          Row(children: [Text(condition.getFormattedTemperature())]),
+          Row(children: [Text(getFormattedTemperature(condition))]),
         ],
       ),
     );
