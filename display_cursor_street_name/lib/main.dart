@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController.preferences.enableCursorRender = true;
 
     // Register touch callback to set cursor to tapped position
-    _mapController.registerTouchCallback((point) async {
+    _mapController.registerOnTouch((point) async {
       await _mapController.setCursorScreenPosition(point);
 
       final streets = _mapController.cursorSelectionStreets();

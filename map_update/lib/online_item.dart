@@ -42,7 +42,7 @@ class _OnlineItemState extends State<OnlineItem> {
     restartDownloadIfNecessary(
       mapItem,
       _onMapDownloadFinished,
-      onProgressCallback: _onMapDownloadProgressUpdated,
+      onProgress: _onMapDownloadProgressUpdated,
     );
   }
 
@@ -127,7 +127,7 @@ class _OnlineItemState extends State<OnlineItem> {
   void _startMapDownload(ContentStoreItem mapItem) {
     mapItem.asyncDownload(
       _onMapDownloadFinished,
-      onProgressCallback: _onMapDownloadProgressUpdated,
+      onProgress: _onMapDownloadProgressUpdated,
       allowChargedNetworks: true,
     );
   }

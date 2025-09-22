@@ -10,7 +10,7 @@ import 'package:gem_kit/routing.dart';
 
 import 'bottom_navigation_panel.dart';
 import 'top_navigation_panel.dart';
-import 'utility.dart';
+import 'utils.dart';
 
 import 'package:flutter/material.dart' hide Animation, Route;
 
@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
               left: 10,
               child: Column(
                 children: [
-                  NavigationInstructionPanel(instruction: currentInstruction),
+                  TopNavigationPanel(instruction: currentInstruction),
                   const SizedBox(height: 10),
                   FollowPositionButton(
                     onTap: () => _mapController.startFollowingPosition(),
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Positioned(
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
-              child: NavigationBottomPanel(
+              child: BottomNavigationPanel(
                 remainingDistance: getFormattedRemainingDistance(
                   currentInstruction,
                 ),
@@ -195,7 +195,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _navigationHandler = NavigationService.startSimulation(
       routes.mainRoute!,
-      null,
       onNavigationInstruction: (instruction, events) {
         setState(() {
           _isSimulationActive = true;

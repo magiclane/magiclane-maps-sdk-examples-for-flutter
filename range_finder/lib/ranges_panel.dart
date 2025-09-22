@@ -8,7 +8,7 @@ import 'package:gem_kit/map.dart';
 import 'package:gem_kit/routing.dart';
 
 import 'range.dart';
-import 'utility.dart';
+import 'utils.dart';
 
 import 'package:flutter/material.dart' hide Route;
 
@@ -426,20 +426,18 @@ class _RangesPanelState extends State<RangesPanel> {
     // Use the map controller to center on route above the panel.
     widget.mapController.centerOnRoute(
       route,
-      screenRect: RectType(
-        x: 0,
-        y: (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
+      screenRect: Rectangle<int>(
+        0,
+        (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
             .toInt(),
-        width:
-            (MediaQuery.of(context).size.width *
-                    MediaQuery.of(context).devicePixelRatio)
-                .toInt(),
-        height:
-            ((MediaQuery.of(context).size.height / 2 -
-                        appbarHeight -
-                        2 * padding * MediaQuery.of(context).devicePixelRatio) *
-                    MediaQuery.of(context).devicePixelRatio)
-                .toInt(),
+        (MediaQuery.of(context).size.width *
+                MediaQuery.of(context).devicePixelRatio)
+            .toInt(),
+        ((MediaQuery.of(context).size.height / 2 -
+                    appbarHeight -
+                    2 * padding * MediaQuery.of(context).devicePixelRatio) *
+                MediaQuery.of(context).devicePixelRatio)
+            .toInt(),
       ),
     );
   }

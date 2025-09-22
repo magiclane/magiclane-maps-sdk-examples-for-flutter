@@ -202,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // In order to be able to select an alternative route, we have to register the route tap gesture callback.
   Future<void> _registerRouteTapCallback() async {
     // Register the generic map touch gesture.
-    _mapController.registerTouchCallback((pos) async {
+    _mapController.registerOnTouch((pos) async {
       // Select the map objects at gives position.
       await _mapController.setCursorScreenPosition(pos);
 

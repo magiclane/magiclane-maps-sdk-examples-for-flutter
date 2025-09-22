@@ -13,15 +13,15 @@ import 'package:map_style_update/offline_item.dart';
 import 'package:map_style_update/online_item.dart';
 import 'package:map_style_update/styles_provider.dart';
 
-class MapStylesUpdatePage extends StatefulWidget {
+class StylesPage extends StatefulWidget {
   final StylesProvider stylesProvider;
-  const MapStylesUpdatePage({super.key, required this.stylesProvider});
+  const StylesPage({super.key, required this.stylesProvider});
 
   @override
-  State<MapStylesUpdatePage> createState() => _MapStylesUpdatePageState();
+  State<StylesPage> createState() => _MapStylesUpdatePageState();
 }
 
-class _MapStylesUpdatePageState extends State<MapStylesUpdatePage> {
+class _MapStylesUpdatePageState extends State<StylesPage> {
   final stylesList = <ContentStoreItem>[];
 
   StylesProvider stylesProvider = StylesProvider.instance;
@@ -108,7 +108,7 @@ class _MapStylesUpdatePageState extends State<MapStylesUpdatePage> {
                     final styleItem = snapshot.data!.elementAt(index);
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: StyleItem(
+                      child: OnlineItem(
                         styleItem: styleItem,
                         onItemStatusChanged: () {
                           if (mounted) setState(() {});

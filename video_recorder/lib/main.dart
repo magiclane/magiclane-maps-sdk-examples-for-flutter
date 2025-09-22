@@ -3,6 +3,8 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
@@ -24,10 +26,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Video Recorder',
-      home: MyHomePage(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Video Recorder',
+        home: MyHomePage());
   }
 }
 
@@ -58,7 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Video Recorder', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('Video Recorder', style: TextStyle(color: Colors.white)),
         actions: [
           if (_hasLiveDataSource && _isRecording == false)
             IconButton(
@@ -73,19 +75,19 @@ class _MyHomePageState extends State<MyHomePage> {
           if (_isRecording)
             IconButton(
               onPressed: _startAudioRecording,
-              icon: Icon(Icons.mic, color: _isAudioRecording ? Colors.green : Colors.white),
+              icon: Icon(Icons.mic,
+                  color: _isAudioRecording ? Colors.green : Colors.white),
             ),
           if (_isRecording)
             IconButton(
               onPressed: _stopAudioRecording,
-              icon: Icon(Icons.mic_off, color: _isAudioRecording ? Colors.white : Colors.grey),
+              icon: Icon(Icons.mic_off,
+                  color: _isAudioRecording ? Colors.white : Colors.grey),
             ),
           IconButton(
             onPressed: _onFollowPositionButtonPressed,
-            icon: const Icon(
-              Icons.location_searching_sharp,
-              color: Colors.white,
-            ),
+            icon:
+                const Icon(Icons.location_searching_sharp, color: Colors.white),
           ),
         ],
       ),
@@ -111,7 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      final locationPermssionWeb = await PositionService.requestLocationPermission;
+      final locationPermssionWeb =
+          await PositionService.requestLocationPermission();
       if (locationPermssionWeb == true) {
         _locationPermissionStatus = PermissionStatus.granted;
       } else {
@@ -146,9 +149,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Camera or microphone permission not granted.'),
-            duration: Duration(seconds: 3),
-          ),
+              content: Text('Camera or microphone permission not granted.'),
+              duration: Duration(seconds: 3)),
         );
       }
       return;
@@ -165,10 +167,13 @@ class _MyHomePageState extends State<MyHomePage> {
           DataType.position, // GPS position data
           DataType.camera, // Video data from the camera sensor
         ],
-        enableAudio: true, // Enable audio recording (requires microphone permission)
+        enableAudio:
+            true, // Enable audio recording (requires microphone permission)
         minDurationSeconds: 5,
-        videoQuality: Resolution.hd720p, // Define the video resolution/quality (requires camera sensor)
-        chunkDurationSeconds: 180, // Length of each recorded video chunk in seconds
+        videoQuality: Resolution
+            .hd720p, // Define the video resolution/quality (requires camera sensor)
+        chunkDurationSeconds:
+            180, // Length of each recorded video chunk in seconds
       ),
     );
 
@@ -181,12 +186,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (error != GemError.success) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(
             content: Text('Recording failed: $error'),
-            duration: Duration(seconds: 5),
-          ),
-        );
+            duration: Duration(seconds: 5)));
       }
       setState(() {
         _isRecording = false;
@@ -206,12 +210,11 @@ class _MyHomePageState extends State<MyHomePage> {
       await _presentRecordedRoute();
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(
             content: Text('Recording failed: $endErr'),
-            duration: Duration(seconds: 5),
-          ),
-        );
+            duration: Duration(seconds: 5)));
       }
     }
 
@@ -237,23 +240,18 @@ class _MyHomePageState extends State<MyHomePage> {
     // Create a path entity from coordinates
     final path = Path.fromCoordinates(recorderCoordinates);
 
-    Landmark beginLandmark = Landmark.withCoordinates(
-      recorderCoordinates.first,
-    );
+    Landmark beginLandmark =
+        Landmark.withCoordinates(recorderCoordinates.first);
     Landmark endLandmark = Landmark.withCoordinates(recorderCoordinates.last);
 
     beginLandmark.setImageFromIcon(GemIcon.waypointStart);
     endLandmark.setImageFromIcon(GemIcon.waypointFinish);
 
-    HighlightRenderSettings renderSettings = HighlightRenderSettings(
-      options: {HighlightOptions.showLandmark},
-    );
+    HighlightRenderSettings renderSettings =
+        HighlightRenderSettings(options: {HighlightOptions.showLandmark});
 
-    _mapController.activateHighlight(
-      [beginLandmark, endLandmark],
-      renderSettings: renderSettings,
-      highlightId: 1,
-    );
+    _mapController.activateHighlight([beginLandmark, endLandmark],
+        renderSettings: renderSettings, highlightId: 1);
 
     // Show the path immediately after stopping recording
     _mapController.preferences.paths.add(path);
@@ -261,21 +259,20 @@ class _MyHomePageState extends State<MyHomePage> {
     // Center on recorder path
     _mapController.centerOnAreaRect(
       path.area,
-      viewRc: RectType(
-        x: _mapController.viewport.width ~/ 3,
-        y: _mapController.viewport.height ~/ 3,
-        width: _mapController.viewport.width ~/ 3,
-        height: _mapController.viewport.height ~/ 3,
+      viewRc: Rectangle<int>(
+        _mapController.viewport.width ~/ 3,
+        _mapController.viewport.height ~/ 3,
+        _mapController.viewport.width ~/ 3,
+        _mapController.viewport.height ~/ 3,
       ),
     );
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(
           content: Text('Duration: $duration'),
-          duration: Duration(seconds: 5),
-        ),
-      );
+          duration: Duration(seconds: 5)));
     }
   }
 

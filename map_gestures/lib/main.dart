@@ -80,21 +80,21 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMapCreated(GemMapController controller) async {
     _mapController = controller;
 
-    _mapController.registerMapAngleUpdateCallback((angle) {
+    _mapController.registerOnMapAngleUpdate((angle) {
       setState(() {
         _mapGesture = 'Rotate gesture';
       });
       print("Gesture: onMapAngleUpdate $angle");
     });
 
-    _mapController.registerTouchCallback((point) {
+    _mapController.registerOnTouch((point) {
       setState(() {
         _mapGesture = 'Touch Gesture';
       });
       print("Gesture: onTouch $point");
     });
 
-    _mapController.registerMoveCallback((point1, point2) {
+    _mapController.registerOnMove((point1, point2) {
       setState(() {
         _mapGesture = 'Pan Gesture';
       });
@@ -103,27 +103,21 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     });
 
-    _mapController.registerLongPressCallback((point) {
+    _mapController.registerOnLongPress((point) {
       setState(() {
         _mapGesture = 'Long Press Gesture';
       });
       print('Gesture: onLongPress $point');
     });
 
-    _mapController.registerDoubleTouchCallback((point) {
+    _mapController.registerOnDoubleTouch((point) {
       setState(() {
         _mapGesture = 'Double Touch Gesture';
       });
       print('Gesture: onDoubleTouch $point');
     });
 
-    _mapController.registerPinchCallback((
-      point1,
-      point2,
-      point3,
-      point4,
-      point5,
-    ) {
+    _mapController.registerOnPinch((point1, point2, point3, point4, point5) {
       setState(() {
         _mapGesture = 'Pinch Gesture';
       });
@@ -132,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     });
 
-    _mapController.registerShoveCallback((degrees, point1, point2, point3) {
+    _mapController.registerOnShove((degrees, point1, point2, point3) {
       setState(() {
         _mapGesture = 'Shove Gesture';
       });
@@ -141,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     });
 
-    _mapController.registerSwipeCallback((distX, distY, speedMMPerSec) {
+    _mapController.registerOnSwipe((distX, distY, speedMMPerSec) {
       setState(() {
         _mapGesture = 'Swipe Gesture';
       });
@@ -150,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     });
 
-    _mapController.registerPinchSwipeCallback((point, zoomSpeed, rotateSpeed) {
+    _mapController.registerOnPinchSwipe((point, zoomSpeed, rotateSpeed) {
       setState(() {
         _mapGesture = 'Pinch Swipe Gesture';
       });
@@ -159,14 +153,14 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     });
 
-    _mapController.registerTwoTouchesCallback((point) {
+    _mapController.registerOnTwoTouches((point) {
       setState(() {
         _mapGesture = 'Two Touches Gesture';
       });
       print('Gesture: onTwoTouches $point');
     });
 
-    _mapController.registerTouchPinchCallback((point1, point2, point3, point4) {
+    _mapController.registerOnTouchPinch((point1, point2, point3, point4) {
       setState(() {
         _mapGesture = 'Touch Pinch Gesture';
       });

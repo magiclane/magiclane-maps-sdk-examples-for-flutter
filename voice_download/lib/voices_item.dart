@@ -147,7 +147,7 @@ class _VoicesItemState extends State<VoicesItem> {
     // Download the voice.
     widget.voice.asyncDownload(
       _onVoiceDownloadFinished,
-      onProgressCallback: _onVoiceDownloadProgressUpdated,
+      onProgress: _onVoiceDownloadProgressUpdated,
       allowChargedNetworks: true,
     );
   }

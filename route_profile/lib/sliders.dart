@@ -14,7 +14,7 @@ import 'package:gem_kit/core.dart';
 
 import 'package:another_xlider/another_xlider.dart';
 
-import 'utility.dart';
+import 'utils.dart';
 
 class SliderItem extends StatefulWidget {
   final String title;

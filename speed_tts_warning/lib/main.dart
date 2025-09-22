@@ -104,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Positioned(
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
-              child: BottomSpeedLimitPanel(speed: _currentSpeed!),
+              child: BottomAlarmPanel(speed: _currentSpeed!),
             ),
         ],
       ),
@@ -198,7 +198,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _navigationHandler = NavigationService.startSimulation(
       routes.mainRoute!,
-      null,
       onNavigationInstruction: (instruction, events) {
         setState(() {
           _isSimulationActive = true;

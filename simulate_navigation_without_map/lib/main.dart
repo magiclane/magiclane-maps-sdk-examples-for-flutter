@@ -9,7 +9,7 @@ import 'package:gem_kit/routing.dart';
 
 import 'bottom_navigation_panel.dart';
 import 'top_navigation_panel.dart';
-import 'utility.dart';
+import 'utils.dart';
 
 import 'package:flutter/material.dart' hide Animation, Route;
 
@@ -94,15 +94,13 @@ class _MyHomePageState extends State<MyHomePage> {
             Positioned(
               top: 10,
               left: 10,
-              child: NavigationInstructionPanel(
-                instruction: _currentInstruction,
-              ),
+              child: TopNavigationPanel(instruction: _currentInstruction),
             ),
           if (_isSimulationActive)
             Positioned(
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
-              child: NavigationBottomPanel(
+              child: BottomNavigationPanel(
                 remainingDistance: getFormattedRemainingDistance(
                   _currentInstruction,
                 ),
@@ -168,7 +166,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _startSimulation() {
     _navigationHandler = NavigationService.startSimulation(
       _route,
-      null,
       onNavigationInstruction: (instruction, events) {
         setState(() {
           _isSimulationActive = true;

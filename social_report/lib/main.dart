@@ -112,12 +112,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController = controller;
 
     // Register callback for touch events and updated cursor position
-    _mapController.registerTouchCallback((point) {
+    _mapController.registerOnTouch((point) {
       _mapController.setCursorScreenPosition(point);
     });
 
     // Get selected overlay items under cursor
-    _mapController.registerCursorSelectionUpdatedOverlayItemsCallback((items) {
+    _mapController.registerOnCursorSelectionUpdatedOverlayItems((items) {
       if (items.isEmpty) return;
       final selectedItem = items.first;
 

@@ -176,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMapCreated(GemMapController controller) async {
     _mapController = controller;
 
-    _mapController.registerMoveCallback((_, __) {
+    _mapController.registerOnMove((_, __) {
       if (!drawMode) return;
 
       _debounce?.cancel();

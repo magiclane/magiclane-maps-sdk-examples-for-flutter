@@ -240,7 +240,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Download the map.
     map.asyncDownload(
       _onMapDownloadFinished,
-      onProgressCallback: _onMapDownloadProgressUpdated,
+      onProgress: _onMapDownloadProgressUpdated,
       allowChargedNetworks: true,
     );
   }

@@ -32,7 +32,7 @@ Uint8List? getImage(ContentStoreItem contentItem) {
 void restartDownloadIfNecessary(
   ContentStoreItem contentItem,
   void Function(GemError err) onCompleteCallback, {
-  void Function(int progress)? onProgressCallback,
+  void Function(int progress)? onProgress,
 }) {
   //If the map is downloading pause and start downloading again
   //so the progress indicator updates value from callback
@@ -40,7 +40,7 @@ void restartDownloadIfNecessary(
     _pauseAndRestartDownload(
       contentItem,
       onCompleteCallback,
-      onProgressCallback: onProgressCallback,
+      onProgress: onProgress,
     );
   }
 }
@@ -49,7 +49,7 @@ void _pauseAndRestartDownload(
   ContentStoreItem contentItem,
 
   void Function(GemError err) onCompleteCallback, {
-  void Function(int progress)? onProgressCallback,
+  void Function(int progress)? onProgress,
 }) {
   final errCode = contentItem.pauseDownload(
     onComplete: (err) {
@@ -57,7 +57,7 @@ void _pauseAndRestartDownload(
         // Download the map.
         contentItem.asyncDownload(
           onCompleteCallback,
-          onProgressCallback: onProgressCallback,
+          onProgress: onProgress,
           allowChargedNetworks: true,
         );
       } else {

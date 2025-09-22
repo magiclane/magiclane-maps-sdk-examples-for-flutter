@@ -6,31 +6,23 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
 
-import 'package:debug_console/debug_console.dart';
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
-
-// Global instance debug console controller
-final controller = DebugConsole.instance;
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
 void main() async {
   // Turn on logging
-  Debug.logCallObjectMethod = true;
+  Debug.logCallObjectMethod = false;
   Debug.logCreateObject = true;
   Debug.logLevel = GemLoggingLevel.all;
   Debug.logListenerMethod = true;
 
-  // Subscribe the DebugConsole to listen to running app
-  DebugConsole.listen(() {
-    runApp(const MyApp());
-  });
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -76,37 +68,28 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: const GemMap(
+      body: GemMap(
         key: ValueKey("GemMap"),
         appAuthorization: projectApiToken,
+        onMapCreated: (ctrl) async {
+          await Debug.setSdkDumpLevel(GemDumpSdkLevel.verbose);
+
+          // Redirect Dart SDK logs to the SDK dump log file
+          final dartSdkLogger = Logger('GemSdkLogger');
+          dartSdkLogger.onRecord.listen((record) {
+            Debug.log(
+                level: GemDumpSdkLevel.verbose,
+                message: '${record.time} ${record.message}');
+          });
+        },
       ),
     );
   }
 
   Future<void> _shareLogs() async {
-    try {
-      final logs = DebugConsole.instance.logs;
-      if (logs.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('No logs to share')));
-        return;
-      }
+    // Get the path to the SDK log dump file
+    final logPath = await Debug.getSdkLogDumpPath();
 
-      // Process logs as in DebugConsole's saveToFile
-      final processedLogs = List<DebugConsoleLog>.from(logs)
-        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
-      final directory = await getTemporaryDirectory();
-      final file = File('${directory.path}/debug_logs.txt');
-      await file.writeAsString(
-        processedLogs.map((log) => log.toString()).join('\n'),
-      );
-
-      await SharePlus.instance
-          .share(ShareParams(text: 'Debug Logs', files: [XFile(file.path)]));
-    } catch (e) {
-      print('Error sharing logs: $e');
-    }
+    await SharePlus.instance.share(ShareParams(files: [XFile(logPath)]));
   }
 }

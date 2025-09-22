@@ -5,7 +5,7 @@
 
 import 'package:gem_kit/core.dart';
 
-import 'utility.dart';
+import 'utils.dart';
 
 import 'package:flutter/material.dart';
 

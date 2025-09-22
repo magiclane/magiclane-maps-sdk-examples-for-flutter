@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Save controller for further usage.
     _mapController = controller;
 
-    _mapController.registerLongPressCallback((pos) async {
+    _mapController.registerOnLongPress((pos) async {
       // Update the cursor screen position
       await _mapController.setCursorScreenPosition(pos);
 

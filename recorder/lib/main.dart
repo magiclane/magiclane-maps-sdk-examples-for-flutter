@@ -3,6 +3,8 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
@@ -234,11 +236,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // Center on recorder path
     _mapController.centerOnAreaRect(
       path.area,
-      viewRc: RectType(
-        x: _mapController.viewport.width ~/ 3,
-        y: _mapController.viewport.height ~/ 3,
-        width: _mapController.viewport.width ~/ 3,
-        height: _mapController.viewport.height ~/ 3,
+      viewRc: Rectangle<int>(
+        _mapController.viewport.width ~/ 3,
+        _mapController.viewport.height ~/ 3,
+        _mapController.viewport.width ~/ 3,
+        _mapController.viewport.height ~/ 3,
       ),
     );
 

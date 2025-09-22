@@ -6,7 +6,7 @@
 import 'package:flutter/material.dart' hide Route;
 import 'package:gem_kit/core.dart';
 
-import 'utility.dart';
+import 'utils.dart';
 
 class ClimbDetails extends StatelessWidget {
   final Route route;

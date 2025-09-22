@@ -201,12 +201,13 @@ class _StyleItemState extends State<StyleItem> {
     );
   }
 
-  // Method that downloads the current map
-  Future<void> _onStyleTap() async {
+  // Method that downloads the current selected map style
+  void _onStyleTap() {
     final item = widget.styleItem;
 
     if (item.isCompleted) {
       Navigator.of(context).pop(item);
+      return;
     }
 
     if (getIsDownloadingOrWaiting(item)) {
@@ -241,7 +242,7 @@ class _StyleItemState extends State<StyleItem> {
     // Download style
     styleItem.asyncDownload(
       _onStyleDownloadFinished,
-      onProgressCallback: _onStyleDownloadProgressUpdated,
+      onProgress: _onStyleDownloadProgressUpdated,
       allowChargedNetworks: true,
     );
   }

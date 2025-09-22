@@ -6,20 +6,20 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:route_profile/utility.dart';
+import 'package:route_profile/utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:gem_kit/core.dart';
 
-class LineAreaChartController {
+class ElevationChartController {
   void Function(double)? setCurrentHighlight;
   void Function(double, double)? changeViewport;
 }
 
-class LineAreaChart extends StatefulWidget {
+class ElevationChart extends StatefulWidget {
   final void Function(double leftX, double rightX)? onViewPortChanged;
   final void Function(double x)? onSelect;
-  final LineAreaChartController controller;
+  final ElevationChartController controller;
 
   late final double maxY;
   late final double minY;
@@ -39,7 +39,7 @@ class LineAreaChart extends StatefulWidget {
   final Color? indicatorColor;
   final bool isInteractive;
 
-  LineAreaChart({
+  ElevationChart({
     super.key,
     required this.controller,
     required List<(double, double)> points,
@@ -97,13 +97,13 @@ class LineAreaChart extends StatefulWidget {
 
   @override
   // ignore: no_logic_in_create_state
-  State<LineAreaChart> createState() {
+  State<ElevationChart> createState() {
     state = _LineAreaChartState();
     return state;
   }
 }
 
-class _LineAreaChartState extends State<LineAreaChart> {
+class _LineAreaChartState extends State<ElevationChart> {
   late double _currentLeftX;
   late double _currentRightX;
   double get _currentSectionLength => _currentRightX - _currentLeftX;
@@ -132,7 +132,7 @@ class _LineAreaChartState extends State<LineAreaChart> {
   }
 
   @override
-  void didUpdateWidget(covariant LineAreaChart oldWidget) {
+  void didUpdateWidget(covariant ElevationChart oldWidget) {
     super.didUpdateWidget(oldWidget);
     resetMarginsAndHighlight();
   }
@@ -218,7 +218,7 @@ class _LineAreaChartState extends State<LineAreaChart> {
     return (_currentHighlightX! - _currentLeftX) /
             (_currentRightX - _currentLeftX) *
             widgetWidth -
-        LineAreaChart.tooptipWidth / 2;
+        ElevationChart.tooptipWidth / 2;
   }
 
   double _getTooltipYOffset(double widgetHeight) {
@@ -243,7 +243,7 @@ class _LineAreaChartState extends State<LineAreaChart> {
                     originalMaxY: widget.maxY,
                     intervalsCount: 3,
                     bottomOffset: 0,
-                    barWidth: LineAreaChart.leftLabelBarWidth,
+                    barWidth: ElevationChart.leftLabelBarWidth,
                     textColor: widget.legendLabelColor,
                     controller: titleBarController,
                   ),
@@ -375,8 +375,8 @@ class _LineAreaChartState extends State<LineAreaChart> {
               originalMaxX: _currentRightX,
               intervalsCount: 4,
               textColor: widget.legendLabelColor,
-              barHeight: LineAreaChart.bottomLabelBarHeight,
-              leftOffset: LineAreaChart.leftLabelBarWidth,
+              barHeight: ElevationChart.bottomLabelBarHeight,
+              leftOffset: ElevationChart.leftLabelBarWidth,
               controller: titleBarController,
             ),
           ],
@@ -446,8 +446,8 @@ class _ChartTooptipState extends State<_ChartTooptip> {
     final offsetX = widget.xOffset(widget.maxWidgetWidth);
     final offsetY = widget.yOffset(widget.maxWidgetHeight);
 
-    if (offsetX < -LineAreaChart.tooptipWidth / 2 ||
-        offsetX > widget.maxWidgetWidth - LineAreaChart.tooptipWidth / 2) {
+    if (offsetX < -ElevationChart.tooptipWidth / 2 ||
+        offsetX > widget.maxWidgetWidth - ElevationChart.tooptipWidth / 2) {
       return Container();
     }
 
@@ -455,7 +455,7 @@ class _ChartTooptipState extends State<_ChartTooptip> {
       left: offsetX,
       bottom: offsetY,
       child: SizedBox(
-        width: LineAreaChart.tooptipWidth,
+        width: ElevationChart.tooptipWidth,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

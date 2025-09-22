@@ -27,7 +27,8 @@ String convertDuration(int seconds) {
 
   String hoursText = (hours > 0) ? '$hours h ' : '';
   String minutesText = (minutes > 0) ? '$minutes min ' : '';
-  String secondsText = (hours == 0 && minutes == 0) ? '$remainingSeconds sec' : '';
+  String secondsText =
+      (hours == 0 && minutes == 0) ? '$remainingSeconds sec' : '';
 
   return (hoursText + minutesText + secondsText).trim();
 }

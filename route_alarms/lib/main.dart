@@ -203,7 +203,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _navigationHandler = NavigationService.startSimulation(
       routes.mainRoute!,
-      null,
       onNavigationInstruction: (instruction, events) {
         setState(() {
           _isSimulationActive = true;

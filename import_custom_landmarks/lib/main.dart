@@ -168,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _registerLandmarkTapCallback() async {
-    _mapController.registerTouchCallback((pos) async {
+    _mapController.registerOnTouch((pos) async {
       // Select the object at the tap position.
       await _mapController.setCursorScreenPosition(pos);
 

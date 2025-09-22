@@ -3,6 +3,8 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
 
+import 'dart:math';
+
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
 import 'package:gem_kit/routing.dart';
@@ -46,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Route? _focusedRoute;
 
-  final LineAreaChartController _chartController = LineAreaChartController();
+  final ElevationChartController _chartController = ElevationChartController();
 
   @override
   void dispose() {
@@ -200,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // In order to be able to select an alternative route, we have to register the route tap gesture callback.
   Future<void> _registerRouteTapCallback() async {
     // Register the generic map touch gesture.
-    _mapController.registerTouchCallback((pos) async {
+    _mapController.registerOnTouch((pos) async {
       // Select the map objects at gives position.
       await _mapController.setCursorScreenPosition(pos);
 
@@ -233,20 +235,18 @@ class _MyHomePageState extends State<MyHomePage> {
     // Use the map controller to center on route above the panel.
     _mapController.centerOnRoutes(
       routes: route,
-      screenRect: RectType(
-        x: 0,
-        y: (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
+      screenRect: Rectangle<int>(
+        0,
+        (appbarHeight + padding * MediaQuery.of(context).devicePixelRatio)
             .toInt(),
-        width:
-            (MediaQuery.of(context).size.width *
-                    MediaQuery.of(context).devicePixelRatio)
-                .toInt(),
-        height:
-            ((MediaQuery.of(context).size.height / 2 -
-                        appbarHeight -
-                        2 * padding * MediaQuery.of(context).devicePixelRatio) *
-                    MediaQuery.of(context).devicePixelRatio)
-                .toInt(),
+        (MediaQuery.of(context).size.width *
+                MediaQuery.of(context).devicePixelRatio)
+            .toInt(),
+        ((MediaQuery.of(context).size.height / 2 -
+                    appbarHeight -
+                    2 * padding * MediaQuery.of(context).devicePixelRatio) *
+                MediaQuery.of(context).devicePixelRatio)
+            .toInt(),
       ),
     );
   }

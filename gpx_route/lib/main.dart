@@ -208,12 +208,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // Start navigation one the main route.
-    _navigationHandler = NavigationService.startSimulation(routes.mainRoute!, (
-      eventType,
-      instruction,
-    ) {
-      // Navigation instruction callback.
-    }, speedMultiplier: 2);
+    _navigationHandler = NavigationService.startSimulation(
+      routes.mainRoute!,
+      speedMultiplier: 2,
+    );
 
     // Set the camera to follow position.
     _mapController.startFollowingPosition();

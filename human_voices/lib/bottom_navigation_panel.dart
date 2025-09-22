@@ -5,12 +5,12 @@
 
 import 'package:flutter/material.dart';
 
-class NavigationBottomPanel extends StatelessWidget {
+class BottomNavigationPanel extends StatelessWidget {
   final String remainingDuration;
   final String remainingDistance;
   final String eta;
 
-  const NavigationBottomPanel({
+  const BottomNavigationPanel({
     super.key,
     required this.remainingDuration,
     required this.remainingDistance,

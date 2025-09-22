@@ -168,7 +168,7 @@ packages:
       path: "plugins/gem_kit"
       relative: true
     source: path
-    version: "2.26.0"
+    version: "2.27.0"
   http:
     dependency: transitive
     description:
@@ -231,7 +231,7 @@ packages:
     source: hosted
     version: "6.0.0"
   logging:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: logging
       sha256: c8245ada5f1717ed44271ed1c26b8ce85ca3228fd2ffdb75468ab01979309d61

@@ -1,10 +1,7 @@
 PODS:
   - CocoaAsyncSocket (7.6.5)
   - Flutter (1.0.0)
-  - gal (1.0.0):
-    - Flutter
-    - FlutterMacOS
-  - gem_kit (2.22.0):
+  - gem_kit (2.27.0):
     - Flutter
   - integration_test (0.0.1):
     - Flutter
@@ -20,7 +17,6 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - gal (from `.symlinks/plugins/gal/darwin`)
   - gem_kit (from `.symlinks/plugins/gem_kit/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -34,8 +30,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  gal:
-    :path: ".symlinks/plugins/gal/darwin"
   gem_kit:
     :path: ".symlinks/plugins/gem_kit/ios"
   integration_test:
@@ -49,13 +43,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  gal: 6a522c75909f1244732d4596d11d6a2f86ff37a5
-  gem_kit: e735aa914150d6e80e91f0f6e56ebd4e74f79b8f
-  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  patrol: cf2cd48c7f3e5171610111994f7b466cd76d1f57
-  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  gem_kit: 1cfb6f8cc68dd4eb52dab2dfe7080ef79d8b5289
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  patrol: 51b76cc7c11a2933ee3e72482d930c75b9d4ec73
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
 
 PODFILE CHECKSUM: f693da7803194a75dc6e51b518dc01647bce15cf
 

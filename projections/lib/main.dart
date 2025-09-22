@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _mapController.preferences.enableCursorRender = true;
 
     // Register touch callback to set cursor to tapped position
-    _mapController.registerTouchCallback((point) async {
+    _mapController.registerOnTouch((point) async {
       // Transform the screen point to Coordinates
       final coords = _mapController.transformScreenToWgs(point);
 

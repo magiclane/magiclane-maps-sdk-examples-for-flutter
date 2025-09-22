@@ -80,13 +80,14 @@ class _OfflineItemState extends State<OfflineItem> {
   }
 
   // Method that downloads the current style
-  Future<void> _onStyleTap() async {
+  void _onStyleTap() {
     final item = widget.styleItem;
 
     if (item.isUpdatable) return;
 
     if (item.isCompleted) {
       Navigator.of(context).pop(item);
+      return;
     }
 
     if (getIsDownloadingOrWaiting(item)) {
@@ -120,7 +121,7 @@ class _OfflineItemState extends State<OfflineItem> {
     // Download style
     styleItem.asyncDownload(
       _onStyleDownloadFinished,
-      onProgressCallback: _onStyleDownloadProgressUpdated,
+      onProgress: _onStyleDownloadProgressUpdated,
       allowChargedNetworks: true,
     );
   }

@@ -5,10 +5,10 @@
 
 import 'package:flutter/material.dart';
 
-class BottomSpeedLimitPanel extends StatelessWidget {
+class BottomAlarmPanel extends StatelessWidget {
   final int speed;
 
-  const BottomSpeedLimitPanel({super.key, required this.speed});
+  const BottomAlarmPanel({super.key, required this.speed});
 
   @override
   Widget build(BuildContext context) {

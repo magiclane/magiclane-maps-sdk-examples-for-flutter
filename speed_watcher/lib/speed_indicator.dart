@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gem_kit/sense.dart';
-import 'package:speed_watcher/utility.dart';
+import 'package:speed_watcher/utils.dart';
 
 class SpeedIndicator extends StatefulWidget {
   const SpeedIndicator({super.key});

@@ -8,7 +8,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Address Search](address_search) - Showcase address search functionality.
 * [Areas Alarms](areas_alarms) - Get notified when corssing a geographic area. 
 * [Assets Map Style](assets_map_style) - Show how to load styles from assets folder and how to apply style.
-* [Better Route Notification](better_route_notification) - Show detailed insights on calculated routes.
+* [Better Route Notification](better_route_notification) - Get notified when a better route is detected during navigation.
 * [Calculate Bike Route](calculate_bike_route) - Calculate a bike route & display on a map.
 * [Calculate Route](calculate_route) - Calculate & display route on a map.
 * [Camera Feed](camera_feed) - Show how to set live datasource & `startFollowingPosition` and sensor data recording. Display recorded path on map.
@@ -17,6 +17,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Center Traffic](center_traffic) - Center the camera on traffic.
 * [Create Custom Overlay](create_custom_overlay) - Create a style with custom dataset. Display and interact with overlay items from the dataset.
 * [Custom Position Icon](custom_position_icon) - Show how to set a custom icon for the position tracker.
+* [Data Source Listeners](data_source_listeners) - Show sensor info from live data source.
 * [Display Cursor Street Name](display_cursor_street_name) - Show street name based on tapped street.
 * [Draw Roadblock](draw_roadblock) - Draw and upload roadblocks.
 * [Draw Shapes](draw_shapes) - Show how to draw and center on a polyline, polygon and on points.
@@ -73,9 +74,6 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [What Is Nearby Category](what_is_nearby_category) - Search nearby locations based on category.
 * [Social Report](social_report) - Upload and view social events.
 * [Social Event Voting](social_event_voting) - Confirm social reports of other users.
-* [Driver Behaviour](driver_behaviour) - Record and view driver behavior using sensor data.
-* [Public Transport Stop Schedule](public_transport_stop_schedule) - Display departure times for public transport vehicles.
-* [Better Route Notification](better_route_notification) - Get notified when a better route is detected during navigation.
 
 **Note:** As the very first step, we highly recommend that you get a token from [Magic Lane Portal](https://developer.magiclane.com/api). If no token is set, you can still test your apps, but a watermark will be displayed, and all the online services including mapping, searching, routing, etc. will slow down after a few minutes.
 

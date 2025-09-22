@@ -8,7 +8,7 @@ import 'package:gem_kit/map.dart';
 import 'package:gem_kit/routing.dart';
 
 import 'route_instructions_page.dart';
-import 'utility.dart';
+import 'utils.dart';
 
 import 'package:flutter/material.dart' hide Route;
 

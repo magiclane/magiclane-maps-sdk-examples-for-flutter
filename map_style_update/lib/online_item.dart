@@ -10,22 +10,22 @@ import 'package:gem_kit/content_store.dart';
 import 'package:gem_kit/core.dart';
 import 'package:map_style_update/styles_provider.dart';
 
-class StyleItem extends StatefulWidget {
+class OnlineItem extends StatefulWidget {
   final ContentStoreItem styleItem;
 
   final void Function() onItemStatusChanged;
 
-  const StyleItem({
+  const OnlineItem({
     super.key,
     required this.styleItem,
     required this.onItemStatusChanged,
   });
 
   @override
-  State<StyleItem> createState() => _StyleItemState();
+  State<OnlineItem> createState() => _StyleItemState();
 }
 
-class _StyleItemState extends State<StyleItem> {
+class _StyleItemState extends State<OnlineItem> {
   int _downloadProgress = 0;
 
   @override
@@ -156,7 +156,7 @@ class _StyleItemState extends State<StyleItem> {
     // Download style
     styleItem.asyncDownload(
       _onStyleDownloadFinished,
-      onProgressCallback: _onStyleDownloadProgressUpdated,
+      onProgress: _onStyleDownloadProgressUpdated,
       allowChargedNetworks: true,
     );
   }

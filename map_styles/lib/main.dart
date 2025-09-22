@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
       true,
     );
 
-    _mapController.registerSetMapStyleCallback((styleId, stylePath, viaApi) {
+    _mapController.registerOnSetMapStyle((styleId, stylePath, viaApi) {
       print("Style updated!");
     });
   }

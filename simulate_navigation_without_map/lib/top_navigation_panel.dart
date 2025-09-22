@@ -6,14 +6,14 @@
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/navigation.dart';
 
-import 'utility.dart';
+import 'utils.dart';
 
 import 'package:flutter/material.dart';
 
-class NavigationInstructionPanel extends StatelessWidget {
+class TopNavigationPanel extends StatelessWidget {
   final NavigationInstruction instruction;
 
-  const NavigationInstructionPanel({super.key, required this.instruction});
+  const TopNavigationPanel({super.key, required this.instruction});
 
   @override
   Widget build(BuildContext context) {

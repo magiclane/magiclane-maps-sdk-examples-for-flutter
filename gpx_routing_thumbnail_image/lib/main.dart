@@ -5,6 +5,8 @@
 
 // ignore_for_file: avoid_print
 
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:gem_kit/core.dart';
 import 'package:gem_kit/map.dart';
@@ -147,11 +149,11 @@ class _MyHomePageState extends State<MyHomePage> {
       _mapController.centerOnAreaRect(
         route.geographicArea,
         zoomLevel: 70,
-        viewRc: RectType(
-          x: _mapController.viewport.x + 100,
-          y: _mapController.viewport.y + 100,
-          width: _mapController.viewport.width - 200,
-          height: _mapController.viewport.height - 100,
+        viewRc: Rectangle<int>(
+          _mapController.viewport.top + 100,
+          _mapController.viewport.left + 100,
+          _mapController.viewport.width - 200,
+          _mapController.viewport.height - 100,
         ),
       );
 

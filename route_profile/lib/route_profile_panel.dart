@@ -7,7 +7,7 @@ import 'dart:math';
 
 import 'package:route_profile/elevation_chart.dart';
 import 'package:route_profile/section.dart';
-import 'package:route_profile/utility.dart';
+import 'package:route_profile/utils.dart';
 import 'package:gem_kit/core.dart';
 
 import 'climb_details.dart';
@@ -18,7 +18,7 @@ import 'package:gem_kit/map.dart';
 class RouteProfilePanel extends StatefulWidget {
   final Route route;
   final GemMapController mapController;
-  final LineAreaChartController chartController;
+  final ElevationChartController chartController;
 
   final VoidCallback centerOnRoute;
 
@@ -64,7 +64,7 @@ class _RouteProfilePanelState extends State<RouteProfilePanel> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(15.0),
-                  child: LineAreaChart(
+                  child: ElevationChart(
                     controller: widget.chartController,
                     points: getElevationSamples(),
                     climbSections: widget.route.terrainProfile!.climbSections,

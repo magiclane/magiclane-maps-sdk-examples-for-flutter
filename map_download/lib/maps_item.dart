@@ -29,7 +29,7 @@ class _MapsItemState extends State<MapsItem> {
     restartDownloadIfNecessary(
       mapItem,
       _onMapDownloadFinished,
-      onProgressCallback: _onMapDownloadProgressUpdated,
+      onProgress: _onMapDownloadProgressUpdated,
     );
   }
 
@@ -111,7 +111,7 @@ class _MapsItemState extends State<MapsItem> {
     // Download the map.
     mapItem.asyncDownload(
       _onMapDownloadFinished,
-      onProgressCallback: _onMapDownloadProgressUpdated,
+      onProgress: _onMapDownloadProgressUpdated,
       allowChargedNetworks: true,
     );
   }

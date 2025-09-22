@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
     mapController = controller;
 
     // Register the map angle update callback.
-    mapController.registerMapAngleUpdateCallback(
+    mapController.registerOnMapAngleUpdate(
       (angle) => setState(() => compassAngle = angle),
     );
 

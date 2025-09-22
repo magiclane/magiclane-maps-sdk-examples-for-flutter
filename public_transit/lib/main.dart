@@ -8,7 +8,7 @@ import 'package:gem_kit/map.dart';
 import 'package:gem_kit/routing.dart';
 
 import 'package:flutter/material.dart' hide Route;
-import 'package:public_transit/utility.dart';
+import 'package:public_transit/utils.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
@@ -22,10 +22,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Public Transit',
-      home: MyHomePage(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Public Transit',
+        home: MyHomePage());
   }
 }
 
@@ -55,10 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Public Transit',
-          style: TextStyle(color: Colors.white),
-        ),
+        title:
+            const Text('Public Transit', style: TextStyle(color: Colors.white)),
         actions: [
           // Routes are not built.
           if (_routingHandler == null && _ptSegments == null)
@@ -84,10 +81,9 @@ class _MyHomePageState extends State<MyHomePage> {
         alignment: AlignmentDirectional.bottomCenter,
         children: [
           GemMap(
-            key: ValueKey("GemMap"),
-            onMapCreated: _onMapCreated,
-            appAuthorization: projectApiToken,
-          ),
+              key: ValueKey("GemMap"),
+              onMapCreated: _onMapCreated,
+              appAuthorization: projectApiToken),
           if (_ptSegments != null)
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -119,21 +115,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark = Landmark.withLatLng(
-      latitude: 51.505929,
-      longitude: -0.097579,
-    );
+    final departureLandmark =
+        Landmark.withLatLng(latitude: 51.505929, longitude: -0.097579);
 
     // Define the destination.
-    final destinationLandmark = Landmark.withLatLng(
-      latitude: 51.507616,
-      longitude: -0.105036,
-    );
+    final destinationLandmark =
+        Landmark.withLatLng(latitude: 51.507616, longitude: -0.105036);
 
     // Define the route preferences with public transport mode.
-    final routePreferences = RoutePreferences(
-      transportMode: RouteTransportMode.public,
-    );
+    final routePreferences =
+        RoutePreferences(transportMode: RouteTransportMode.public);
 
     _showSnackBar(context, message: "The route is being calculated.");
 
@@ -142,45 +133,42 @@ class _MyHomePageState extends State<MyHomePage> {
     // err is an error enum, results is a list of routes.
 
     _routingHandler = RoutingService.calculateRoute(
-      [departureLandmark, destinationLandmark],
-      routePreferences,
-      (err, routes) {
-        // If the route calculation is finished, we don't have a progress listener anymore.
-        _routingHandler = null;
-        ScaffoldMessenger.of(context).clearSnackBars();
+        [departureLandmark, destinationLandmark], routePreferences, (
+      err,
+      routes,
+    ) {
+      // If the route calculation is finished, we don't have a progress listener anymore.
+      _routingHandler = null;
+      ScaffoldMessenger.of(context).clearSnackBars();
 
-        // If there aren't any errors, we display the routes.
-        if (err == GemError.success) {
-          // Get the routes collection from map preferences.
-          final routesMap = _mapController.preferences.routes;
+      // If there aren't any errors, we display the routes.
+      if (err == GemError.success) {
+        // Get the routes collection from map preferences.
+        final routesMap = _mapController.preferences.routes;
 
-          // Display the routes on map.
-          for (final route in routes) {
-            routesMap.add(
-              route,
-              route == routes.first,
-              label: route == routes.first ? getMapLabel(route) : null,
-            );
-          }
-
-          // Center the camera on routes.
-          _mapController.centerOnRoutes(routes: routes);
-          // Convert normal route to PTRoute
-          final ptRoute = routes.first.toPTRoute();
-          // Convert each segment to PTRouteSegment
-          final List<PTRouteSegment?> segments =
-              ptRoute!.segments.map((seg) => seg.toPTRouteSegment()).toList();
-          final List<PTRouteSegment> ptSegments = segments
-              .where((seg) => seg != null)
-              .cast<PTRouteSegment>()
-              .toList();
-
-          setState(() {
-            _ptSegments = ptSegments;
-          });
+        // Display the routes on map.
+        for (final route in routes) {
+          routesMap.add(route, route == routes.first,
+              label: route == routes.first ? getMapLabel(route) : null);
         }
-      },
-    );
+
+        // Center the camera on routes.
+        _mapController.centerOnRoutes(routes: routes);
+        // Convert normal route to PTRoute
+        final ptRoute = routes.first.toPTRoute();
+        // Convert each segment to PTRouteSegment
+        final List<PTRouteSegment?> segments =
+            ptRoute!.segments.map((seg) => seg.toPTRouteSegment()).toList();
+        final List<PTRouteSegment> ptSegments = segments
+            .where((seg) => seg != null)
+            .cast<PTRouteSegment>()
+            .toList();
+
+        setState(() {
+          _ptSegments = ptSegments;
+        });
+      }
+    });
 
     setState(() {});
   }
@@ -208,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // In order to be able to select an alternative route, we have to register the route tap gesture callback.
   Future<void> _registerRouteTapCallback() async {
     // Register the generic map touch gesture.
-    _mapController.registerTouchCallback((pos) async {
+    _mapController.registerOnTouch((pos) async {
       // Select the map objects at gives position.
       await _mapController.setCursorScreenPosition(pos);
 
@@ -223,11 +211,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(
-    BuildContext context, {
-    required String message,
-    Duration duration = const Duration(hours: 1),
-  }) {
+  void _showSnackBar(BuildContext context,
+      {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -255,10 +240,7 @@ class TransitSegment extends StatelessWidget {
                 const Icon(Icons.directions_bus_outlined, size: 35.0),
                 if (segment.hasWheelchairSupport)
                   const Icon(Icons.accessible_forward),
-                Container(
-                  color: Colors.green,
-                  child: Text(segment.shortName),
-                ),
+                Container(color: Colors.green, child: Text(segment.shortName)),
               ],
             ),
     );

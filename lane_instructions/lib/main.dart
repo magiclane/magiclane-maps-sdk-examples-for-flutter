@@ -8,7 +8,7 @@ import 'package:gem_kit/map.dart';
 import 'package:gem_kit/navigation.dart';
 import 'package:gem_kit/routing.dart';
 
-import 'utility.dart';
+import 'utils.dart';
 
 import 'package:flutter/material.dart' hide Animation, Route;
 
@@ -193,7 +193,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _navigationHandler = NavigationService.startSimulation(
       routes.mainRoute!,
-      null,
       onNavigationInstruction: (instruction, events) {
         setState(() {
           _isSimulationActive = true;

@@ -1,10 +1,7 @@
 PODS:
   - CocoaAsyncSocket (7.6.5)
   - Flutter (1.0.0)
-  - gal (1.0.0):
-    - Flutter
-    - FlutterMacOS
-  - gem_kit (2.23.0):
+  - gem_kit (2.26.0):
     - Flutter
   - integration_test (0.0.1):
     - Flutter
@@ -20,7 +17,6 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - gal (from `.symlinks/plugins/gal/darwin`)
   - gem_kit (from `.symlinks/plugins/gem_kit/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -34,8 +30,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  gal:
-    :path: ".symlinks/plugins/gal/darwin"
   gem_kit:
     :path: ".symlinks/plugins/gem_kit/ios"
   integration_test:
@@ -49,9 +43,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  gal: 6a522c75909f1244732d4596d11d6a2f86ff37a5
-  gem_kit: 13f95079c06921bdc07cd6b14ce9583ad4f6cdfe
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  gem_kit: 8e8ac120fb12189b44b86a331876cd5c0830a84e
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   patrol: cf2cd48c7f3e5171610111994f7b466cd76d1f57
