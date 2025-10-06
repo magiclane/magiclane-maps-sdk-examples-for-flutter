@@ -56,7 +56,7 @@ analysis_benchmark.json
 .pub-cache/
 .pub/
 build/
-plugins/gem_kit/*
+plugins/magiclane_maps_flutter/*
 flutter_*.png
 linked_*.ds
 unlinked.ds

@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
-import 'package:gem_kit/routing.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
+import 'package:magiclane_maps_flutter/routing.dart';
 
 import 'package:flutter/material.dart' hide Route;
 
@@ -19,11 +19,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Calculate Route',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Calculate Route', home: MyHomePage());
   }
 }
 
@@ -53,10 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Calculate Route',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Calculate Route', style: TextStyle(color: Colors.white)),
         actions: [
           // Routes are not built.
           if (_routingHandler == null && _routes == null)
@@ -78,11 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
         ],
       ),
-      body: GemMap(
-        key: ValueKey("GemMap"),
-        onMapCreated: _onMapCreated,
-        appAuthorization: projectApiToken,
-      ),
+      body: GemMap(key: ValueKey("GemMap"), onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
     );
   }
 
@@ -97,16 +86,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark = Landmark.withLatLng(
-      latitude: 48.85682,
-      longitude: 2.34375,
-    );
+    final departureLandmark = Landmark.withLatLng(latitude: 48.85682, longitude: 2.34375);
 
     // Define the destination.
-    final destinationLandmark = Landmark.withLatLng(
-      latitude: 50.84644,
-      longitude: 4.34587,
-    );
+    final destinationLandmark = Landmark.withLatLng(latitude: 50.84644, longitude: 4.34587);
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
@@ -117,36 +100,31 @@ class _MyHomePageState extends State<MyHomePage> {
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
 
-    _routingHandler = RoutingService.calculateRoute(
-      [departureLandmark, destinationLandmark],
-      routePreferences,
-      (err, routes) {
-        // If the route calculation is finished, we don't have a progress listener anymore.
-        _routingHandler = null;
-        ScaffoldMessenger.of(context).clearSnackBars();
+    _routingHandler = RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (
+      err,
+      routes,
+    ) {
+      // If the route calculation is finished, we don't have a progress listener anymore.
+      _routingHandler = null;
+      ScaffoldMessenger.of(context).clearSnackBars();
 
-        // If there aren't any errors, we display the routes.
-        if (err == GemError.success) {
-          // Get the routes collection from map preferences.
-          final routesMap = _mapController.preferences.routes;
+      // If there aren't any errors, we display the routes.
+      if (err == GemError.success) {
+        // Get the routes collection from map preferences.
+        final routesMap = _mapController.preferences.routes;
 
-          // Display the routes on map.
-          for (final route in routes) {
-            routesMap.add(
-              route,
-              route == routes.first,
-              label: getMapLabel(route),
-            );
-          }
-
-          // Center the camera on routes.
-          _mapController.centerOnRoutes(routes: routes);
-          setState(() {
-            _routes = routes;
-          });
+        // Display the routes on map.
+        for (final route in routes) {
+          routesMap.add(route, route == routes.first, label: getMapLabel(route));
         }
-      },
-    );
+
+        // Center the camera on routes.
+        _mapController.centerOnRoutes(routes: routes);
+        setState(() {
+          _routes = routes;
+        });
+      }
+    });
 
     setState(() {});
   }
@@ -189,11 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(
-    BuildContext context, {
-    required String message,
-    Duration duration = const Duration(hours: 1),
-  }) {
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

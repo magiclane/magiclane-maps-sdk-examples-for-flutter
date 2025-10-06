@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
 
 import 'voices_page.dart';
 
@@ -21,11 +21,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Voice Download',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Voice Download', home: MyHomePage());
   }
 }
 
@@ -48,10 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Voice Download',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Voice Download', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
             onPressed: () => _onVoicesButtonTap(context),
@@ -59,25 +52,16 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: GemMap(
-        key: ValueKey("GemMap"),
-        onMapCreated: _onMapCreated,
-        appAuthorization: projectApiToken,
-      ),
+      body: GemMap(key: ValueKey("GemMap"), onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
     );
   }
 
   void _onMapCreated(GemMapController controller) async {
-    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(
-      ServiceGroupType.contentService,
-      true,
-    );
+    SdkSettings.setAllowOffboardServiceOnExtraChargedNetwork(ServiceGroupType.contentService, true);
   }
 
   // Method to navigate to the Voices Page.
   void _onVoicesButtonTap(BuildContext context) async {
-    Navigator.of(context).push(
-      MaterialPageRoute<dynamic>(builder: (context) => const VoicesPage()),
-    );
+    Navigator.of(context).push(MaterialPageRoute<dynamic>(builder: (context) => const VoicesPage()));
   }
 }

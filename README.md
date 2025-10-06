@@ -1,6 +1,6 @@
 # Magic Lane - Maps SDK for Flutter demo applications
 
-This repository holds a series of example projects using the **Magic Lane - Maps SDK for Flutter**. More information about the API can be found on the [Documentation](https://developer.magiclane.com/documentation) page.
+This repository holds a series of example projects using the **Magic Lane - Maps SDK for Flutter**. More information about the API can be found on the [Documentation](https://developer.magiclane.com/docs/flutter) page.
 
 This set of individual, use-case based projects is designed to be cloned by developers for their own use.
 
@@ -53,6 +53,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Recorder](recorder) - Show how to record sensor data.
 * [Record NMEA](record_nmea) - Show how to record a log including NMEA Chunks and how to export the resulting file to CSV.
 * [Recorder Bookmarks](recorder_bookmarks) - Show how to display sensor data recordings.
+* [Recorder In Background](recorder_in_background) - Show how to do sensor data recording in the background.
 * [Route Alarms](route_alarms) - Show how to use the alarms service.
 * [Route Instructions](route_instructions) - Display a map. Show route instructions.
 * [Route Profile](route_profile) - Show route profile panel (elevation chart, climb details).
@@ -81,4 +82,4 @@ This set of individual, use-case based projects is designed to be cloned by deve
 
 Copyright (C) 1995-2025 Magic Lane International B.V.
 
-Contact Magic Lane at info@magiclane.com for commercial licensing options.
+Contact Magic Lane at <info@magiclane.com> for SDK licensing options.

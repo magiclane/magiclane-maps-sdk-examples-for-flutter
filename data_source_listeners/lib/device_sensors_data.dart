@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'package:flutter/material.dart';
-import 'package:gem_kit/sense.dart' as sense;
-import 'package:gem_kit/position.dart' as position;
+import 'package:magiclane_maps_flutter/sense.dart' as sense;
+import 'package:magiclane_maps_flutter/position.dart' as position;
 
 /// Device sensors UI
 class DeviceSensorsDataPage extends StatefulWidget {
@@ -33,10 +33,7 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
       appBar: AppBar(
         foregroundColor: Colors.white,
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Device Sensors Data',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Device Sensors Data', style: TextStyle(color: Colors.white)),
         elevation: 0,
       ),
       body: Column(
@@ -48,10 +45,7 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: SingleChildScrollView(
-                child: Text(
-                  _displayFor(_selectedType),
-                  style: const TextStyle(fontSize: 16),
-                ),
+                child: Text(_displayFor(_selectedType), style: const TextStyle(fontSize: 16)),
               ),
             ),
           ),
@@ -103,9 +97,7 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
 
   Widget _buildButtonsRow() {
     final types = sense.DataType.values
-        .where(
-          (t) => t != sense.DataType.unknown && t != sense.DataType.gyroscope,
-        )
+        .where((t) => t != sense.DataType.unknown && t != sense.DataType.gyroscope)
         .toList();
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -127,10 +119,13 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
   }
 
   String _displayFor(sense.DataType? type) {
-    if (type == null) return 'No type selected.';
+    if (type == null) {
+      return 'No type selected.';
+    }
     final data = _latest[type];
-    if (data == null)
+    if (data == null) {
       return 'No data received yet for ${type.toString().split('.').last}.';
+    }
 
     switch (type) {
       case sense.DataType.acceleration:
@@ -162,9 +157,7 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
         final d = data as position.GemImprovedPosition;
         final roadMods = d.roadModifiers.isEmpty
             ? 'none'
-            : d.roadModifiers
-                  .map((m) => m.toString().split('.').last)
-                  .join(',');
+            : d.roadModifiers.map((m) => m.toString().split('.').last).join(',');
         final addr = () {
           try {
             return d.address.format();
@@ -174,24 +167,20 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
         }();
 
         final sb = StringBuffer();
-        sb.writeln(
-          'Position: ${d.latitude.toStringAsFixed(6)}, ${d.longitude.toStringAsFixed(6)}',
-        );
+        sb.writeln('Position: ${d.latitude.toStringAsFixed(6)}, ${d.longitude.toStringAsFixed(6)}');
         sb.writeln('Altitude: ${d.altitude} m');
         sb.writeln('Provider: ${d.provider.toString().split('.').last}');
 
-        final speedLine = StringBuffer(
-          'Speed: ${d.speed.toStringAsFixed(2)} m/s',
-        );
-        if (d.hasSpeedAccuracy)
+        final speedLine = StringBuffer('Speed: ${d.speed.toStringAsFixed(2)} m/s');
+        if (d.hasSpeedAccuracy) {
           speedLine.write(' ±${d.speedAccuracy.toStringAsFixed(2)} m/s');
+        }
         sb.writeln(speedLine.toString());
 
-        final courseLine = StringBuffer(
-          'Course: ${d.course.toStringAsFixed(1)}°',
-        );
-        if (d.hasCourseAccuracy)
+        final courseLine = StringBuffer('Course: ${d.course.toStringAsFixed(1)}°');
+        if (d.hasCourseAccuracy) {
           courseLine.write(' ±${d.courseAccuracy.toStringAsFixed(1)}°');
+        }
         sb.writeln(courseLine.toString());
         sb.writeln('Fix quality: ${d.fixQuality.toString().split('.').last}');
 
@@ -204,12 +193,12 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
         sb.writeln('Road localization: ${d.hasRoadLocalization}');
         sb.writeln('Terrain data available: ${d.hasTerrainData}');
 
-        sb.writeln(
-          'Terrain altitude: ${d.terrainAltitude.toStringAsFixed(1)} m',
-        );
+        sb.writeln('Terrain altitude: ${d.terrainAltitude.toStringAsFixed(1)} m');
         sb.writeln('Terrain slope: ${d.terrainSlope.toStringAsFixed(1)}°');
 
-        if (addr.isNotEmpty) sb.writeln('Address: $addr');
+        if (addr.isNotEmpty) {
+          sb.writeln('Address: $addr');
+        }
 
         return sb.toString().trim();
       case sense.DataType.rotationRate || sense.DataType.gyroscope:

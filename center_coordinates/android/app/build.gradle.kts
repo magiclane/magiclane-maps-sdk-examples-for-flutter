@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.magiclane.gem_kit.examples.center_coordinates"
+    namespace = "com.magiclane.magiclane_maps_flutter.examples.center_coordinates"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.magiclane.gem_kit.examples.center_coordinates"
+        applicationId = "com.magiclane.magiclane_maps_flutter.examples.center_coordinates"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

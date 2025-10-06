@@ -7,7 +7,7 @@ project(runner LANGUAGES CXX)
 set(BINARY_NAME "assets_map_style")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "com.magiclane.gem_kit.examples.assets_map_style")
+set(APPLICATION_ID "com.magiclane.magiclane_maps_flutter.examples.assets_map_style")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

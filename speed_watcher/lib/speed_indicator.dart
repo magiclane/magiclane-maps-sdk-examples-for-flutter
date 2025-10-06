@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'package:flutter/material.dart';
-import 'package:gem_kit/sense.dart';
+import 'package:magiclane_maps_flutter/sense.dart';
 import 'package:speed_watcher/utils.dart';
 
 class SpeedIndicator extends StatefulWidget {
@@ -21,7 +21,7 @@ class _SpeedIndicatorState extends State<SpeedIndicator> {
   @override
   void initState() {
     // Listen to the current position to detect the current speed and the speed limit.
-    PositionService.instance.addImprovedPositionListener((position) {
+    PositionService.addImprovedPositionListener((position) {
       if (mounted) {
         setState(() {
           _currentSpeed = position.speed;

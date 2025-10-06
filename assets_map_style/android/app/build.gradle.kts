@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.magiclane.gem_kit.examples.assets_map_style"
+    namespace = "com.magiclane.magiclane_maps_flutter.examples.assets_map_style"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.magiclane.gem_kit.examples.assets_map_style"
+        applicationId = "com.magiclane.magiclane_maps_flutter.examples.assets_map_style"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

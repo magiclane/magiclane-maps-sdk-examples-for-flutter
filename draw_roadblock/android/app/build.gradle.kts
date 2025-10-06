@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.magiclane.gem_kit.examples.draw_roadblock"
+    namespace = "com.magiclane.magiclane_maps_flutter.examples.draw_roadblock"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.magiclane.gem_kit.examples.draw_roadblock"
+        applicationId = "com.magiclane.magiclane_maps_flutter.examples.draw_roadblock"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

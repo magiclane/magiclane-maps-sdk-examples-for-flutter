@@ -1,21 +1,17 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'package:flutter/material.dart';
-import 'package:gem_kit/map.dart';
+import 'package:magiclane_maps_flutter/map.dart';
 
 class OverlayItemPanel extends StatelessWidget {
   final VoidCallback onCancelTap;
 
   final OverlayItem overlayItem;
 
-  const OverlayItemPanel({
-    super.key,
-    required this.onCancelTap,
-    required this.overlayItem,
-  });
+  const OverlayItemPanel({super.key, required this.onCancelTap, required this.overlayItem});
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +19,13 @@ class OverlayItemPanel extends StatelessWidget {
       width: MediaQuery.of(context).size.width - 20,
       padding: const EdgeInsets.symmetric(horizontal: 5),
       margin: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: overlayItem.img.isValid
-                ? Image.memory(
-                    overlayItem.img.getRenderableImageBytes(
-                      size: Size(50, 50),
-                    )!,
-                  )
+                ? Image.memory(overlayItem.img.getRenderableImageBytes(size: Size(50, 50))!)
                 : SizedBox(),
           ),
           Row(
@@ -56,26 +45,16 @@ class OverlayItemPanel extends StatelessWidget {
                             overlayItem.name,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                           const SizedBox(height: 5),
                           // Show data in key-value pair structure
                           SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Text(
-                              overlayItem.previewData
-                                  .map((kv) => '${kv.key}: ${kv.value}')
-                                  .join(', '),
+                              overlayItem.previewDataParameterList.map((kv) => '${kv.key}: ${kv.value}').join(', '),
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
-                              ),
+                              style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w800),
                             ),
                           ),
                           const SizedBox(height: 5),
@@ -83,11 +62,7 @@ class OverlayItemPanel extends StatelessWidget {
                             '${overlayItem.coordinates.latitude.toString()}, ${overlayItem.coordinates.longitude.toString()}',
                             maxLines: 2,
                             overflow: TextOverflow.visible,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
+                            style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
                           ),
                         ],
                       ),
@@ -105,11 +80,7 @@ class OverlayItemPanel extends StatelessWidget {
                       child: IconButton(
                         padding: EdgeInsets.zero,
                         onPressed: onCancelTap,
-                        icon: const Icon(
-                          Icons.cancel,
-                          color: Colors.red,
-                          size: 30,
-                        ),
+                        icon: const Icon(Icons.cancel, color: Colors.red, size: 30),
                       ),
                     ),
                   ],

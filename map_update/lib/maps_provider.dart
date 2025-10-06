@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -10,9 +10,9 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-import 'package:gem_kit/content_store.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
+import 'package:magiclane_maps_flutter/content_store.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
 
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -127,7 +127,7 @@ class MapsProvider {
       items,
       isCached,
     ) {
-      if (err == GemError.success && items != null) {
+      if (err == GemError.success && items.isNotEmpty) {
         mapsListCompleter.complete(items);
       } else {
         mapsListCompleter.complete([]);
@@ -247,13 +247,13 @@ enum CurrentMapsStatus {
   upToDate, // updated maps
   unknown; // not received any notification yet
 
-  static CurrentMapsStatus fromStatus(MapStatus status) {
+  static CurrentMapsStatus fromStatus(ContentStoreStatus status) {
     switch (status) {
-      case MapStatus.expiredData:
+      case ContentStoreStatus.expiredData:
         return CurrentMapsStatus.expiredData;
-      case MapStatus.oldData:
+      case ContentStoreStatus.oldData:
         return CurrentMapsStatus.oldData;
-      case MapStatus.upToDate:
+      case ContentStoreStatus.upToDate:
         return CurrentMapsStatus.upToDate;
     }
   }

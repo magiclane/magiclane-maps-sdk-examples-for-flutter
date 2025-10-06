@@ -15,8 +15,7 @@ dependencies:
   path_provider: ^2.1.5
   share_plus: ^11.0.0
 
-  gem_kit:
-    path: plugins/gem_kit
+  magiclane_maps_flutter: ^3.0.0
 
   cupertino_icons: ^1.0.8
   permission_handler: ^12.0.1
@@ -38,6 +37,6 @@ patrol:
   app_name: My App
 
   android:
-    package_name: com.magiclane.gem_kit.examples.send_debug_info
+    package_name: com.magiclane.magiclane_maps_flutter.examples.send_debug_info
   ios:
     bundle_id: com.example.MyApp

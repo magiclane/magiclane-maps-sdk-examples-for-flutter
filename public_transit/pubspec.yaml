@@ -10,8 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  gem_kit:
-    path: plugins/gem_kit
+  magiclane_maps_flutter: ^3.0.0
 
 dev_dependencies:
   flutter_test:

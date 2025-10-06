@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'package:flutter/material.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
 import 'package:intl/intl.dart';
 
 class SocialEventPanel extends StatelessWidget {

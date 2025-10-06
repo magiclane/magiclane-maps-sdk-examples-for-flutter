@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'package:flutter/material.dart';
-import 'package:gem_kit/projections.dart';
+import 'package:magiclane_maps_flutter/projections.dart';
 
 class ProjectionsPanel extends StatelessWidget {
   final WGS84Projection? wgsProjection;

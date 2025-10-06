@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -9,9 +9,9 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:gem_kit/content_store.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
+import 'package:magiclane_maps_flutter/content_store.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
 
 bool getIsDownloadingOrWaiting(ContentStoreItem contentItem) => [
   ContentStoreItemStatus.downloadQueued,

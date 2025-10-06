@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
-import 'package:gem_kit/routing.dart';
-import 'package:gem_kit/sense.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
+import 'package:magiclane_maps_flutter/routing.dart';
+import 'package:magiclane_maps_flutter/sense.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 
@@ -25,11 +25,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Social Report',
-      debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
-    );
+    return const MaterialApp(title: 'Social Report', debugShowCheckedModeBanner: false, home: MyHomePage());
   }
 }
 
@@ -60,17 +56,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Social Report',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Social Report', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
             onPressed: _onFollowPositionButtonPressed,
-            icon: const Icon(
-              Icons.location_searching_sharp,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.location_searching_sharp, color: Colors.white),
           ),
           if (_hasLiveDataSource)
             IconButton(
@@ -81,11 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(
         children: [
-          GemMap(
-            key: ValueKey("GemMap"),
-            onMapCreated: _onMapCreated,
-            appAuthorization: projectApiToken,
-          ),
+          GemMap(key: ValueKey("GemMap"), onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
           if (_selectedItem != null)
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -132,8 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      final locationPermssionWeb =
-          await PositionService.requestLocationPermission();
+      final locationPermssionWeb = await PositionService.requestLocationPermission();
       if (locationPermssionWeb == true) {
         _locationPermissionStatus = PermissionStatus.granted;
       } else {
@@ -148,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // After the permission was granted, we can set the live data source (in most cases the GPS).
       // The data source should be set only once, otherwise we'll get -5 error.
       if (!_hasLiveDataSource) {
-        PositionService.instance.setLiveDataSource();
+        PositionService.setLiveDataSource();
         _hasLiveDataSource = true;
       }
 
@@ -164,16 +149,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onPrepareReportingButtonPressed() async {
     // Get current position quality
-    final improvedPos = PositionService.instance.improvedPosition;
+    final improvedPos = PositionService.improvedPosition;
     final posQuality = improvedPos!.fixQuality;
 
-    if (posQuality == PositionQuality.invalid ||
-        posQuality == PositionQuality.inertial) {
-      _showSnackBar(
-        context,
-        message: "There is no accurate position at the moment.",
-        duration: Duration(seconds: 3),
-      );
+    if (posQuality == PositionQuality.invalid || posQuality == PositionQuality.inertial) {
+      _showSnackBar(context, message: "There is no accurate position at the moment.", duration: Duration(seconds: 3));
       return;
     }
 
@@ -182,8 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Get the subcategory id
     SocialReportsOverlayInfo info = SocialOverlay.reportsOverlayInfo;
-    List<SocialReportsOverlayCategory> categs = info
-        .getSocialReportsCategories();
+    List<SocialReportsOverlayCategory> categs = info.getSocialReportsCategories();
     SocialReportsOverlayCategory cat = categs.first;
     List<SocialReportsOverlayCategory> subcats = cat.overlaySubcategories;
     SocialReportsOverlayCategory subCategory = subcats.first;
@@ -193,21 +172,13 @@ class _MyHomePageState extends State<MyHomePage> {
       prepareId: idReport,
       categId: subCategory.uid,
       onComplete: (error) {
-        _showSnackBar(
-          context,
-          message: "Added report error: $error.",
-          duration: Duration(seconds: 3),
-        );
+        _showSnackBar(context, message: "Added report error: $error.", duration: Duration(seconds: 3));
       },
     );
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(
-    BuildContext context, {
-    required String message,
-    Duration duration = const Duration(hours: 1),
-  }) {
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

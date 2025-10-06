@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:path/path.dart' as path;
@@ -19,16 +19,18 @@ Future<String> getDirectoryPath(String dirName) async {
   return expectedPath;
 }
 
-// Utility function to convert the seconds duration into a suitable format
-String convertDuration(int seconds) {
-  int hours = seconds ~/ 3600;
-  int minutes = (seconds % 3600) ~/ 60;
-  int remainingSeconds = seconds % 60;
+// Utility function to convert the milliseconds duration into a suitable format
+String convertDurationMillis(int milliseconds) {
+  if (milliseconds < 1000) return '$milliseconds ms';
+
+  int totalSeconds = milliseconds ~/ 1000;
+  int hours = totalSeconds ~/ 3600;
+  int minutes = (totalSeconds % 3600) ~/ 60;
+  int remainingSeconds = totalSeconds % 60;
 
   String hoursText = (hours > 0) ? '$hours h ' : '';
   String minutesText = (minutes > 0) ? '$minutes min ' : '';
-  String secondsText =
-      (hours == 0 && minutes == 0) ? '$remainingSeconds sec' : '';
+  String secondsText = '$remainingSeconds sec';
 
   return (hoursText + minutesText + secondsText).trim();
 }

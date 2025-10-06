@@ -12,8 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  gem_kit:
-    path: plugins/gem_kit
+  magiclane_maps_flutter: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -31,6 +30,6 @@ patrol:
   app_name: My App
 
   android:
-    package_name: com.magiclane.gem_kit.examples.public_transit_stop_schedule
+    package_name: com.magiclane.magiclane_maps_flutter.examples.public_transit_stop_schedule
   ios:
     bundle_id: com.example.MyApp

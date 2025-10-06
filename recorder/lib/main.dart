@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
-import 'package:gem_kit/sense.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
+import 'package:magiclane_maps_flutter/sense.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:recorder/utils.dart';
@@ -99,11 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _onFollowPositionButtonPressed() async {
     if (kIsWeb) {
-      final locationPermssionWeb =
-          await PositionService.requestLocationPermission();
-      _locationPermissionStatus = locationPermssionWeb == true
-          ? PermissionStatus.granted
-          : PermissionStatus.denied;
+      final locationPermssionWeb = await PositionService.requestLocationPermission();
+      _locationPermissionStatus = locationPermssionWeb == true ? PermissionStatus.granted : PermissionStatus.denied;
     } else {
       // Request WhenInUse permission first
       final whenInUseStatus = await Permission.locationWhenInUse.request();
@@ -118,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (_locationPermissionStatus == PermissionStatus.granted) {
       if (!_hasLiveDataSource) {
-        PositionService.instance.setLiveDataSource();
+        PositionService.setLiveDataSource();
         _hasLiveDataSource = true;
       }
 
@@ -197,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
     final recorderCoordinates = meta.preciseRoute;
-    final duration = convertDuration(meta.durationMillis);
+    final duration = convertDurationMillis(meta.durationMillis);
 
     if (recorderCoordinates.isEmpty) {
       // ignore: use_build_context_synchronously

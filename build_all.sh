@@ -2,9 +2,9 @@
 # vim:ts=4:sts=4:sw=4:et
 
 # SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-# SPDX-License-Identifier: BSD-3-Clause
+# SPDX-License-Identifier: Apache-2.0
 #
-# Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+# Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 declare -r PROGNAME=${0##*/}
 
@@ -50,7 +50,7 @@ function clean_example()
 
     flutter clean &>/dev/null
 
-	[[ -d "plugins/gem_kit" ]] && rm -rf "plugins/gem_kit" &>/dev/null
+	[[ -d "plugins/magiclane_maps_flutter" ]] && rm -rf "plugins/magiclane_maps_flutter" &>/dev/null
 
     find . -type d -name ".gradle" -exec rm -rf {} + 2>/dev/null
     find . -type d -name ".cxx" -exec rm -rf {} + 2>/dev/null
@@ -233,7 +233,7 @@ mapfile -t EXAMPLE_PROJECTS < <(find "${MY_DIR}" -maxdepth 1 -type d -exec [ -d 
 for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
 	EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
 
-    cp -R "${SDK_TEMP_DIR}"/gem_kit "${EXAMPLE_PATH}"/plugins/
+    cp -R "${SDK_TEMP_DIR}"/magiclane_maps_flutter "${EXAMPLE_PATH}"/plugins/
 
     pushd "${EXAMPLE_PATH}" &>/dev/null
 

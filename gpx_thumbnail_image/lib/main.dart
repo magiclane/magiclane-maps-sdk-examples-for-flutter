@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 // ignore_for_file: avoid_print
 
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
 
 import 'package:path_provider/path_provider.dart';
 
@@ -30,11 +30,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'GPX Thumbnail Image',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'GPX Thumbnail Image', home: MyHomePage());
   }
 }
 
@@ -68,10 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          "GPX Thumbnail Image",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("GPX Thumbnail Image", style: TextStyle(color: Colors.white)),
         actions: [
           if (_screenshotImage == null)
             IconButton(
@@ -91,11 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Positioned.fill(child: Container(color: Colors.white)),
           _screenshotImage != null
               ? Center(
-                  child: Image.memory(
-                    _screenshotImage!,
-                    width: MediaQuery.of(context).size.width - 100,
-                    height: 500,
-                  ),
+                  child: Image.memory(_screenshotImage!, width: MediaQuery.of(context).size.width - 100, height: 500),
                 )
               : const SizedBox(),
         ],
@@ -105,21 +94,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //Read GPX data from file, then compute & show path on map
   Future<void> _importGPX() async {
-    _showSnackBar(
-      context,
-      message: 'Importing GPX.',
-      duration: Duration(seconds: 3),
-    );
+    _showSnackBar(context, message: 'Importing GPX.', duration: Duration(seconds: 3));
 
     Path gemPath;
 
     if (kIsWeb) {
       final fileBytes = await rootBundle.load('assets/recorded_route.gpx');
       final buffer = fileBytes.buffer;
-      final pathData = buffer.asUint8List(
-        fileBytes.offsetInBytes,
-        fileBytes.lengthInBytes,
-      );
+      final pathData = buffer.asUint8List(fileBytes.offsetInBytes, fileBytes.lengthInBytes);
 
       // Process GPX data using your existing method
       gemPath = Path.create(data: pathData, format: PathFileFormat.gpx);
@@ -184,12 +166,10 @@ class _MyHomePageState extends State<MyHomePage> {
     lmkEnd.setImageFromIcon(GemIcon.waypointFinish);
 
     // Display start and end waypoints
-    _mapController.activateHighlight(
-      [lmkStart, lmkEnd],
-      renderSettings: HighlightRenderSettings(
-        options: {HighlightOptions.noFading, HighlightOptions.showLandmark},
-      ),
-    );
+    _mapController.activateHighlight([
+      lmkStart,
+      lmkEnd,
+    ], renderSettings: HighlightRenderSettings(options: {HighlightOptions.noFading, HighlightOptions.showLandmark}));
   }
 
   //Copy the recorded_route.gpx file from assets directory to app documents directory
@@ -199,18 +179,12 @@ class _MyHomePageState extends State<MyHomePage> {
       final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
       final fileBytes = await rootBundle.load('assets/recorded_route.gpx');
       final buffer = fileBytes.buffer;
-      await gpxFile.writeAsBytes(
-        buffer.asUint8List(fileBytes.offsetInBytes, fileBytes.lengthInBytes),
-      );
+      await gpxFile.writeAsBytes(buffer.asUint8List(fileBytes.offsetInBytes, fileBytes.lengthInBytes));
     }
   }
 
   // Method to show message in case calculate route is not finished
-  void _showSnackBar(
-    BuildContext context, {
-    required String message,
-    Duration duration = const Duration(hours: 1),
-  }) {
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
-import 'package:gem_kit/sense.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
+import 'package:magiclane_maps_flutter/sense.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 
@@ -23,11 +23,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Follow Position',
-      debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
-    );
+    return const MaterialApp(title: 'Follow Position', debugShowCheckedModeBanner: false, home: MyHomePage());
   }
 }
 
@@ -55,25 +51,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Follow Position',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Follow Position', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
             onPressed: _onFollowPositionButtonPressed,
-            icon: const Icon(
-              Icons.location_searching_sharp,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.location_searching_sharp, color: Colors.white),
           ),
         ],
       ),
-      body: GemMap(
-        key: ValueKey("GemMap"),
-        onMapCreated: _onMapCreated,
-        appAuthorization: projectApiToken,
-      ),
+      body: GemMap(key: ValueKey("GemMap"), onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
     );
   }
 
@@ -87,8 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      final locationPermssionWeb =
-          await PositionService.requestLocationPermission();
+      final locationPermssionWeb = await PositionService.requestLocationPermission();
       if (locationPermssionWeb == true) {
         _locationPermissionStatus = PermissionStatus.granted;
       } else {
@@ -103,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // After the permission was granted, we can set the live data source (in most cases the GPS).
       // The data source should be set only once, otherwise we'll get -5 error.
       if (!_hasLiveDataSource) {
-        PositionService.instance.setLiveDataSource();
+        PositionService.setLiveDataSource();
         _hasLiveDataSource = true;
       }
 

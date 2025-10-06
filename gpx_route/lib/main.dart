@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 // ignore_for_file: avoid_print
 
 import 'package:flutter/foundation.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
-import 'package:gem_kit/navigation.dart';
-import 'package:gem_kit/routing.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
+import 'package:magiclane_maps_flutter/navigation.dart';
+import 'package:magiclane_maps_flutter/routing.dart';
 
 import 'package:path_provider/path_provider.dart';
 
@@ -30,11 +30,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'GPX Route',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'GPX Route', home: MyHomePage());
   }
 }
 
@@ -91,11 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
         ],
       ),
-      body: GemMap(
-        key: ValueKey("GemMap"),
-        onMapCreated: _onMapCreated,
-        appAuthorization: projectApiToken,
-      ),
+      body: GemMap(key: ValueKey("GemMap"), onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
     );
   }
 
@@ -112,9 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final gpxFile = File('${docDirectory.path}/recorded_route.gpx');
       final fileBytes = await rootBundle.load('assets/recorded_route.gpx');
       final buffer = fileBytes.buffer;
-      await gpxFile.writeAsBytes(
-        buffer.asUint8List(fileBytes.offsetInBytes, fileBytes.lengthInBytes),
-      );
+      await gpxFile.writeAsBytes(buffer.asUint8List(fileBytes.offsetInBytes, fileBytes.lengthInBytes));
     }
   }
 
@@ -127,10 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       final fileBytes = await rootBundle.load('assets/recorded_route.gpx');
       final buffer = fileBytes.buffer;
-      final pathData = buffer.asUint8List(
-        fileBytes.offsetInBytes,
-        fileBytes.lengthInBytes,
-      );
+      final pathData = buffer.asUint8List(fileBytes.offsetInBytes, fileBytes.lengthInBytes);
 
       // Process GPX data using your existing method
       final gemPath = Path.create(data: pathData, format: PathFileFormat.gpx);
@@ -157,17 +144,12 @@ class _MyHomePageState extends State<MyHomePage> {
     print("GPX Landmarklist size: ${landmarkList.length}");
 
     // Define the route preferences.
-    final routePreferences = RoutePreferences(
-      transportMode: RouteTransportMode.bicycle,
-    );
+    final routePreferences = RoutePreferences(transportMode: RouteTransportMode.bicycle);
 
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
-    RoutingService.calculateRoute(landmarkList, routePreferences, (
-      err,
-      routes,
-    ) {
+    RoutingService.calculateRoute(landmarkList, routePreferences, (err, routes) {
       ScaffoldMessenger.of(context).clearSnackBars();
 
       // If there aren't any errors, we display the routes.
@@ -178,11 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Display the routes on map.
         for (final route in routes) {
           // The first route is the main route
-          routesMap.add(
-            route,
-            route == routes.first,
-            label: getMapLabel(route),
-          );
+          routesMap.add(route, route == routes.first, label: getMapLabel(route));
         }
 
         // Center the camera on routes.
@@ -208,10 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // Start navigation one the main route.
-    _navigationHandler = NavigationService.startSimulation(
-      routes.mainRoute!,
-      speedMultiplier: 2,
-    );
+    _navigationHandler = NavigationService.startSimulation(routes.mainRoute!, speedMultiplier: 2);
 
     // Set the camera to follow position.
     _mapController.startFollowingPosition();
@@ -235,11 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished
-  void _showSnackBar(
-    BuildContext context, {
-    required String message,
-    Duration duration = const Duration(hours: 1),
-  }) {
+  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

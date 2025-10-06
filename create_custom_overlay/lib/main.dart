@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 // ignore_for_file: avoid_print
 
@@ -9,11 +9,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
 
 import 'package:flutter/material.dart' hide Route;
-import 'package:gem_kit/search.dart';
+import 'package:magiclane_maps_flutter/search.dart';
 import 'package:create_custom_overlay/overlay_item_panel.dart';
 import 'package:create_custom_overlay/search_page.dart';
 
@@ -30,11 +30,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Create custom overlay',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Create custom overlay', home: MyHomePage());
   }
 }
 
@@ -62,10 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          "Create custom overlay",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Create custom overlay", style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
             onPressed: applyStyle,
@@ -80,18 +73,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(
         children: [
-          GemMap(
-            key: ValueKey("GemMap"),
-            onMapCreated: _onMapCreated,
-            appAuthorization: projectApiToken,
-          ),
+          GemMap(key: ValueKey("GemMap"), onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
           if (_focusedOverlayItem != null)
             Positioned(
               bottom: 30,
-              child: OverlayItemPanel(
-                onCancelTap: _onCancelOverlayItemPanelTap,
-                overlayItem: _focusedOverlayItem!,
-              ),
+              child: OverlayItemPanel(onCancelTap: _onCancelOverlayItemPanelTap, overlayItem: _focusedOverlayItem!),
             ),
         ],
       ),
@@ -107,9 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void applyStyle() async {
     // Import asset style data
     // The style containing custom overlay items from York should be added by the user in the assets folder of the project.
-    final assetStyleData = await rootBundle.load(
-      'assets/style_with_data.style',
-    );
+    final assetStyleData = await rootBundle.load('assets/style_with_data.style');
     final assetStyleBytes = assetStyleData.buffer.asUint8List();
 
     // Apply the style to the map
@@ -176,17 +160,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _highlightOverlayItems(List<OverlayItem> overlayItems) {
     final settings = HighlightRenderSettings(
-      options: {
-        HighlightOptions.showLandmark,
-        HighlightOptions.showContour,
-        HighlightOptions.overlap,
-      },
+      options: {HighlightOptions.showLandmark, HighlightOptions.showContour, HighlightOptions.overlap},
     );
     // Highlight the overlay item on the map.
-    _mapController.activateHighlightOverlayItems(
-      overlayItems,
-      renderSettings: settings,
-    );
+    _mapController.activateHighlightOverlayItems(overlayItems, renderSettings: settings);
 
     final overlay = overlayItems[0];
     setState(() {
@@ -209,17 +186,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Custom method for navigating to search screen
-  void _onSearchButtonPressed(
-    BuildContext context,
-    SearchPreferences preferences,
-  ) async {
+  void _onSearchButtonPressed(BuildContext context, SearchPreferences preferences) async {
     // Navigating to search screen. The result will be the selected search result(OverlayItem)
     final result = await Navigator.of(context).push(
       MaterialPageRoute<dynamic>(
-        builder: (context) => SearchPage(
-          coordinates: Coordinates.fromLatLong(53.9617, -1.0779),
-          preferences: preferences,
-        ),
+        builder: (context) =>
+            SearchPage(coordinates: Coordinates.fromLatLong(53.9617, -1.0779), preferences: preferences),
       ),
     );
 

@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'package:datasource_listeners/device_sensors_data.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
 
 import 'package:flutter/material.dart' hide Animation, Route, Orientation;
 import 'package:permission_handler/permission_handler.dart';
@@ -20,11 +20,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Datasource Listeners',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Datasource Listeners', home: MyHomePage());
   }
 }
 
@@ -47,22 +43,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Datasource Listeners",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Datasource Listeners", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           IconButton(
             onPressed: () async {
               await _requestPermissions();
-              // ignore: use_build_context_synchronously
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => const DeviceSensorsDataPage(),
-                ),
-              );
+              if (!context.mounted) return;
+              Navigator.push(context, MaterialPageRoute<void>(builder: (context) => const DeviceSensorsDataPage()));
             },
             icon: const Icon(Icons.article_outlined, color: Colors.white),
           ),

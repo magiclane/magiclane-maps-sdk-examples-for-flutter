@@ -7,7 +7,7 @@ project(runner LANGUAGES CXX)
 set(BINARY_NAME "create_custom_overlay")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "com.magiclane.gem_kit.examples.create_custom_overlay")
+set(APPLICATION_ID "com.magiclane.magiclane_maps_flutter.examples.create_custom_overlay")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

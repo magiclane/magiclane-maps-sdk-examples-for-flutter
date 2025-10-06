@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 // ignore_for_file: avoid_print
 
-import 'package:gem_kit/content_store.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
+import 'package:magiclane_maps_flutter/content_store.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
 
 import 'package:flutter/material.dart';
 
@@ -40,9 +40,7 @@ class _VoicesItemState extends State<VoicesItem> {
           if (err == GemError.success) {
             _downloadVoice();
           } else {
-            print(
-              "Download pause for item ${widget.voice.id} failed with code $err",
-            );
+            print("Download pause for item ${widget.voice.id} failed with code $err");
           }
         },
       );
@@ -72,22 +70,15 @@ class _VoicesItemState extends State<VoicesItem> {
               padding: const EdgeInsets.all(8),
               width: 50,
               child: countryImg.isValid
-                  ? Image.memory(
-                      countryImg.getRenderableImageBytes(size: Size(80, 80))!,
-                      gaplessPlayback: true,
-                    )
+                  ? Image.memory(countryImg.getRenderableImageBytes(size: Size(80, 80))!, gaplessPlayback: true)
                   : SizedBox(),
             ),
             title: Text(
               '${widget.voice.name} (${(widget.voice.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB)',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
-              '${widget.voice.contentParameters[3].value as String} - ${widget.voice.contentParameters[1].value as String}',
+              '${widget.voice.getContentParametersAs<VoiceParameters>()?.nativeLanguage} - ${widget.voice.getContentParametersAs<VoiceParameters>()?.gender}',
               style: const TextStyle(color: Colors.black, fontSize: 16),
             ),
             trailing: SizedBox.square(
@@ -105,8 +96,7 @@ class _VoicesItemState extends State<VoicesItem> {
                         backgroundColor: Colors.grey.shade300,
                       ),
                     );
-                  } else if (widget.voice.status ==
-                      ContentStoreItemStatus.paused) {
+                  } else if (widget.voice.status == ContentStoreItemStatus.paused) {
                     return const Icon(Icons.pause);
                   }
                   return const SizedBox.shrink();

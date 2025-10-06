@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: Apache-2.0
 //
-// Contact Magic Lane at <info@magiclane.com> for commercial licensing options.
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart' as fp;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gem_kit/core.dart';
-import 'package:gem_kit/map.dart';
-import 'package:gem_kit/sense.dart';
+import 'package:magiclane_maps_flutter/core.dart';
+import 'package:magiclane_maps_flutter/map.dart';
+import 'package:magiclane_maps_flutter/sense.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'utils.dart';
@@ -26,11 +26,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Record NMEA Chunk',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Record NMEA Chunk', home: MyHomePage());
   }
 }
 
@@ -57,9 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'NMEA Chunk recording is only available on Android devices.',
-            ),
+            content: Text('NMEA Chunk recording is only available on Android devices.'),
             duration: Duration(seconds: 20),
           ),
         );
@@ -78,10 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Record NMEA Chunk',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Record NMEA Chunk', style: TextStyle(color: Colors.white)),
         actions: [
           if (_hasLiveDataSource && _isRecording == false)
             IconButton(
@@ -95,10 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           IconButton(
             onPressed: _onFollowPositionButtonPressed,
-            icon: const Icon(
-              Icons.location_searching_sharp,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.location_searching_sharp, color: Colors.white),
           ),
         ],
       ),
@@ -124,8 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      final locationPermssionWeb =
-          await PositionService.requestLocationPermission();
+      final locationPermssionWeb = await PositionService.requestLocationPermission();
       if (locationPermssionWeb == true) {
         _locationPermissionStatus = PermissionStatus.granted;
       } else {
@@ -141,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // After the permission was granted, we can set the live data source (in most cases the GPS).
       // The data source should be set only once, otherwise we'll get -5 error.
       if (!_hasLiveDataSource) {
-        PositionService.instance.setLiveDataSource();
+        PositionService.setLiveDataSource();
         _hasLiveDataSource = true;
       }
 
@@ -202,12 +189,9 @@ class _MyHomePageState extends State<MyHomePage> {
       await _presentRecordedNmeaData();
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Recording failed: $endErr'),
-            duration: Duration(seconds: 5),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Recording failed: $endErr'), duration: Duration(seconds: 5)));
       }
     }
 
@@ -227,19 +211,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Save the log as a CSV
     await _deletePreviousCsv();
-    final exportError = bookmarks!.exportLog(
-      logList!.last,
-      FileType.csv,
-      exportedFileName: "exported_route",
-    );
+    final exportError = bookmarks!.exportLog(logList!.last, FileType.csv, exportedFileName: "exported_route");
     if (exportError != GemError.success) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Export failed: $exportError'),
-            duration: Duration(seconds: 5),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Export failed: $exportError'), duration: Duration(seconds: 5)));
       }
       return;
     }
