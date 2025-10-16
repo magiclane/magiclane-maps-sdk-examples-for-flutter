@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  magiclane_maps_flutter: ^3.0.0
+  magiclane_maps_flutter: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -21,15 +21,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
-  patrol: ^3.17.0
   intl: ^0.20.2
 
 flutter:
   uses-material-design: true
-patrol:
-  app_name: My App
-
-  android:
-    package_name: com.magiclane.magiclane_maps_flutter.examples.public_transit_stop_schedule
-  ios:
-    bundle_id: com.example.MyApp

@@ -3,6 +3,9 @@ allprojects {
         google()
         mavenCentral()
         maven {
+            url = uri("https://developer.magiclane.com/packages/android")
+        }
+        maven {
             url = uri("${rootDir}/../plugins/magiclane_maps_flutter/android/build")
         }
     }

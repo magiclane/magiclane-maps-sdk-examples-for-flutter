@@ -3,6 +3,8 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
+import 'dart:math';
+
 import 'package:recorder_in_background/foreground_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -125,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (_locationPermissionStatus == PermissionStatus.granted) {
       if (!_hasLiveDataSource) {
-        PositionService.instance.setLiveDataSource();
+        PositionService.setLiveDataSource();
         _hasLiveDataSource = true;
       }
 
@@ -271,11 +273,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // Center on recorder path
     _mapController.centerOnAreaRect(
       path.area,
-      viewRc: RectType(
-        x: _mapController.viewport.width ~/ 3,
-        y: _mapController.viewport.height ~/ 3,
-        width: _mapController.viewport.width ~/ 3,
-        height: _mapController.viewport.height ~/ 3,
+      viewRc: Rectangle(
+        _mapController.viewport.width ~/ 3,
+        _mapController.viewport.height ~/ 3,
+        _mapController.viewport.width ~/ 3,
+        _mapController.viewport.height ~/ 3,
       ),
     );
 
