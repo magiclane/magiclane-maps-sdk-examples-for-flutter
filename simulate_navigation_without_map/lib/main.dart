@@ -65,7 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Simulate Navigation Without Map", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Simulate Navigation Without Map",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           if (!_isSimulationActive && _areRoutesBuilt)
@@ -88,15 +91,23 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(
         children: [
           if (_isSimulationActive)
-            Positioned(top: 10, left: 10, child: TopNavigationPanel(instruction: _currentInstruction)),
+            Positioned(
+              top: 10,
+              left: 10,
+              child: TopNavigationPanel(instruction: _currentInstruction),
+            ),
           if (_isSimulationActive)
             Positioned(
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
               child: BottomNavigationPanel(
-                remainingDistance: getFormattedRemainingDistance(_currentInstruction),
+                remainingDistance: getFormattedRemainingDistance(
+                  _currentInstruction,
+                ),
                 eta: getFormattedETA(_currentInstruction),
-                remainingDuration: getFormattedRemainingDuration(_currentInstruction),
+                remainingDuration: getFormattedRemainingDuration(
+                  _currentInstruction,
+                ),
               ),
             ),
         ],
@@ -108,10 +119,16 @@ class _MyHomePageState extends State<MyHomePage> {
   // Custom method for calling calculate route and displaying the results.
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark = Landmark.withLatLng(latitude: 51.20830988558932, longitude: 6.6794155000229045);
+    final departureLandmark = Landmark.withLatLng(
+      latitude: 51.20830988558932,
+      longitude: 6.6794155000229045,
+    );
 
     // Define the destination.
-    final destinationLandmark = Landmark.withLatLng(latitude: 50.93416933110433, longitude: 6.94370301382495);
+    final destinationLandmark = Landmark.withLatLng(
+      latitude: 50.93416933110433,
+      longitude: 6.94370301382495,
+    );
 
     // Define the route preferences.
     final routePreferences = RoutePreferences();
@@ -120,26 +137,31 @@ class _MyHomePageState extends State<MyHomePage> {
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
-    _routingHandler = RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (
-      err,
-      routes,
-    ) async {
-      // If the route calculation is finished, we don't have a progress listener anymore.
-      _routingHandler = null;
+    _routingHandler = RoutingService.calculateRoute(
+      [departureLandmark, destinationLandmark],
+      routePreferences,
+      (err, routes) async {
+        // If the route calculation is finished, we don't have a progress listener anymore.
+        _routingHandler = null;
 
-      ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there aren't any errors, we display the routes.
-      if (err == GemError.success) {
-        _showSnackBar(context, message: 'Successfully calculated the route.', duration: const Duration(seconds: 2));
+        // If there aren't any errors, we display the routes.
+        if (err == GemError.success) {
+          _showSnackBar(
+            context,
+            message: 'Successfully calculated the route.',
+            duration: const Duration(seconds: 2),
+          );
+          setState(() {
+            _route = routes.first;
+          });
+        }
         setState(() {
-          _route = routes.first;
+          _areRoutesBuilt = true;
         });
-      }
-      setState(() {
-        _areRoutesBuilt = true;
-      });
-    });
+      },
+    );
   }
 
   // Method for starting the simulation and following the position,
@@ -192,7 +214,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished,
-  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

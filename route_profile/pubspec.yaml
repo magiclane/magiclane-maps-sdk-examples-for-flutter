@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  magiclane_maps_flutter: ^3.1.1
+  magiclane_maps_flutter: ^3.1.2
 
   another_xlider: ^3.0.2
   fl_chart: ^1.0.0

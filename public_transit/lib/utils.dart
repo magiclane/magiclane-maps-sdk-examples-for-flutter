@@ -22,15 +22,18 @@ String convertDuration(int seconds) {
 
   String hoursText = (hours > 0) ? '$hours h ' : '';
   String minutesText = (minutes > 0) ? '$minutes min ' : '';
-  String secondsText = (hours == 0 && minutes == 0) ? '$remainingSeconds sec' : '';
+  String secondsText =
+      (hours == 0 && minutes == 0) ? '$remainingSeconds sec' : '';
 
   return (hoursText + minutesText + secondsText).trim();
 }
 
 String getMapLabel(Route route) {
   // Get total distance and total duration from time distance.
-  final totalDistance = route.getTimeDistance().unrestrictedDistanceM + route.getTimeDistance().restrictedDistanceM;
-  final totalDuration = route.getTimeDistance().unrestrictedTimeS + route.getTimeDistance().restrictedTimeS;
+  final totalDistance = route.getTimeDistance().unrestrictedDistanceM +
+      route.getTimeDistance().restrictedDistanceM;
+  final totalDuration = route.getTimeDistance().unrestrictedTimeS +
+      route.getTimeDistance().restrictedTimeS;
 
   // Convert the route to a public transit route (PTRoute).
   final publicTransitRoute = route.toPTRoute();
@@ -51,15 +54,18 @@ String getMapLabel(Route route) {
   final arrivalTime = lastSegment.arrivalTime;
 
   // Calculate total walking distance (first and last segments are typically walking).
-  final totalWalkingDistance = firstSegment.timeDistance.totalDistanceM + lastSegment.timeDistance.totalDistanceM;
+  final totalWalkingDistance = firstSegment.timeDistance.totalDistanceM +
+      lastSegment.timeDistance.totalDistanceM;
 
   String formattedDepartureTime = "";
   String formattedArrivalTime = "";
 
   if (departureTime != null && arrivalTime != null) {
     // Format departure and arrival times.
-    formattedDepartureTime = '${departureTime.hour}:${departureTime.minute.toString().padLeft(2, '0')}';
-    formattedArrivalTime = '${arrivalTime.hour}:${arrivalTime.minute.toString().padLeft(2, '0')}';
+    formattedDepartureTime =
+        '${departureTime.hour}:${departureTime.minute.toString().padLeft(2, '0')}';
+    formattedArrivalTime =
+        '${arrivalTime.hour}:${arrivalTime.minute.toString().padLeft(2, '0')}';
   }
 
   // Build the label string with the route's details.

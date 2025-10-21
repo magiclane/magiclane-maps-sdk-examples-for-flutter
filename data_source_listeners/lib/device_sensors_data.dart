@@ -33,7 +33,10 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
       appBar: AppBar(
         foregroundColor: Colors.white,
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Device Sensors Data', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Device Sensors Data',
+          style: TextStyle(color: Colors.white),
+        ),
         elevation: 0,
       ),
       body: Column(
@@ -45,7 +48,10 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: SingleChildScrollView(
-                child: Text(_displayFor(_selectedType), style: const TextStyle(fontSize: 16)),
+                child: Text(
+                  _displayFor(_selectedType),
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
             ),
           ),
@@ -97,7 +103,9 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
 
   Widget _buildButtonsRow() {
     final types = sense.DataType.values
-        .where((t) => t != sense.DataType.unknown && t != sense.DataType.gyroscope)
+        .where(
+          (t) => t != sense.DataType.unknown && t != sense.DataType.gyroscope,
+        )
         .toList();
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -157,7 +165,9 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
         final d = data as position.GemImprovedPosition;
         final roadMods = d.roadModifiers.isEmpty
             ? 'none'
-            : d.roadModifiers.map((m) => m.toString().split('.').last).join(',');
+            : d.roadModifiers
+                  .map((m) => m.toString().split('.').last)
+                  .join(',');
         final addr = () {
           try {
             return d.address.format();
@@ -167,17 +177,23 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
         }();
 
         final sb = StringBuffer();
-        sb.writeln('Position: ${d.latitude.toStringAsFixed(6)}, ${d.longitude.toStringAsFixed(6)}');
+        sb.writeln(
+          'Position: ${d.latitude.toStringAsFixed(6)}, ${d.longitude.toStringAsFixed(6)}',
+        );
         sb.writeln('Altitude: ${d.altitude} m');
         sb.writeln('Provider: ${d.provider.toString().split('.').last}');
 
-        final speedLine = StringBuffer('Speed: ${d.speed.toStringAsFixed(2)} m/s');
+        final speedLine = StringBuffer(
+          'Speed: ${d.speed.toStringAsFixed(2)} m/s',
+        );
         if (d.hasSpeedAccuracy) {
           speedLine.write(' ±${d.speedAccuracy.toStringAsFixed(2)} m/s');
         }
         sb.writeln(speedLine.toString());
 
-        final courseLine = StringBuffer('Course: ${d.course.toStringAsFixed(1)}°');
+        final courseLine = StringBuffer(
+          'Course: ${d.course.toStringAsFixed(1)}°',
+        );
         if (d.hasCourseAccuracy) {
           courseLine.write(' ±${d.courseAccuracy.toStringAsFixed(1)}°');
         }
@@ -193,7 +209,9 @@ class _DeviceSensorsDataPageState extends State<DeviceSensorsDataPage> {
         sb.writeln('Road localization: ${d.hasRoadLocalization}');
         sb.writeln('Terrain data available: ${d.hasTerrainData}');
 
-        sb.writeln('Terrain altitude: ${d.terrainAltitude.toStringAsFixed(1)} m');
+        sb.writeln(
+          'Terrain altitude: ${d.terrainAltitude.toStringAsFixed(1)} m',
+        );
         sb.writeln('Terrain slope: ${d.terrainSlope.toStringAsFixed(1)}°');
 
         if (addr.isNotEmpty) {

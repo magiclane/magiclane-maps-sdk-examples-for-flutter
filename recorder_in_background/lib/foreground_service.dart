@@ -20,7 +20,9 @@ class AndroidForegroundService {
   static Future<void> initialize(bool isForegroundMode) async {
     if (!Platform.isAndroid) return;
 
-    const initSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSettingsAndroid = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
 
     const initSettings = InitializationSettings(android: initSettingsAndroid);
 
@@ -34,7 +36,8 @@ class AndroidForegroundService {
     );
 
     hasGrantedNotificationsPermission = await notificationsPlugin
-            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+            .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>()
             ?.requestNotificationsPermission() ??
         false;
 
@@ -43,7 +46,8 @@ class AndroidForegroundService {
     }
 
     await notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
     await service.configure(
@@ -57,9 +61,7 @@ class AndroidForegroundService {
         foregroundServiceNotificationId: notificationId,
         initialNotificationTitle: 'Background location',
         initialNotificationContent: 'Background location is active',
-        foregroundServiceTypes: [
-          AndroidForegroundType.location,
-        ],
+        foregroundServiceTypes: [AndroidForegroundType.location],
       ),
     );
   }
@@ -69,7 +71,8 @@ class AndroidForegroundService {
     if (!Platform.isAndroid) return false;
 
     return hasGrantedNotificationsPermission = await notificationsPlugin
-            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+            .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>()
             ?.areNotificationsEnabled() ??
         false;
   }

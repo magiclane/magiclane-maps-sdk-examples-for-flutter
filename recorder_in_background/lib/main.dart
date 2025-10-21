@@ -64,7 +64,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Background Location', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Background Location',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           if (_hasLiveDataSource && _isRecording == false)
             IconButton(
@@ -110,8 +113,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     if (kIsWeb) {
-      final locationPermissionWeb = await PositionService.requestLocationPermission();
-      _locationPermissionStatus = locationPermissionWeb == true ? PermissionStatus.granted : PermissionStatus.denied;
+      final locationPermissionWeb =
+          await PositionService.requestLocationPermission();
+      _locationPermissionStatus = locationPermissionWeb == true
+          ? PermissionStatus.granted
+          : PermissionStatus.denied;
     } else {
       // Request WhenInUse permission first
       final whenInUseStatus = await Permission.locationWhenInUse.request();

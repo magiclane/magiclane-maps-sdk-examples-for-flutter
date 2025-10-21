@@ -25,7 +25,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(title: 'Social Report', debugShowCheckedModeBanner: false, home: MyHomePage());
+    return const MaterialApp(
+      title: 'Social Report',
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(),
+    );
   }
 }
 
@@ -56,11 +60,17 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Social Report', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Social Report',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
             onPressed: _onFollowPositionButtonPressed,
-            icon: const Icon(Icons.location_searching_sharp, color: Colors.white),
+            icon: const Icon(
+              Icons.location_searching_sharp,
+              color: Colors.white,
+            ),
           ),
           if (_hasLiveDataSource)
             IconButton(
@@ -71,7 +81,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(
         children: [
-          GemMap(key: ValueKey("GemMap"), onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
+          ),
           if (_selectedItem != null)
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -118,7 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      final locationPermssionWeb = await PositionService.requestLocationPermission();
+      final locationPermssionWeb =
+          await PositionService.requestLocationPermission();
       if (locationPermssionWeb == true) {
         _locationPermissionStatus = PermissionStatus.granted;
       } else {
@@ -152,8 +167,13 @@ class _MyHomePageState extends State<MyHomePage> {
     final improvedPos = PositionService.improvedPosition;
     final posQuality = improvedPos!.fixQuality;
 
-    if (posQuality == PositionQuality.invalid || posQuality == PositionQuality.inertial) {
-      _showSnackBar(context, message: "There is no accurate position at the moment.", duration: Duration(seconds: 3));
+    if (posQuality == PositionQuality.invalid ||
+        posQuality == PositionQuality.inertial) {
+      _showSnackBar(
+        context,
+        message: "There is no accurate position at the moment.",
+        duration: Duration(seconds: 3),
+      );
       return;
     }
 
@@ -162,7 +182,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Get the subcategory id
     SocialReportsOverlayInfo info = SocialOverlay.reportsOverlayInfo;
-    List<SocialReportsOverlayCategory> categs = info.getSocialReportsCategories();
+    List<SocialReportsOverlayCategory> categs = info
+        .getSocialReportsCategories();
     SocialReportsOverlayCategory cat = categs.first;
     List<SocialReportsOverlayCategory> subcats = cat.overlaySubcategories;
     SocialReportsOverlayCategory subCategory = subcats.first;
@@ -172,13 +193,21 @@ class _MyHomePageState extends State<MyHomePage> {
       prepareId: idReport,
       categId: subCategory.uid,
       onComplete: (error) {
-        _showSnackBar(context, message: "Added report error: $error.", duration: Duration(seconds: 3));
+        _showSnackBar(
+          context,
+          message: "Added report error: $error.",
+          duration: Duration(seconds: 3),
+        );
       },
     );
   }
 
   // Show a snackbar indicating that the route calculation is in progress.
-  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

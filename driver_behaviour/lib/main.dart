@@ -96,7 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
               right: 0.0,
               child: ElevatedButton(
                 onPressed: () {
-                  final analyses = _driverBehaviour.getAllDriverBehaviourAnalyses();
+                  final analyses =
+                      _driverBehaviour.getAllDriverBehaviourAnalyses();
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (context) {
@@ -123,7 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      final locationPermssionWeb = await PositionService.requestLocationPermission();
+      final locationPermssionWeb =
+          await PositionService.requestLocationPermission();
       if (locationPermssionWeb == true) {
         _locationPermissionStatus = PermissionStatus.granted;
       } else {

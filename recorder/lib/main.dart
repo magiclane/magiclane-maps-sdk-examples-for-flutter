@@ -99,8 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _onFollowPositionButtonPressed() async {
     if (kIsWeb) {
-      final locationPermssionWeb = await PositionService.requestLocationPermission();
-      _locationPermissionStatus = locationPermssionWeb == true ? PermissionStatus.granted : PermissionStatus.denied;
+      final locationPermssionWeb =
+          await PositionService.requestLocationPermission();
+      _locationPermissionStatus = locationPermssionWeb == true
+          ? PermissionStatus.granted
+          : PermissionStatus.denied;
     } else {
       // Request WhenInUse permission first
       final whenInUseStatus = await Permission.locationWhenInUse.request();

@@ -20,7 +20,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Datasource Listeners', home: MyHomePage());
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Datasource Listeners',
+      home: MyHomePage(),
+    );
   }
 }
 
@@ -43,14 +47,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Datasource Listeners", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Datasource Listeners",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           IconButton(
             onPressed: () async {
               await _requestPermissions();
               if (!context.mounted) return;
-              Navigator.push(context, MaterialPageRoute<void>(builder: (context) => const DeviceSensorsDataPage()));
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (context) => const DeviceSensorsDataPage(),
+                ),
+              );
             },
             icon: const Icon(Icons.article_outlined, color: Colors.white),
           ),

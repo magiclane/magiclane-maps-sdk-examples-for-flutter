@@ -68,30 +68,34 @@ class _MyHomePageState extends State<MyHomePage> {
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.deepPurple[900],
-          title: const Text('Camera feed', style: TextStyle(color: Colors.white)),
+          title: const Text(
+            'Camera feed',
+            style: TextStyle(color: Colors.white),
+          ),
           actions: [
             IconButton(
-              icon: Icon(
-                Icons.play_arrow,
-                color: Colors.white,
-              ),
+              icon: Icon(Icons.play_arrow, color: Colors.white),
               onPressed: () async {
                 if (_cameraPlayerController == null) {
                   _ds = DataSource.createLiveDataSource()!;
 
                   _ds!.start();
 
-                  _recorder = Recorder.create(RecorderConfiguration(
-                    logsDir: await getDirectoryPath('Tracks'),
-                    dataSource: _ds!,
-                    videoQuality: Resolution.hd720p,
-                    recordedTypes: [DataType.position, DataType.camera],
-                    transportMode: RecordingTransportMode.car,
-                  ));
+                  _recorder = Recorder.create(
+                    RecorderConfiguration(
+                      logsDir: await getDirectoryPath('Tracks'),
+                      dataSource: _ds!,
+                      videoQuality: Resolution.hd720p,
+                      recordedTypes: [DataType.position, DataType.camera],
+                      transportMode: RecordingTransportMode.car,
+                    ),
+                  );
 
                   await _recorder!.startRecording();
 
-                  _cameraPlayerController = GemCameraPlayerController(dataSource: _ds!);
+                  _cameraPlayerController = GemCameraPlayerController(
+                    dataSource: _ds!,
+                  );
 
                   _watchPlayerStatus();
 
@@ -100,10 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             IconButton(
-              icon: Icon(
-                Icons.stop,
-                color: Colors.white,
-              ),
+              icon: Icon(Icons.stop, color: Colors.white),
               onPressed: () async {
                 await _recorder!.stopRecording();
 
@@ -147,7 +148,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     return SizedBox(
                       width: 200,
                       child: AspectRatio(
-                        aspectRatio: controller.size!.$1.toDouble() / controller.size!.$2.toDouble(),
+                        aspectRatio:
+                            controller.size!.$1.toDouble() /
+                            controller.size!.$2.toDouble(),
                         child: GemCameraPlayer(
                           controller: controller,
                           fit: BoxFit.cover,
@@ -157,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

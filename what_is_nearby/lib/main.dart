@@ -83,7 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      final locationPermssionWeb = await PositionService.requestLocationPermission();
+      final locationPermssionWeb =
+          await PositionService.requestLocationPermission();
       if (locationPermssionWeb == true) {
         _locationPermissionStatus = PermissionStatus.granted;
       } else {
@@ -130,7 +131,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // Pass the current position
     Navigator.of(context).push(
       MaterialPageRoute<dynamic>(
-        builder: (context) => WhatIsNearbyPage(position: currentPositionNoAltitude),
+        builder: (context) =>
+            WhatIsNearbyPage(position: currentPositionNoAltitude),
       ),
     );
   }

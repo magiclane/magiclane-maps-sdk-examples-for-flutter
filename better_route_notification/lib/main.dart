@@ -28,7 +28,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Better Route Notification', home: MyHomePage());
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Better Route Notification',
+      home: MyHomePage(),
+    );
   }
 }
 
@@ -62,7 +66,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Better Route Notification", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Better Route Notification",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.deepPurple[900],
         actions: [
           if (!_isSimulationActive && _areRoutesBuilt)
@@ -84,7 +91,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(
         children: [
-          GemMap(key: ValueKey("GemMap"), onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
+          ),
           if (_isSimulationActive)
             Positioned(
               top: 10,
@@ -93,7 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 spacing: 10,
                 children: [
                   TopNavigationPanel(instruction: currentInstruction),
-                  FollowPositionButton(onTap: () => _mapController.startFollowingPosition()),
+                  FollowPositionButton(
+                    onTap: () => _mapController.startFollowingPosition(),
+                  ),
                 ],
               ),
             ),
@@ -102,9 +115,13 @@ class _MyHomePageState extends State<MyHomePage> {
               bottom: MediaQuery.of(context).padding.bottom + 10,
               left: 0,
               child: BottomNavigationPanel(
-                remainingDistance: getFormattedRemainingDistance(currentInstruction),
-                eta: getFormattedRemainingDuration(currentInstruction),
-                remainingDuration: getFormattedETA(currentInstruction),
+                remainingDistance: getFormattedRemainingDistance(
+                  currentInstruction,
+                ),
+                eta: getFormattedETA(currentInstruction),
+                remainingDuration: getFormattedRemainingDuration(
+                  currentInstruction,
+                ),
               ),
             ),
         ],
@@ -120,10 +137,16 @@ class _MyHomePageState extends State<MyHomePage> {
   // Custom method for calling calculate route and displaying the results.
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define the departure.
-    final departureLandmark = Landmark.withLatLng(latitude: 48.79743778098061, longitude: 2.4029037044571875);
+    final departureLandmark = Landmark.withLatLng(
+      latitude: 48.79743778098061,
+      longitude: 2.4029037044571875,
+    );
 
     // Define the destination.
-    final destinationLandmark = Landmark.withLatLng(latitude: 48.904767018940184, longitude: 2.3223936076132086);
+    final destinationLandmark = Landmark.withLatLng(
+      latitude: 48.904767018940184,
+      longitude: 2.3223936076132086,
+    );
 
     // Define the route preferences.
     final routePreferences = RoutePreferences(
@@ -136,32 +159,37 @@ class _MyHomePageState extends State<MyHomePage> {
     // Calling the calculateRoute SDK method.
     // (err, results) - is a callback function that gets called when the route computing is finished.
     // err is an error enum, results is a list of routes.
-    _routingHandler = RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (
-      err,
-      routes,
-    ) async {
-      // If the route calculation is finished, we don't have a progress listener anymore.
-      _routingHandler = null;
+    _routingHandler = RoutingService.calculateRoute(
+      [departureLandmark, destinationLandmark],
+      routePreferences,
+      (err, routes) async {
+        // If the route calculation is finished, we don't have a progress listener anymore.
+        _routingHandler = null;
 
-      ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).clearSnackBars();
 
-      // If there aren't any errors, we display the routes.
-      if (err == GemError.success) {
-        // Get the routes collection from map preferences.
-        final routesMap = _mapController.preferences.routes;
+        // If there aren't any errors, we display the routes.
+        if (err == GemError.success) {
+          // Get the routes collection from map preferences.
+          final routesMap = _mapController.preferences.routes;
 
-        // Display the routes on map.
-        for (final route in routes) {
-          routesMap.add(route, route == routes.first, label: getMapLabel(route));
+          // Display the routes on map.
+          for (final route in routes) {
+            routesMap.add(
+              route,
+              route == routes.first,
+              label: getMapLabel(route),
+            );
+          }
+
+          // Center the camera on routes.
+          _mapController.centerOnRoutes(routes: routes);
         }
-
-        // Center the camera on routes.
-        _mapController.centerOnRoutes(routes: routes);
-      }
-      setState(() {
-        _areRoutesBuilt = true;
-      });
-    });
+        setState(() {
+          _areRoutesBuilt = true;
+        });
+      },
+    );
   }
 
   // Method for starting the simulation and following the position,
@@ -252,7 +280,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to show message in case calculate route is not finished,
-  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -289,7 +321,11 @@ class FollowPositionButton extends StatelessWidget {
             Icon(Icons.navigation),
             Text(
               'Recenter',
-              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),

@@ -40,7 +40,9 @@ class _VoicesItemState extends State<VoicesItem> {
           if (err == GemError.success) {
             _downloadVoice();
           } else {
-            print("Download pause for item ${widget.voice.id} failed with code $err");
+            print(
+              "Download pause for item ${widget.voice.id} failed with code $err",
+            );
           }
         },
       );
@@ -70,12 +72,19 @@ class _VoicesItemState extends State<VoicesItem> {
               padding: const EdgeInsets.all(8),
               width: 50,
               child: countryImg.isValid
-                  ? Image.memory(countryImg.getRenderableImageBytes(size: Size(80, 80))!, gaplessPlayback: true)
+                  ? Image.memory(
+                      countryImg.getRenderableImageBytes(size: Size(80, 80))!,
+                      gaplessPlayback: true,
+                    )
                   : SizedBox(),
             ),
             title: Text(
               '${widget.voice.name} (${(widget.voice.totalSize / (1024.0 * 1024.0)).toStringAsFixed(2)} MB)',
-              style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Text(
               '${widget.voice.getContentParametersAs<VoiceParameters>()?.nativeLanguage} - ${widget.voice.getContentParametersAs<VoiceParameters>()?.gender}',
@@ -96,7 +105,8 @@ class _VoicesItemState extends State<VoicesItem> {
                         backgroundColor: Colors.grey.shade300,
                       ),
                     );
-                  } else if (widget.voice.status == ContentStoreItemStatus.paused) {
+                  } else if (widget.voice.status ==
+                      ContentStoreItemStatus.paused) {
                     return const Icon(Icons.pause);
                   }
                   return const SizedBox.shrink();

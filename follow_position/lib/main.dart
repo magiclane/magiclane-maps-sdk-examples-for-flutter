@@ -23,7 +23,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(title: 'Follow Position', debugShowCheckedModeBanner: false, home: MyHomePage());
+    return const MaterialApp(
+      title: 'Follow Position',
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(),
+    );
   }
 }
 
@@ -51,15 +55,25 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Follow Position', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Follow Position',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
             onPressed: _onFollowPositionButtonPressed,
-            icon: const Icon(Icons.location_searching_sharp, color: Colors.white),
+            icon: const Icon(
+              Icons.location_searching_sharp,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
-      body: GemMap(key: ValueKey("GemMap"), onMapCreated: _onMapCreated, appAuthorization: projectApiToken),
+      body: GemMap(
+        key: ValueKey("GemMap"),
+        onMapCreated: _onMapCreated,
+        appAuthorization: projectApiToken,
+      ),
     );
   }
 
@@ -73,7 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (kIsWeb) {
       // On web platform permission are handled differently than other platforms.
       // The SDK handles the request of permission for location.
-      final locationPermssionWeb = await PositionService.requestLocationPermission();
+      final locationPermssionWeb =
+          await PositionService.requestLocationPermission();
       if (locationPermssionWeb == true) {
         _locationPermissionStatus = PermissionStatus.granted;
       } else {

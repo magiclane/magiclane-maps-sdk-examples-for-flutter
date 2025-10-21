@@ -15,7 +15,7 @@ dependencies:
   path_provider: ^2.1.5
   share_plus: ^11.0.0
 
-  magiclane_maps_flutter: ^3.1.1
+  magiclane_maps_flutter: ^3.1.2
 
   permission_handler: ^12.0.1
   debug_console: ^0.0.1

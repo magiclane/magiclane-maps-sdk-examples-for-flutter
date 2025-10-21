@@ -81,10 +81,7 @@ class AnalysesPage extends StatelessWidget {
                     'Harsh Braking',
                     a.numberOfHarshBrakingEvents.toString(),
                   ),
-                  _buildRow(
-                    'Cornering',
-                    a.numberOfCorneringEvents.toString(),
-                  ),
+                  _buildRow('Cornering', a.numberOfCorneringEvents.toString()),
                   _buildRow('Swerving', a.numberOfSwervingEvents.toString()),
                   _buildRow(
                     'Ignored Stops',

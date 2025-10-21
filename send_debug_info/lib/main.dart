@@ -78,8 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
           final dartSdkLogger = Logger('GemSdkLogger');
           dartSdkLogger.onRecord.listen((record) {
             Debug.log(
-                level: GemDumpSdkLevel.verbose,
-                message: '${record.time} ${record.message}');
+              level: GemDumpSdkLevel.verbose,
+              message: '${record.time} ${record.message}',
+            );
           });
         },
       ),
