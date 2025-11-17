@@ -5,11 +5,9 @@
 
 import 'dart:async';
 
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
-
 import 'package:flutter/material.dart' hide Animation;
-import 'package:magiclane_maps_flutter/projections.dart';
+
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 import 'package:projections/projections_panel.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');

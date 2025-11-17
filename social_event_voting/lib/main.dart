@@ -3,16 +3,13 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-import 'package:magiclane_maps_flutter/navigation.dart';
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
-import 'package:magiclane_maps_flutter/routing.dart' hide Route;
+import 'dart:async';
 
 import 'package:flutter/material.dart' hide Animation, Route;
-import 'package:magiclane_maps_flutter/search.dart';
-import 'package:social_event_voting/social_event_panel.dart';
 
-import 'dart:async';
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
+
+import 'package:social_event_voting/social_event_panel.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
@@ -155,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _stopSimulation() {
     // Cancel the navigation.
     if (_navigationHandler != null) {
-      NavigationService.cancelNavigation(_navigationHandler!);
+      NavigationService.cancelNavigation(_navigationHandler);
     }
 
     setState(() {

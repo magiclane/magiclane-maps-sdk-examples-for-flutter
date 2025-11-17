@@ -3,17 +3,15 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-// ignore_for_file: avoid_print
-
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 
 import 'maps_page.dart';
 import 'maps_provider.dart';
 
-import 'package:flutter/material.dart';
+// ignore_for_file: avoid_print
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 

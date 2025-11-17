@@ -5,12 +5,11 @@
 
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart' as fp;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
-import 'package:magiclane_maps_flutter/sense.dart';
+
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
+import 'package:file_picker/file_picker.dart' as fp;
 import 'package:permission_handler/permission_handler.dart';
 
 import 'utils.dart';

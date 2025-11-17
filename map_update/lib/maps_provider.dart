@@ -277,52 +277,6 @@ bool getIsDownloadingOrWaiting(ContentStoreItem contentItem) => [
   ContentStoreItemStatus.downloadWaitingNetwork,
 ].contains(contentItem.status);
 
-void restartDownloadIfNecessary(
-  ContentStoreItem contentItem,
-  void Function(GemError err) onCompleteCallback, {
-  void Function(int progress)? onProgress,
-}) {
-  //If the map is downloading pause and start downloading again
-  //so the progress indicator updates value from callback
-  if (getIsDownloadingOrWaiting(contentItem)) {
-    _pauseAndRestartDownload(
-      contentItem,
-      onCompleteCallback,
-      onProgress: onProgress,
-    );
-  }
-}
-
-void _pauseAndRestartDownload(
-  ContentStoreItem contentItem,
-
-  void Function(GemError err) onCompleteCallback, {
-  void Function(int progress)? onProgress,
-}) {
-  final errCode = contentItem.pauseDownload(
-    onComplete: (err) {
-      if (err == GemError.success) {
-        // Download the map.
-        contentItem.asyncDownload(
-          onCompleteCallback,
-          onProgress: onProgress,
-          allowChargedNetworks: true,
-        );
-      } else {
-        print(
-          "Download pause for item ${contentItem.id} failed with code $err",
-        );
-      }
-    },
-  );
-
-  if (errCode != GemError.success) {
-    print(
-      "Download pause for item ${contentItem.id} failed with code $errCode",
-    );
-  }
-}
-
 bool isReady(ContentUpdaterStatus status) =>
     status == ContentUpdaterStatus.partiallyReady ||
     status == ContentUpdaterStatus.fullyReady;

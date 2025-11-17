@@ -3,19 +3,17 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/services.dart';
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
-
 import 'package:flutter/material.dart' hide Route;
-import 'package:magiclane_maps_flutter/search.dart';
+import 'package:flutter/services.dart';
+
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 import 'package:create_custom_overlay/overlay_item_panel.dart';
 import 'package:create_custom_overlay/search_page.dart';
+
+// ignore_for_file: avoid_print
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 const overlayUid = 0; // <-- Replace with your overlay UID

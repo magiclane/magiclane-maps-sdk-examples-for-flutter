@@ -39,10 +39,9 @@ class _OnlineItemState extends State<OnlineItem> {
 
     _downloadProgress = mapItem.downloadProgress;
 
-    restartDownloadIfNecessary(
-      mapItem,
+    mapItem.setProgressListener(
       _onMapDownloadFinished,
-      onProgress: _onMapDownloadProgressUpdated,
+      _onMapDownloadProgressUpdated,
     );
   }
 

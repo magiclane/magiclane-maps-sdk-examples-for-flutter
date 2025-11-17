@@ -26,10 +26,9 @@ class _MapsItemState extends State<MapsItem> {
   void initState() {
     super.initState();
 
-    restartDownloadIfNecessary(
-      mapItem,
+    mapItem.setProgressListener(
       _onMapDownloadFinished,
-      onProgress: _onMapDownloadProgressUpdated,
+      _onMapDownloadProgressUpdated,
     );
   }
 

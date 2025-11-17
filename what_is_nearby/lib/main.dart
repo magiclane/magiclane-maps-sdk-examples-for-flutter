@@ -3,14 +3,12 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
-import 'package:magiclane_maps_flutter/sense.dart';
-
-import 'package:permission_handler/permission_handler.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Animation;
+
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 import 'package:what_is_nearby/what_is_nearby_page.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
@@ -25,10 +23,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'What\'s Nearby',
-      debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
-    );
+        title: 'What\'s Nearby',
+        debugShowCheckedModeBanner: false,
+        home: MyHomePage());
   }
 }
 
@@ -56,10 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'What\'s Nearby',
-          style: TextStyle(color: Colors.white),
-        ),
+        title:
+            const Text('What\'s Nearby', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
             onPressed: () => _onWhatIsNearbyButtonPressed(context),
@@ -68,10 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: GemMap(
-        key: ValueKey("GemMap"),
-        onMapCreated: _onMapCreated,
-        appAuthorization: projectApiToken,
-      ),
+          key: ValueKey("GemMap"),
+          onMapCreated: _onMapCreated,
+          appAuthorization: projectApiToken),
     );
   }
 
@@ -117,8 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (currentPosition == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No position currently available')),
-      );
+          const SnackBar(content: Text('No position currently available')));
       return;
     }
 
@@ -129,11 +122,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     // Pass the current position
-    Navigator.of(context).push(
-      MaterialPageRoute<dynamic>(
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<dynamic>(
         builder: (context) =>
-            WhatIsNearbyPage(position: currentPositionNoAltitude),
-      ),
-    );
+            WhatIsNearbyPage(position: currentPositionNoAltitude)));
   }
 }

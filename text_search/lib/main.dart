@@ -5,13 +5,11 @@
 
 import 'dart:math';
 
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/landmark_store.dart';
-import 'package:magiclane_maps_flutter/map.dart';
+import 'package:flutter/material.dart';
+
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 
 import 'search_page.dart';
-
-import 'package:flutter/material.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 

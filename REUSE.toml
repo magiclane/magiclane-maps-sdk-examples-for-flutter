@@ -2,7 +2,7 @@ version = 1
 
 SPDX-PackageName = "maps-sdk-examples-for-flutter"
 SPDX-PackageSupplier = "magiclane-developer@users.noreply.github.com"
-SPDX-PackageDownloadLocation = "https://github.com/magiclane-international/maps-sdk-examples-for-flutter"
+SPDX-PackageDownloadLocation = "https://github.com/magiclane/magiclane-maps-sdk-examples-for-flutter"
 SPDX-PackageComment = "A collection of sample projects to support application development with the Magic Lane Maps SDK for Flutter."
 
 [[annotations]]

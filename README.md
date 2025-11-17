@@ -1,12 +1,38 @@
-# Magic Lane - Maps SDK for Flutter demo applications
+# Magic Lane Maps SDK Examples for Flutter
 
-This repository holds a series of example projects using the **Magic Lane - Maps SDK for Flutter**. More information about the API can be found on the [Documentation](https://developer.magiclane.com/docs/flutter) page.
+Explore practical examples using the Magic Lane Maps SDK for Flutter — including 3D maps, offline navigation, route calculation, traffic updates, and POI search. Build advanced location-based apps for mobile platforms with ease.
 
-This set of individual, use-case based projects is designed to be cloned by developers for their own use.
+This repository contains dozens of open-source Flutter sample apps that demonstrate specific SDK features and real-world use cases.
+Each example focuses on a single feature or workflow, so developers can quickly clone, explore, and integrate the sample code into their projects.
+
+<p>
+  <a href="https://pub.dev/packages/magiclane_maps_flutter">
+    <img src="https://img.shields.io/pub/v/magiclane_maps_flutter.svg" alt="pub package">
+  </a>
+  <a href="https://pub.dev/packages/magiclane_maps_flutter">
+    <img src="https://img.shields.io/badge/Magic%20Lane-9b78fd" alt="Magic Lane">
+  </a>
+  <a href="https://pub.dev/packages/magiclane_maps_flutter#-installing-tab-">
+    <img src="https://img.shields.io/badge/Read-Documentation-blue?labelColor=000000" alt="Read Docs"/>
+  </a>
+</p>
+
+## Why use Magic Lane Maps SDK for Flutter
+
+The **Magic Lane Flutter Maps SDK** enables developers to create feature-rich mapping and navigation apps with:
+- Global coverage and offline map support  
+- Advanced routing for cars, bikes, trucks, and pedestrians  
+- Customizable 3D maps and map styles  
+- Voice-guided turn-by-turn navigation  
+- Real-time traffic updates and driver behavior analytics  
+
+## Examples
+
+Explore the examples to learn the capabilities of the Magic Lane Maps Flutter SDK:
 
 * [Add Markers](add_markers) - Handle marker tap. Customize position tracker.
 * [Address Search](address_search) - Showcase address search functionality.
-* [Areas Alarms](areas_alarms) - Get notified when corssing a geographic area. 
+* [Areas Alarms](areas_alarms) - Get notified when crossing a geographic area.
 * [Assets Map Style](assets_map_style) - Show how to load styles from assets folder and how to apply style.
 * [Better Route Notification](better_route_notification) - Get notified when a better route is detected during navigation.
 * [Calculate Bike Route](calculate_bike_route) - Calculate a bike route & display on a map.
@@ -76,10 +102,57 @@ This set of individual, use-case based projects is designed to be cloned by deve
 * [Social Report](social_report) - Upload and view social events.
 * [Social Event Voting](social_event_voting) - Confirm social reports of other users.
 
-**Note:** As the very first step, we highly recommend that you get a token from [Magic Lane Portal](https://developer.magiclane.com/api). If no token is set, you can still test your apps, but a watermark will be displayed, and all the online services including mapping, searching, routing, etc. will slow down after a few minutes.
+## Running individual examples
+
+Individual samples can be run on an iOS or Android simulator or device.
+
+Check the `README.md` inside each examples folder for instructions.
+
+## Configuring API Keys
+
+An API Key is required to unlock the full functionality of these example applications. Follow our [guide](https://developer.magiclane.com/docs/guides/get-started) to generate your API Key.
+
+If no API Key is set, you can still test your apps, but a watermark will be displayed, and all the online services including mapping, searching, routing, etc. will slow down after a few minutes.
+
+You can either add your API Key directly in the `main.dart` file or use an environment JSON file with the `--dart-define-from-file` option when running the app.
+
+To use a JSON file, create a file with the following structure:
+```json
+{
+    "GEM_TOKEN": "your_api_key_here"
+}
+```
+
+Then run any example with:
+
+```bash
+flutter run --dart-define-from-file=path/to/json/file.json
+```
+
+**Important:** When adding the token directly to `main.dart`, update the `projectApiToken` constant. Always keep your API token secure and never commit it to version control.
+
+## Developer resources
+
+- [Flutter SDK documentation](https://developer.magiclane.com/docs/flutter): Detailed guides and API references for the SDK.
+- [Magic Lane Developer Portal](https://developer.magiclane.com/api/login): Manage API tokens and create custom styles.
+- [Build with AI](https://www.magiclane.com/web/build-with-ai): Accelerate development with AI-powered tools and workflows. Compatible with all AI agents.
 
 ## License
 
 Copyright (C) 1995-2025 Magic Lane International B.V.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+A copy of the license is available in the repository's LICENSE file.
 
 Contact Magic Lane at <info@magiclane.com> for SDK licensing options.

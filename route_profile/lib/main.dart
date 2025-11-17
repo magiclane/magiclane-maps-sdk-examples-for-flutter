@@ -5,11 +5,9 @@
 
 import 'dart:math';
 
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
-import 'package:magiclane_maps_flutter/routing.dart';
-
 import 'package:flutter/material.dart' hide Route;
+
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 
 import 'elevation_chart.dart';
 import 'route_profile_panel.dart';

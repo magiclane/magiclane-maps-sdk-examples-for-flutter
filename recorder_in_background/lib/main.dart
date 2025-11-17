@@ -5,14 +5,12 @@
 
 import 'dart:math';
 
-import 'package:recorder_in_background/foreground_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
-import 'package:magiclane_maps_flutter/sense.dart';
-import 'package:permission_handler/permission_handler.dart';
 
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:recorder_in_background/foreground_service.dart';
 import 'package:recorder_in_background/utils.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');

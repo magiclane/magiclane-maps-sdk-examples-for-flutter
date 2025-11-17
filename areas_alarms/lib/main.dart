@@ -5,13 +5,10 @@
 
 import 'dart:math';
 
-import 'package:areas_alarms/bottom_alarm_panel.dart';
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
-import 'package:magiclane_maps_flutter/navigation.dart';
-import 'package:magiclane_maps_flutter/routing.dart';
-
 import 'package:flutter/material.dart' hide Animation, Route;
+
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
+import 'package:areas_alarms/bottom_alarm_panel.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 void main() {
@@ -107,7 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onMapCreated(GemMapController controller) {
     _mapController = controller;
+  }
 
+  void _drawCircleMarker() {
     // Draw area on map
     final marker = Marker();
     final circleAreaCoords = generateCircleCoordinates(
@@ -174,6 +173,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
           // Center the camera on routes.
           _mapController.centerOnRoutes(routes: routes);
+
+          _drawCircleMarker();
         }
         setState(() {
           _areRoutesBuilt = true;
@@ -268,11 +269,12 @@ class _MyHomePageState extends State<MyHomePage> {
   // Method to stop the simulation and remove the displayed routes,
   void _stopSimulation() {
     // Cancel the navigation.
-    NavigationService.cancelNavigation(_navigationHandler!);
+    NavigationService.cancelNavigation(_navigationHandler);
     _navigationHandler = null;
     _areaNotification = null;
 
     _cancelRoute();
+    _mapController.preferences.markers.clear();
 
     setState(() => _isSimulationActive = false);
   }

@@ -4,8 +4,8 @@
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'package:flutter/material.dart';
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
+
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 import 'package:location_wikipedia/location_wikipedia_page.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
@@ -19,11 +19,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Location Wikipedia',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Location Wikipedia', home: MyHomePage());
   }
 }
 
@@ -46,10 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text(
-          'Location Wikipedia',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Location Wikipedia', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
             onPressed: () => _onLocationWikipediaTap(context),
@@ -57,18 +50,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: const GemMap(
-        key: ValueKey("GemMap"),
-        appAuthorization: projectApiToken,
-      ),
+      body: const GemMap(key: ValueKey("GemMap"), appAuthorization: projectApiToken),
     );
   }
 
   void _onLocationWikipediaTap(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<dynamic>(
-        builder: (context) => const LocationWikipediaPage(),
-      ),
-    );
+    Navigator.of(context).push(MaterialPageRoute<dynamic>(builder: (context) => const LocationWikipediaPage()));
   }
 }

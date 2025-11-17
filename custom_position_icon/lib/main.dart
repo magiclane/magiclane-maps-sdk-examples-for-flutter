@@ -3,15 +3,12 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-import 'package:magiclane_maps_flutter/core.dart';
-import 'package:magiclane_maps_flutter/map.dart';
-import 'package:magiclane_maps_flutter/sense.dart';
-
-import 'package:permission_handler/permission_handler.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Animation;
 import 'package:flutter/services.dart' show rootBundle;
+
+import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 const projectApiToken = String.fromEnvironment('GEM_TOKEN');
 
