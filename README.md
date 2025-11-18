@@ -5,18 +5,6 @@ Explore practical examples using the Magic Lane Maps SDK for Flutter — includi
 This repository contains dozens of open-source Flutter sample apps that demonstrate specific SDK features and real-world use cases.
 Each example focuses on a single feature or workflow, so developers can quickly clone, explore, and integrate the sample code into their projects.
 
-<p>
-  <a href="https://pub.dev/packages/magiclane_maps_flutter">
-    <img src="https://img.shields.io/pub/v/magiclane_maps_flutter.svg" alt="pub package">
-  </a>
-  <a href="https://pub.dev/packages/magiclane_maps_flutter">
-    <img src="https://img.shields.io/badge/Magic%20Lane-9b78fd" alt="Magic Lane">
-  </a>
-  <a href="https://pub.dev/packages/magiclane_maps_flutter#-installing-tab-">
-    <img src="https://img.shields.io/badge/Read-Documentation-blue?labelColor=000000" alt="Read Docs"/>
-  </a>
-</p>
-
 ## Why use Magic Lane Maps SDK for Flutter
 
 The **Magic Lane Flutter Maps SDK** enables developers to create feature-rich mapping and navigation apps with:
@@ -139,6 +127,7 @@ flutter run --dart-define-from-file=path/to/json/file.json
 
 ## License
 
+```
 Copyright (C) 1995-2025 Magic Lane International B.V.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -152,7 +141,8 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```
 
-A copy of the license is available in the repository's LICENSE file.
+A copy of the license is available in the repository's `LICENSE` file.
 
 Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
