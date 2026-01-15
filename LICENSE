@@ -1,6 +1,4 @@
-# License
-
-Copyright (C) 1995-2025 Magic Lane International B.V.
+Copyright (C) 2023-2026 Magic Lane International B.V.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,6 +12,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-See `REUSE.toml` for complete licensing information, including licenses of third-party code.
+See REUSE.toml for complete licensing information, including licenses of third-party code.
 
-See the full license text in the `LICENSES` folder.
+See the full license text in the LICENSES folder.

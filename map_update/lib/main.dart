@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
 // SPDX-License-Identifier: Apache-2.0
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
@@ -21,7 +21,10 @@ void main() async {
   // A init is required to create the assets directory structure where the
   // road map files are located. The SDK needs to be released before copying
   // the old map files into the assets directory.
-  await GemKit.initialize(appAuthorization: projectApiToken);
+  await GemKit.initialize(
+    appAuthorization: projectApiToken,
+    autoUpdateSettings: AutoUpdateSettings.allDisabled(),
+  );
   await GemKit.release();
 
   // Simulate old maps
@@ -29,20 +32,15 @@ void main() async {
   // AS A USER YOU NEVER DO THAT
   await loadOldMaps(rootBundle);
 
-  final autoUpdate = AutoUpdateSettings(
-    isAutoUpdateForRoadMapEnabled: false,
-    isAutoUpdateForViewStyleHighResEnabled: false,
-    isAutoUpdateForViewStyleLowResEnabled: false,
-    isAutoUpdateForHumanVoiceEnabled: false, // default
-    isAutoUpdateForComputerVoiceEnabled: false, // default
-    isAutoUpdateForCarModelEnabled: false, // default
-    isAutoUpdateForResourcesEnabled: false,
-  );
-
   await GemKit.initialize(
     appAuthorization: projectApiToken,
-    autoUpdateSettings: autoUpdate,
+    autoUpdateSettings: AutoUpdateSettings.allDisabled(),
   );
+
+  // As the maps have been changed manually we need to refresh the content store
+  // This method may cause syncronization issues when used in a real app
+  // AS A USER YOU NEVER DO THAT
+  Debug.refreshContentStore();
   await MapsProvider.instance.init();
 
   runApp(const MyApp());

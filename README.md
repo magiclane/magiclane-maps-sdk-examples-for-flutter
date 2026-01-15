@@ -1,6 +1,6 @@
 # Magic Lane Maps SDK Examples for Flutter
 
-Explore practical examples using the Magic Lane Maps SDK for Flutter — including 3D maps, offline navigation, route calculation, traffic updates, and POI search. Build advanced location-based apps for mobile platforms with ease.
+Explore practical examples using the Magic Lane Maps SDK for Flutter - including 3D maps, offline navigation, route calculation, traffic updates, and POI search. Build advanced location-based apps for mobile platforms with ease.
 
 This repository contains dozens of open-source Flutter sample apps that demonstrate specific SDK features and real-world use cases.
 Each example focuses on a single feature or workflow, so developers can quickly clone, explore, and integrate the sample code into their projects.
@@ -89,6 +89,8 @@ Explore the examples to learn the capabilities of the Magic Lane Maps Flutter SD
 * [What Is Nearby Category](what_is_nearby_category) - Search nearby locations based on category.
 * [Social Report](social_report) - Upload and view social events.
 * [Social Event Voting](social_event_voting) - Confirm social reports of other users.
+* [Round Trip](round_trip) - Calculate round trip routes based on distance, energy or time.
+* [Route Bookmarks](route_bookmarks) - Save and load route bookmarks.
 
 ## Running individual examples
 
@@ -128,7 +130,7 @@ flutter run --dart-define-from-file=path/to/json/file.json
 ## License
 
 ```
-Copyright (C) 1995-2025 Magic Lane International B.V.
+Copyright (C) 2023-2026 Magic Lane International B.V.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

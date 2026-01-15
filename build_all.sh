@@ -1,19 +1,31 @@
 #!/usr/bin/env bash
 # vim:ts=4:sts=4:sw=4:et
+# shellcheck disable=SC2317,SC2329
 
-# SPDX-FileCopyrightText: 1995-2025 Magic Lane International B.V. <info@magiclane.com>
+# SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
 # SPDX-License-Identifier: Apache-2.0
 #
 # Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
-declare -r PROGNAME=${0##*/}
+set -eEuo pipefail
 
-declare -r COLOR_RESET="\033[0m"
-declare -r COLOR_RED="\033[31;1m"
-declare -r COLOR_GREEN="\033[32;1m"
-declare -r COLOR_YELLOW="\033[33;1m"
-declare -r COLOR_BLUE="\033[34;1m"
-declare -r COLOR_CYAN="\033[36;1m"
+declare -r PROGNAME="${0##*/}"
+
+declare -r COLOR_RESET_DEFAULT="\033[0m"
+declare -r COLOR_RED_DEFAULT="\033[31;1m"
+declare -r COLOR_GREEN_DEFAULT="\033[32;1m"
+declare -r COLOR_YELLOW_DEFAULT="\033[33;1m"
+declare -r COLOR_BLUE_DEFAULT="\033[34;1m"
+declare -r COLOR_CYAN_DEFAULT="\033[36;1m"
+
+COLOR_RESET="${COLOR_RESET_DEFAULT}"
+COLOR_RED="${COLOR_RED_DEFAULT}"
+COLOR_GREEN="${COLOR_GREEN_DEFAULT}"
+COLOR_YELLOW="${COLOR_YELLOW_DEFAULT}"
+COLOR_BLUE="${COLOR_BLUE_DEFAULT}"
+COLOR_CYAN="${COLOR_CYAN_DEFAULT}"
+
+CONSOLE_MODE="auto"
 
 function log_timestamp()
 {
@@ -22,112 +34,618 @@ function log_timestamp()
 
 function log_info()
 {
-    echo -e "${COLOR_CYAN}[$(log_timestamp)] [INFO]${COLOR_RESET} $*"
+    printf '%b\n' "${COLOR_CYAN}[$(log_timestamp)] [INFO]${COLOR_RESET} $*"
 }
 
 function log_success()
 {
-    echo -e "${COLOR_GREEN}[$(log_timestamp)] [SUCCESS]${COLOR_RESET} $*"
+    printf '%b\n' "${COLOR_GREEN}[$(log_timestamp)] [SUCCESS]${COLOR_RESET} $*"
 }
 
 function log_warning()
 {
-    echo -e "${COLOR_YELLOW}[$(log_timestamp)] [WARNING]${COLOR_RESET} $*"
+    printf '%b\n' "${COLOR_YELLOW}[$(log_timestamp)] [WARNING]${COLOR_RESET} $*"
 }
 
 function log_error()
 {
-    echo -e "${COLOR_RED}[$(log_timestamp)] [ERROR]${COLOR_RESET} $*" >&2
+    printf '%b\n' "${COLOR_RED}[$(log_timestamp)] [ERROR]${COLOR_RESET} $*" >&2
 }
 
 function log_step()
 {
-    echo -e "${COLOR_BLUE}[$(log_timestamp)] [STEP]${COLOR_RESET} $*"
+    printf '\n%b\n\n' "${COLOR_BLUE}[$(log_timestamp)] [STEP]${COLOR_RESET} $*"
+}
+
+function apply_console_mode()
+{
+    function _disable_colors()
+    {
+        COLOR_RESET=""
+        COLOR_RED=""
+        COLOR_GREEN=""
+        COLOR_YELLOW=""
+        COLOR_BLUE=""
+        COLOR_CYAN=""
+    }
+
+    case "${CONSOLE_MODE}" in
+        auto)
+            if [[ ! -t 1 ]]; then
+                _disable_colors
+            fi
+            ;;
+        plain)
+            _disable_colors
+            ;;
+        colored)
+            :
+            ;;
+        verbose)
+            set -x
+            ;;
+        *)
+            log_error "Invalid --console value: '${CONSOLE_MODE}'. Allowed: auto, plain, colored, verbose"
+            usage
+            exit 1
+            ;;
+    esac
+}
+
+function check_cmd()
+{
+    command -v "${1}" >/dev/null 2>&1
 }
 
 function is_mac()
 {
     local OS_NAME
-    OS_NAME=$(uname | tr "[:upper:]" "[:lower:]")
-    if [[ ${OS_NAME} =~ "darwin" ]]; then
+    OS_NAME="$(uname | tr '[:upper:]' '[:lower:]')"
+    [[ "${OS_NAME}" =~ darwin ]]
+}
+
+function is_ci()
+{
+    if [[ -n "${CI:-}" ]] && [[ "${CI}" != "false" ]] && [[ "${CI}" != "0" ]]; then
         return 0
     fi
+
+    local -a CI_VARS=(
+        GITHUB_ACTIONS
+        GITLAB_CI
+        JENKINS_URL
+        TEAMCITY_VERSION
+        BUILDKITE
+        CIRCLECI
+        TRAVIS
+        APPVEYOR
+        TF_BUILD
+        BITBUCKET_BUILD_NUMBER
+        DRONE
+        SEMAPHORE
+        CODEBUILD_BUILD_ID
+    )
+
+    local VAR
+    for VAR in "${CI_VARS[@]}"; do
+        [[ -n "${!VAR:-}" ]] && return 0
+    done
 
     return 1
 }
 
-SDK_TEMP_DIR=""
-
-# shellcheck disable=SC2317
-function ctrl_c()
+function setup_mac_deps()
 {
-    exit 1
+    is_mac || return 0
+
+    if ! check_cmd brew; then
+        log_error "Missing Homebrew. Run:"
+        # shellcheck disable=SC2016
+        log_error '$ bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+        exit 1
+    fi
+
+    local BREW_PREFIX
+    BREW_PREFIX="$(brew --prefix)"
+
+    # package:path_suffix
+    local -a DEPS=(
+        "gnu-getopt:gnu-getopt/bin"
+        "grep:grep/libexec/gnubin"
+        "coreutils:coreutils/libexec/gnubin"
+        "findutils:findutils/libexec/gnubin"
+    )
+
+    local DEP PKG PATH_SUFFIX
+    for DEP in "${DEPS[@]}"; do
+        PKG="${DEP%%:*}"
+        PATH_SUFFIX="${DEP##*:}"
+
+        if ! brew ls --versions "${PKG}" > /dev/null 2>&1; then
+            log_error "Missing ${PKG}. Run 'brew install ${PKG}'"
+            exit 1
+        fi
+
+        export PATH="${BREW_PREFIX}/opt/${PATH_SUFFIX}:${PATH}"
+    done
 }
-trap ctrl_c INT
+
+function contains_in_array()
+{
+    local NEEDLE="$1"
+    shift
+
+    local NEEDLE_LC
+    NEEDLE_LC="$(printf '%s' "${NEEDLE}" | tr '[:upper:]' '[:lower:]')"
+
+    local ITEM ITEM_LC
+    for ITEM in "$@"; do
+        ITEM_LC="$(printf '%s' "${ITEM}" | tr '[:upper:]' '[:lower:]')"
+        [[ "${ITEM_LC}" == "${NEEDLE_LC}" ]] && return 0
+    done
+
+    return 1
+}
+
+function filtering_active()
+{
+    [[ ${#ONLY_EXAMPLES[@]} -gt 0 ]] || [[ ${#EXCLUDE_EXAMPLES[@]} -gt 0 ]]
+}
+
+function validate_filter_names()
+{
+    local NAME EXAMPLE_PATH EXAMPLE_NAME
+    local FOUND
+    local -a UNKNOWN_ONLY=()
+    local -a UNKNOWN_EXCLUDE=()
+
+    for NAME in "${ONLY_EXAMPLES[@]}"; do
+        FOUND=false
+        for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
+            EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
+            if contains_in_array "${NAME}" "${EXAMPLE_NAME}"; then
+                FOUND=true
+                break
+            fi
+        done
+        if ! "${FOUND}"; then
+            UNKNOWN_ONLY+=("${NAME}")
+        fi
+    done
+
+    for NAME in "${EXCLUDE_EXAMPLES[@]}"; do
+        FOUND=false
+        for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
+            EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
+            if contains_in_array "${NAME}" "${EXAMPLE_NAME}"; then
+                FOUND=true
+                break
+            fi
+        done
+        if ! "${FOUND}"; then
+            UNKNOWN_EXCLUDE+=("${NAME}")
+        fi
+    done
+
+    if [[ ${#UNKNOWN_ONLY[@]} -gt 0 ]]; then
+        log_error "Unknown example(s) in --only: ${UNKNOWN_ONLY[*]}"
+        log_error "Use --list-examples to see available examples"
+        exit 1
+    fi
+
+    if [[ ${#UNKNOWN_EXCLUDE[@]} -gt 0 ]]; then
+        log_warning "Unknown example(s) in --exclude (ignored): ${UNKNOWN_EXCLUDE[*]}"
+    fi
+}
+
+SDK_TEMP_DIR=""
+SCRIPT_DIR=""
+SHOW_EXIT_MESSAGE=true
+
+declare -a EXAMPLE_PROJECTS=()
+declare -a ONLY_EXAMPLES=()
+declare -a EXCLUDE_EXAMPLES=()
+
+# Flutter iOS builds all use "Runner" as the Xcode project name
+function clean_xcode_derived_data_runner()
+{
+    local DERIVED_BASE="${HOME}/Library/Developer/Xcode/DerivedData"
+    [[ -d "${DERIVED_BASE}" ]] || return 0
+
+    rm -rf "${DERIVED_BASE}"/Runner-* 2>/dev/null || true
+}
 
 function clean_example()
 {
     local EXAMPLE_PATH="${1}"
+    local EXAMPLE_NAME
 
-    if [[ -z "${EXAMPLE_PATH}" || ! -d "${EXAMPLE_PATH}" ]]; then
-        return
-    fi
-
-    pushd "${EXAMPLE_PATH}" &>/dev/null
+    [[ -z "${EXAMPLE_PATH}" || ! -d "${EXAMPLE_PATH}" ]] && return 0
 
     EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
     log_info "Cleaning example '${EXAMPLE_NAME}'..."
 
-    flutter clean &>/dev/null
+    (
+        cd "${EXAMPLE_PATH}" || exit 0
 
-    [[ -d "plugins/magiclane_maps_flutter" ]] && rm -rf "plugins/magiclane_maps_flutter" &>/dev/null
+        # Flutter project artifacts (replaces slow 'flutter clean')
+        rm -rf \
+            build \
+            .dart_tool \
+            .flutter-plugins \
+            .flutter-plugins-dependencies \
+            .packages \
+            2>/dev/null || true
 
-    find . -type d -name ".gradle" -exec rm -rf {} + 2>/dev/null
-    find . -type d -name ".cxx" -exec rm -rf {} + 2>/dev/null
-    find . -type d -name ".kotlin" -exec rm -rf {} + 2>/dev/null   
-    find . -type f -name "local.properties" -exec rm -f {} + 2>/dev/null
+        # Plugin checkout/symlink
+        rm -rf plugins/magiclane_maps_flutter 2>/dev/null || true
+
+        # Android
+        rm -rf \
+            android/.gradle \
+            android/app/.gradle \
+            android/.kotlin \
+            android/.cxx \
+            android/app/.cxx \
+            android/app/build \
+            android/build \
+            android/app/src/main/java/io/flutter/plugins \
+            2>/dev/null || true
+        rm -f android/local.properties 2>/dev/null || true
+
+        # iOS
+        rm -rf \
+            ios/Pods \
+            ios/.symlinks \
+            ios/Flutter/.symlinks \
+            2>/dev/null || true
+        rm -f ios/Podfile.lock 2>/dev/null || true
+    )
     
-    find ios -type d -name ".symlinks" -exec rm -rf {} + 2>/dev/null
-    find ios -type d -name "Pods" -exec rm -rf {} + 2>/dev/null
-    find ios -type d -name "Podfile.lock" -exec rm -f {} + 2>/dev/null
-
-    local GEN_FILE="${EXAMPLE_PATH}/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java"
-    if [[ -f "${GEN_FILE}" ]]; then
-        local JAVA_DIR="${EXAMPLE_PATH}/android/app/src/main/java"
-        rm -rf "${JAVA_DIR}" &>/dev/null
-    fi
-
-    popd &>/dev/null
+    clean_xcode_derived_data_runner
 }
 
-# shellcheck disable=SC2317
-function on_exit()
+function dist_clean()
 {
-    if [[ -v EXAMPLE_PROJECTS ]]; then
+    [ "${CLEAN_ON_EXIT}" = true ] || return 0
+
+    if [[ ${#EXAMPLE_PROJECTS[@]} -gt 0 ]]; then
         for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
             clean_example "${EXAMPLE_PATH}"
         done
     fi
 
-    if [[ -n ${SDK_TEMP_DIR} ]]; then
-        rm -fr "${SDK_TEMP_DIR:?}"
+    clean_xcode_derived_data_runner
+}
+
+function ctrl_c()
+{
+    exit 1
+}
+trap ctrl_c INT TERM
+
+function on_error()
+{
+    local EXIT_CODE="${1:-1}"
+    local LINE="${2:-unknown}"
+    local COMMAND="${3:-unknown}"
+
+    log_error "Command failed at line ${LINE}: ${COMMAND}"
+    log_error "Exit code: ${EXIT_CODE}"
+
+    if [[ ${#FUNCNAME[@]} -gt 2 ]]; then
+        log_error "Call stack:"
+        for ((I = 1; I < ${#FUNCNAME[@]} - 1; I++)); do
+            log_error "  ${FUNCNAME[I]}() at ${BASH_SOURCE[I]}:${BASH_LINENO[I - 1]}"
+        done
+    fi
+}
+trap 'on_error "$?" "${LINENO}" "${BASH_COMMAND}"' ERR
+
+function on_exit()
+{
+    local EXIT_CODE=$?
+    set +e
+
+    dist_clean
+
+    if [[ -n "${SDK_TEMP_DIR}" ]] && [[ -d "${SDK_TEMP_DIR}" ]]; then
+        rm -rf "${SDK_TEMP_DIR:?}"
     fi
 
-    log_info "Build script completed"
-}
-trap 'on_exit' EXIT
+    if "${SHOW_EXIT_MESSAGE}"; then
+        if [[ ${EXIT_CODE} -eq 0 ]]; then
+            "${BUILD_ANDROID}" && log_info "APKs: ${SCRIPT_DIR}/_APK"
+            "${BUILD_WEB}" && log_info "Web:  ${SCRIPT_DIR}/_WEB"
+        fi
 
-if is_mac; then
-    if [ ! -f "$(brew --prefix)/opt/gnu-getopt/bin/getopt" ]; then
-        log_error "This script requires 'brew install gnu-getopt && brew link --force gnu-getopt'"
+        printf '\n'
+        log_info "Bye-Bye"
+    fi
+
+    exit "${EXIT_CODE}"
+}
+trap on_exit EXIT
+
+function usage()
+{
+    SHOW_EXIT_MESSAGE=false
+
+    printf '%b\n' "${COLOR_GREEN}
+Usage: ${PROGNAME} [options]
+
+Options:
+    -h, --help                   Show this help message
+
+    --sdk-archive=<path>         Set path to the Maps SDK for Flutter archive
+                                 (.tar.bz2 or .zip)
+                                 If not provided, magiclane_maps_flutter will be
+                                 downloaded from pub.dev
+
+    --android                    Build examples for Android
+
+    --ios                        Build examples for iOS
+
+    --web                        Build examples for Web
+
+    --list-examples              List detected example names and exit
+
+    --only <name>                Build only this example (can be repeated)
+
+    --exclude <name>             Exclude this example from build (can be repeated)
+
+    --analyze                    Analyze dart code for all examples
+
+    --upgrade                    Upgrade the current package's dependencies to
+                                 latest versions
+
+    --fail-fast                  Exit on first error
+
+    --clean                      Remove build artifacts on exit
+                                 (default: on in CI, off locally)
+
+    --console=(auto|plain|colored|verbose)
+                                 Specifies which type of console output to generate
+
+                                 auto:    colored when attached to a terminal,
+                                          plain otherwise (default)
+                                 plain:   plain text only; disables all color
+                                 colored: colored output
+                                 verbose: colored output and verbose logging
+${COLOR_RESET}"
+}
+
+function extract_sdk_archive()
+{
+    [[ -n "${SDK_ARCHIVE_PATH}" ]] || return 0
+
+    log_info "Extracting SDK archive..."
+
+    SDK_TEMP_DIR="$(mktemp -d)"
+
+    case "${SDK_ARCHIVE_PATH}" in
+        *.tar.bz2)
+            tar -xvf "${SDK_ARCHIVE_PATH}" --strip-components=1 -C "${SDK_TEMP_DIR}"
+            ;;
+        *.zip)
+            if ! check_cmd unzip; then
+                log_error "unzip command not found. Please install unzip to extract .zip archives"
+                exit 2
+            fi
+            unzip -q "${SDK_ARCHIVE_PATH}" -d "${SDK_TEMP_DIR}"
+            # Handle potential top-level directory in zip
+            if [[ $(find "${SDK_TEMP_DIR}" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ') -eq 1 ]]; then
+                local TOP_DIR
+                TOP_DIR="$(find "${SDK_TEMP_DIR}" -mindepth 1 -maxdepth 1 -type d)"
+                mv "${TOP_DIR}"/* "${SDK_TEMP_DIR}"/
+                rmdir "${TOP_DIR}"
+            fi
+            ;;
+        *)
+            log_error "Unsupported archive format. Only .tar.bz2 and .zip are supported"
+            exit 1
+            ;;
+    esac
+
+    log_success "SDK archive extracted successfully"
+}
+
+function check_ios_prerequisites()
+{
+    "${BUILD_IOS}" || return 0
+
+    if ! is_mac; then
+        log_error "Examples can be built for iOS only under macOS"
         exit 1
     fi
 
-    PATH="$(brew --prefix)/opt/gnu-getopt/bin:${PATH}"
-    export PATH
-fi
+    if ! check_cmd xcodebuild; then
+        log_error "xcodebuild not found. Please install Xcode from the App Store"
+        exit 1
+    fi
 
-set -eEuo pipefail
+    log_info "Checking for installed iOS SDKs..."
+
+    local SIMULATOR_SDK DEVICE_SDK
+
+    SIMULATOR_SDK="$(xcodebuild -showsdks 2>/dev/null | grep "iphonesimulator" | tail -1 | sed -n 's/.*iphonesimulator\([0-9.]*\)/\1/p')"
+    DEVICE_SDK="$(xcodebuild -showsdks 2>/dev/null | grep -E "iphoneos[0-9]" | tail -1 | sed -n 's/.*iphoneos\([0-9.]*\)/\1/p')"
+
+    if [[ -z "${SIMULATOR_SDK}" ]]; then
+        log_error "No iOS Simulator SDK found"
+        log_error "Please install iOS platform components:"
+        log_error "  Xcode > Settings > Platforms > iOS"
+        exit 1
+    fi
+
+    if [[ -z "${DEVICE_SDK}" ]]; then
+        log_error "No iOS Device SDK found"
+        log_error "Please install iOS platform components:"
+        log_error "  Xcode > Settings > Platforms > iOS"
+        exit 1
+    fi
+
+    log_info "Found iOS Simulator SDK: ${SIMULATOR_SDK}"
+    log_info "Found iOS Device SDK: ${DEVICE_SDK}"
+
+    if [[ "${SIMULATOR_SDK}" != "${DEVICE_SDK}" ]]; then
+        log_error "SDK version mismatch:"
+        log_error "  Simulator SDK: ${SIMULATOR_SDK}"
+        log_error "  Device SDK: ${DEVICE_SDK}"
+        log_error "Please ensure both are updated to the same latest version:"
+        log_error "  Xcode > Settings > Platforms > iOS (update all components)"
+        exit 1
+    fi
+
+    log_success "iOS SDK verification passed (version ${DEVICE_SDK})"
+}
+
+function discover_examples()
+{
+    log_step "Discovering examples..."
+
+    mapfile -t EXAMPLE_PROJECTS < <(
+        find "${SCRIPT_DIR}" -maxdepth 1 -type d -exec [ -d "{}/plugins" ] \; -print 2>/dev/null | sort
+    )
+
+    if [[ ${#EXAMPLE_PROJECTS[@]} -eq 0 ]]; then
+        log_error "No examples found under ${SCRIPT_DIR} (expected <example>/plugins)"
+        exit 1
+    fi
+
+    log_info "Found ${#EXAMPLE_PROJECTS[@]} example(s)"
+}
+
+function list_examples()
+{
+    SHOW_EXIT_MESSAGE=false
+
+    local EXAMPLE_PATH
+    for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
+        printf '%s\n' "$(basename "${EXAMPLE_PATH}")"
+    done
+}
+
+function filter_examples()
+{
+    local -a FILTERED=()
+    local EXAMPLE_PATH EXAMPLE_NAME
+
+    if [[ ${#ONLY_EXAMPLES[@]} -gt 0 ]] && [[ ${#EXCLUDE_EXAMPLES[@]} -gt 0 ]]; then
+        log_error "Do not use --only and --exclude together"
+        usage
+        exit 1
+    fi
+
+    for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
+        EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
+
+        if [[ ${#ONLY_EXAMPLES[@]} -gt 0 ]]; then
+            if contains_in_array "${EXAMPLE_NAME}" "${ONLY_EXAMPLES[@]}"; then
+                FILTERED+=("${EXAMPLE_PATH}")
+            fi
+            continue
+        fi
+
+        if [[ ${#EXCLUDE_EXAMPLES[@]} -gt 0 ]]; then
+            if contains_in_array "${EXAMPLE_NAME}" "${EXCLUDE_EXAMPLES[@]}"; then
+                continue
+            fi
+        fi
+
+        FILTERED+=("${EXAMPLE_PATH}")
+    done
+
+    EXAMPLE_PROJECTS=("${FILTERED[@]}")
+
+    if [[ ${#EXAMPLE_PROJECTS[@]} -eq 0 ]]; then
+        log_error "After filtering, no examples remain to build"
+        exit 1
+    fi
+
+    log_info "Selected ${#EXAMPLE_PROJECTS[@]} example(s): $(printf '%s ' "${EXAMPLE_PROJECTS[@]##*/}")"
+}
+
+function build_example()
+{
+    local EXAMPLE_PATH="${1}"
+    local CURRENT_INDEX="${2}"
+    local TOTAL_COUNT="${3}"
+    local EXAMPLE_NAME
+    EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
+
+    if [[ -n "${SDK_ARCHIVE_PATH}" ]]; then
+        cp -R "${SDK_TEMP_DIR}"/magiclane_maps_flutter "${EXAMPLE_PATH}"/plugins/
+    fi
+
+    pushd "${EXAMPLE_PATH}" > /dev/null || return 1
+
+    log_step "Building example (${CURRENT_INDEX}/${TOTAL_COUNT}): ${EXAMPLE_NAME}"
+    log_info "Running flutter pub get..."
+    flutter pub get
+
+    log_info "Checking for outdated packages..."
+    flutter pub outdated || true
+
+    if "${UPGRADE}"; then
+        log_info "Upgrading packages..."
+        flutter pub upgrade
+    fi
+
+    if "${BUILD_IOS}"; then
+        if [[ -f "ios/Podfile" ]]; then
+            log_info "Installing CocoaPods dependencies..."
+            (cd ios && pod install)
+        else
+            log_warning "Skipping pod install - no Podfile found in ios/"
+        fi
+
+        log_info "Building iOS release..."
+        flutter build ios --release --no-codesign
+        log_success "iOS build completed"
+    fi
+
+    if "${BUILD_ANDROID}"; then
+        log_info "Building Android APK..."
+        flutter build apk --release --dart-define=CI=true
+        log_success "Android APK build completed"
+    fi
+
+    if "${BUILD_WEB}"; then
+        log_info "Building Web release..."
+        flutter build web --release
+        log_success "Web build completed"
+    fi
+
+    if "${ANALYZE}"; then
+        log_info "Analyzing Dart code..."
+        flutter analyze --preamble --no-pub --no-fatal-infos --no-fatal-warnings
+        log_success "Code analysis completed"
+    fi
+
+    if "${BUILD_ANDROID}"; then
+        mv "build/app/outputs/flutter-apk/app-release.apk" "${SCRIPT_DIR}/_APK/${EXAMPLE_NAME}_app-release.apk"
+    fi
+
+    if "${BUILD_WEB}"; then
+        mkdir -p "${SCRIPT_DIR}/_WEB/${EXAMPLE_NAME}"
+        mv "build/web"/* "${SCRIPT_DIR}/_WEB/${EXAMPLE_NAME}"/
+    fi
+
+    if "${CLEAN_ON_EXIT}"; then
+        clean_example "${EXAMPLE_PATH}"
+    fi
+
+    popd > /dev/null || true
+}
+
+# =============================================================================
+# Main
+# =============================================================================
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+setup_mac_deps
 
 SDK_ARCHIVE_PATH=""
 BUILD_ANDROID=false
@@ -135,32 +653,13 @@ BUILD_IOS=false
 BUILD_WEB=false
 ANALYZE=false
 UPGRADE=false
+FAIL_FAST=false
+CLEAN_ON_EXIT=false
+LIST_EXAMPLES=false
 
-MY_DIR="$(cd "$(dirname "$0")" && pwd)"
-
-function usage()
-{
-    echo -e "\033[32;1m
-Usage: ${PROGNAME} [options] 
-
-Options:
-    [OPTIONAL] --sdk-archive=<path>
-                    Set path to the Maps SDK for Flutter archive (.tar.bz2 or .zip)
-                    If not provided, magiclane_maps_flutter will be downloaded from pub.dev
-
-    [OPTIONAL] --android
-                    Build examples for Android
-    [OPTIONAL] --ios
-                    Build examples for iOS
-    [OPTIONAL] --web
-                    Build examples for Web
-
-    [OPTIONAL] --analyze
-                    Analyze dart code for all examples
-    [OPTIONAL] --upgrade
-                    Upgrade the current package's dependencies to latest versions
-\033[0m\n"
-}
+if is_ci; then
+    CLEAN_ON_EXIT=true
+fi
 
 SHORTOPTS="h"
 LONGOPTS_LIST=(
@@ -169,16 +668,22 @@ LONGOPTS_LIST=(
     "android"
     "ios"
     "web"
+    "list-examples"
+    "only:"
+    "exclude:"
     "analyze"
     "upgrade"
+    "fail-fast"
+    "clean"
+    "console:"
 )
 
-if ! PARSED_OPTIONS=$(getopt \
+if ! PARSED_OPTIONS="$(getopt \
     -s bash \
-    --options ${SHORTOPTS} \
+    --options "${SHORTOPTS}" \
     --longoptions "$(printf "%s," "${LONGOPTS_LIST[@]}")" \
     --name "${PROGNAME}" \
-    -- "$@"); then
+    -- "$@")"; then
     usage
     exit 1
 fi
@@ -205,11 +710,32 @@ while true; do
         --web)
             BUILD_WEB=true
             ;;
+        --list-examples)
+            LIST_EXAMPLES=true
+            ;;
+        --only)
+            shift
+            ONLY_EXAMPLES+=("${1}")
+            ;;
+        --exclude)
+            shift
+            EXCLUDE_EXAMPLES+=("${1}")
+            ;;
         --analyze)
             ANALYZE=true
             ;;
         --upgrade)
             UPGRADE=true
+            ;;
+        --fail-fast)
+            FAIL_FAST=true
+            ;;
+        --clean)
+            CLEAN_ON_EXIT=true
+            ;;
+        --console)
+            shift
+            CONSOLE_MODE="${1}"
             ;;
         --)
             shift
@@ -223,22 +749,21 @@ while true; do
     shift
 done
 
-log_info "Checking prerequisites..."
+apply_console_mode
 
-if ${BUILD_IOS}; then
-    if ! is_mac; then
-        log_error "Examples can be built for iOS only under MacOS"
-        exit 1
-    fi
+log_step "Checking prerequisites..."
+
+if "${BUILD_IOS}" && ! is_mac; then
+    log_error "Examples can be built for iOS only under macOS"
+    exit 1
 fi
 
 if ! is_mac && [[ -z "${SDK_ARCHIVE_PATH}" ]]; then
     log_error "On Linux, the --sdk-archive option is required because the pub.dev version"
-    log_error "includes iOS dependencies that cannot be resolved on non-macOS systems."
+    log_error "includes iOS dependencies that cannot be resolved on non-macOS systems"
     log_error ""
     log_error "Please provide an SDK archive:"
     log_error "  ${PROGNAME} --sdk-archive=/path/to/sdk.tar.bz2 --android --analyze"
-    log_error ""
     exit 1
 fi
 
@@ -248,176 +773,67 @@ if is_mac; then
     flutter config --enable-swift-package-manager 2>/dev/null || true
 fi
 
-if [[ -n "${SDK_ARCHIVE_PATH}" && ! -f "${SDK_ARCHIVE_PATH}" ]]; then
+if [[ -n "${SDK_ARCHIVE_PATH}" ]] && [[ ! -f "${SDK_ARCHIVE_PATH}" ]]; then
     log_error "SDK archive file not found: ${SDK_ARCHIVE_PATH}"
     usage
     exit 1
 fi
 
-if ! command -v flutter >/dev/null; then
-    log_error "flutter command not found. Please get it from: https://docs.flutter.dev/get-started/install"
-    printf '\n'
+if ! check_cmd flutter; then
+    log_error "flutter command not found"
+    log_error "Please get it from: https://docs.flutter.dev/get-started/install"
     exit 2
 fi
 
-flutter doctor || ( log_error "flutter doctor failed"; exit 1 )
+log_info "Running flutter doctor..."
+if ! flutter doctor; then
+    log_error "flutter doctor failed"
+    exit 1
+fi
 
-if [[ -n "${SDK_ARCHIVE_PATH}" ]]; then
-    log_info "Extracting SDK archive..."
+check_ios_prerequisites
 
-    SDK_TEMP_DIR="$(mktemp -d)"
-    
-    case "${SDK_ARCHIVE_PATH}" in
-        *.tar.bz2)
-            tar -xvf "${SDK_ARCHIVE_PATH}" --strip-components=1 -C "${SDK_TEMP_DIR}"
-            ;;
-        *.zip)
-            if ! command -v unzip >/dev/null; then
-                log_error "unzip command not found. Please install unzip to extract .zip archives"
-                exit 2
-            fi
-            unzip -q "${SDK_ARCHIVE_PATH}" -d "${SDK_TEMP_DIR}"
-            # Handle potential top-level directory in zip
-            if [[ $(find "${SDK_TEMP_DIR}" -mindepth 1 -maxdepth 1 -type d | wc -l) -eq 1 ]]; then
-                local TOP_DIR=$(find "${SDK_TEMP_DIR}" -mindepth 1 -maxdepth 1 -type d)
-                mv "${TOP_DIR}"/* "${SDK_TEMP_DIR}"/
-                rmdir "${TOP_DIR}"
-            fi
-            ;;
-        *)
-            log_error "Unsupported archive format. Only .tar.bz2 and .zip are supported"
-            exit 1
-            ;;
-    esac
-    log_success "SDK archive extracted successfully"
-else
+extract_sdk_archive
+
+if [[ -z "${SDK_ARCHIVE_PATH}" ]]; then
     log_info "No SDK archive provided, will use magiclane_maps_flutter from pub.dev"
 fi
 
-if ${BUILD_IOS}; then
-    if ! command -v xcodebuild >/dev/null; then
-        log_error "xcodebuild not found. Please install Xcode from the App Store."
-        exit 1
-    fi
+discover_examples
 
-    log_info "Checking for installed iOS SDKs..."
-
-    SIMULATOR_SDK=$(xcodebuild -showsdks 2>/dev/null | grep "iphonesimulator" | tail -1 | sed -n 's/.*iphonesimulator\([0-9.]*\)/\1/p')
-    DEVICE_SDK=$(xcodebuild -showsdks 2>/dev/null | grep -E "iphoneos[0-9]" | tail -1 | sed -n 's/.*iphoneos\([0-9.]*\)/\1/p')
-
-    if [[ -z "${SIMULATOR_SDK}" ]]; then
-        log_error "No iOS Simulator SDK found."
-        log_error "Please install iOS platform components:"
-        log_error "  Xcode > Settings > Platforms > iOS"
-        log_error "  Or: Xcode > Settings > Components"
-        exit 1
-    fi
-
-    if [[ -z "${DEVICE_SDK}" ]]; then
-        log_error "No iOS Device SDK found."
-        log_error "Please install iOS platform components:"
-        log_error "  Xcode > Settings > Platforms > iOS"
-        exit 1
-    fi
-
-    log_info "Found iOS Simulator SDK: ${SIMULATOR_SDK}"
-    log_info "Found iOS Device SDK: ${DEVICE_SDK}"
-
-    if [[ "${SIMULATOR_SDK}" != "${DEVICE_SDK}" ]]; then
-        log_error "SDK version mismatch:"
-        log_error "  Simulator SDK: ${SIMULATOR_SDK}"
-        log_error "  Device SDK: ${DEVICE_SDK}"
-        log_error "Please ensure both are updated to the same latest version:"
-        log_error "  Xcode > Settings > Platforms > iOS (update all components)"
-        exit 1
-    fi
-
-    log_success "iOS SDK verification passed (version ${DEVICE_SDK})"
+if "${LIST_EXAMPLES}"; then
+    list_examples
+    exit 0
 fi
 
-pushd "${MY_DIR}" &>/dev/null
+if filtering_active; then
+    validate_filter_names
+fi
+filter_examples
 
-[ -d "_APK" ] && rm -rf _APK
-${BUILD_ANDROID} && mkdir _APK
+# Setup output directories
+pushd "${SCRIPT_DIR}" > /dev/null || exit 1
 
-[ -d "_WEB" ] && rm -rf _WEB
-${BUILD_WEB} && mkdir _WEB
+[[ -d "_APK" ]] && rm -rf _APK
+"${BUILD_ANDROID}" && mkdir -p _APK
 
-popd &>/dev/null
+[[ -d "_WEB" ]] && rm -rf _WEB
+"${BUILD_WEB}" && mkdir -p _WEB
 
-# Find paths that contain an app module
-mapfile -t EXAMPLE_PROJECTS < <(find "${MY_DIR}" -maxdepth 1 -type d -exec [ -d "{}/plugins" ] \; -exec realpath {} \; 2>/dev/null)
+popd > /dev/null || true
+
+TOTAL_EXAMPLES=${#EXAMPLE_PROJECTS[@]}
+CURRENT_INDEX=0
 
 for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
-    EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
+    CURRENT_INDEX=$((CURRENT_INDEX + 1))
+    build_example "${EXAMPLE_PATH}" "${CURRENT_INDEX}" "${TOTAL_EXAMPLES}"
+    BUILD_STATUS=$?
 
-    if [[ -n "${SDK_ARCHIVE_PATH}" ]]; then
-        cp -R "${SDK_TEMP_DIR}"/magiclane_maps_flutter "${EXAMPLE_PATH}"/plugins/
+    if "${FAIL_FAST}" && [[ ${BUILD_STATUS} -ne 0 ]]; then
+        log_error "Build failed for '$(basename "${EXAMPLE_PATH}")'"
+        exit 1
     fi
-
-    pushd "${EXAMPLE_PATH}" &>/dev/null
-
-    printf '\n'
-    log_step "Building example: ${EXAMPLE_NAME}"
-
-    log_info "Running flutter pub get..."
-    flutter pub get
-
-    log_info "Checking for outdated packages..."
-    flutter pub outdated
-
-    if ${UPGRADE}; then
-        log_info "Upgrading packages..."
-        flutter pub upgrade
-    fi
-
-    if ${BUILD_IOS}; then
-        if [[ -f "ios/Podfile" ]]; then
-            log_info "Installing CocoaPods dependencies..."
-            (cd ios; pod install; cd ..)
-        else
-            log_warning "Skipping pod install - no Podfile found in ios/"
-        fi
-
-        log_info "Building iOS release..."
-        flutter build ios --release --no-codesign
-        log_success "iOS build completed"
-    fi
-
-    if ${BUILD_ANDROID}; then
-        log_info "Building Android APK..."
-        flutter build apk --release --dart-define=CI=true
-        log_success "Android APK build completed"
-    fi
-
-    if ${BUILD_WEB}; then
-        log_info "Building Web release..."
-        flutter build web --release
-        log_success "Web build completed"
-    fi
-
-    if ${ANALYZE}; then
-        log_info "Analyzing Dart code..."
-        flutter analyze --preamble --no-pub --no-fatal-infos --no-fatal-warnings
-        log_success "Code analysis completed"
-    fi
-
-    if ${BUILD_ANDROID}; then
-        log_info "Copying APK to output directory..."
-        mv "build/app/outputs/flutter-apk"/app-release.apk "${MY_DIR}/_APK/${EXAMPLE_NAME}_app-release.apk"
-    fi
-    
-    if ${BUILD_WEB}; then
-        log_info "Copying Web build to output directory..."
-        mkdir -p "${MY_DIR}/_WEB/${EXAMPLE_NAME}"
-        mv "build/web"/* "${MY_DIR}/_WEB/${EXAMPLE_NAME}"/
-    fi
-
-    clean_example "${EXAMPLE_PATH}"
-
-    popd &>/dev/null
 done
-
-log_success "All examples built successfully"
 
 exit 0

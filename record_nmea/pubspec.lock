@@ -203,10 +203,10 @@ packages:
     dependency: "direct main"
     description:
       name: magiclane_maps_flutter
-      sha256: "30f7bd3c57adb674385e2d10b41faa8b89c6abc2a30e08e74c09e8b0716cd2be"
+      sha256: e919d100b803bc529504ce5e220d932c277df4ea610a3aee7a876085b242dc83
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.2"
+    version: "3.1.4"
   matcher:
     dependency: transitive
     description:

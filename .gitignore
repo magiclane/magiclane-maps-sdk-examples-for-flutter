@@ -1,3 +1,24 @@
+# Mac OS X
+*.DS_Store
+
+# Xcode
+**/xcuserdata/
+**/DerivedData/
+**/*.xcworkspace/xcuserdata/
+**/*.xcodeproj/xcuserdata/
+**/Package.resolved
+
 /*/plugins/magiclane_maps_flutter/*
 _APK/
 _WEB/
+
+/*/.idea/
+.idea/
+/*/.gradle/
+/*/build/
+/*/app/build/
+/*/.DS_Store
+/*/captures/
+/*/.externalNativeBuild/
+/*/.cxx/
+/*/.kotlin/

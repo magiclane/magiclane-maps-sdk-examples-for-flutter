@@ -8,7 +8,7 @@ SPDX-PackageComment = "A collection of sample projects to support application de
 [[annotations]]
 path = "**"
 precedence = "aggregate"
-SPDX-FileCopyrightText = "1995-2025 Magic Lane International B.V. <info@magiclane.com>"
+SPDX-FileCopyrightText = "2023-2026 Magic Lane International B.V. <info@magiclane.com>"
 SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
