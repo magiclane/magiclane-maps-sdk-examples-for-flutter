@@ -72,6 +72,7 @@ Explore the examples to learn the capabilities of the Magic Lane Maps Flutter SD
 * [Route Instructions](route_instructions) - Display a map. Show route instructions.
 * [Route Profile](route_profile) - Show route profile panel (elevation chart, climb details).
 * [Save Favorites](save_favorites) - Show to save landmarks to your favorites list, as well as remove them from favorites list.
+* [SDK Automatic Activation](sdk_auto_activation) - Show how to automatically activate the SDK using a token.
 * [Search Along Route](search_along_route) - Display a map. Calculate route. Display route. Show how to search along route.
 * [Search Category](search_category) - Display a map. Text search. Shows search results and the distance towards them. Highlights the selected result on the map.
 * [Search Location](search_location) - Display a map. Text search. Shows search results and the distance towards them. Highlights the selected result on the map.

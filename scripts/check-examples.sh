@@ -316,10 +316,12 @@ function check_secrets()
                 RC=1
             fi
 
-            # Check if appAuthorization uses projectApiToken
+            # Check if appAuthorization uses projectApiToken (directly or via token variable)
             if ! grep -Eq "appAuthorization\s*:\s*projectApiToken" "${FILE}" 2>/dev/null; then
-                log_error "'${EXAMPLE_NAME}' main.dart: appAuthorization not using projectApiToken"
-                RC=1
+                if ! grep -Eq "GemKit\.initialize\(appAuthorization:\s*token\)" "${FILE}" 2>/dev/null; then
+                    log_error "'${EXAMPLE_NAME}' main.dart: appAuthorization not using projectApiToken or token variable"
+                    RC=1
+                fi
             fi
         done
     done
