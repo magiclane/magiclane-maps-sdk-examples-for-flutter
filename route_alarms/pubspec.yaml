@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  magiclane_maps_flutter: ^3.1.5
+  magiclane_maps_flutter: ^3.1.6
   
   intl: ^0.20.2
 

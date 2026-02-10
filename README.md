@@ -39,6 +39,7 @@ Explore the examples to learn the capabilities of the Magic Lane Maps Flutter SD
 * [External Position Source Navigation](external_position_source_navigation) - Show how to use `DataSource` to push positions in order to simulate navigation.
 * [Finger Route](finger_route) - Calculate & display route using fingers movement.
 * [Follow Position](follow_position) - Show how to set live datasource & `startFollowingPosition`.
+* [Advanced Follow Position](follow_position_advanced) - Configure advanced settings for following the device's location on a map.
 * [GPX Route](gpx_route) - Display a map. Calculate route. Display route. Start navigation.
 * [GPX Routing Thumbnail Image](gpx_routing_thumbnail_image) - Display the gpx record as a Route on map. Take a screenshot of presented Route.
 * [GPX Thumbnail Image](gpx_thumbnail_image) - Display the gpx record as a Path on map. Take a screenshot of presented Path.

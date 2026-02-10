@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  magiclane_maps_flutter: ^3.1.5
+  magiclane_maps_flutter: ^3.1.6
   
   shared_preferences: ^2.5.3
   cupertino_icons: ^1.0.8
