@@ -87,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       const AlertDialog(content: Text('No activations found.')),
                 );
               } else {
+                // ignore: experimental_member_use
                 final activations = ActivationService.getActivationsForProduct(
                   ProductID.core,
                 );

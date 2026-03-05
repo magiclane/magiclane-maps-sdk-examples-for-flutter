@@ -94,8 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
               right: 0.0,
               child: ElevatedButton(
                 onPressed: () {
-                  final analyses =
-                      _driverBehaviour.getAllDriverBehaviourAnalyses();
+                  final analyses = _driverBehaviour.allDriverBehaviourAnalyses;
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (context) {

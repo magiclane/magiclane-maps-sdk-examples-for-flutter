@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _shareLogs() async {
     // Get the path to the SDK log dump file
-    final logPath = await Debug.getSdkLogDumpPath();
+    final logPath = await Debug.sdkLogDumpPath;
 
     await SharePlus.instance.share(ShareParams(files: [XFile(logPath)]));
   }

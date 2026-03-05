@@ -3,6 +3,8 @@
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart' hide Route;
 
 import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
@@ -234,12 +236,21 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
+    _showSnackBar(context, message: 'Searching along route...');
+
     // Calling the search along route SDK method.
     // (err, results) - is a callback function that gets called when the search is finished.
     // err is an error enum, results is a list of landmarks.
     SearchService.searchAlongRoute(routes.mainRoute!, (err, results) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+
       if (err != GemError.success) {
         print("SearchAlongRoute - no results found");
+        _showSnackBar(
+          context,
+          message: "No results found",
+          duration: const Duration(seconds: 2),
+        );
         return;
       }
 
@@ -248,7 +259,202 @@ class _MyHomePageState extends State<MyHomePage> {
         final landmarkName = landmark.name;
         print("SearchAlongRoute: $landmarkName");
       }
+
+      // Show the results in a popup dialog
+      _showSearchResultsDialog(results);
     });
+  }
+
+  // Show search results in a popup dialog
+  void _showSearchResultsDialog(List<Landmark> results) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 10,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on, color: Colors.deepPurple[900]),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Places Along Route',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple[900],
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple[100],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${results.length} found',
+                        style: TextStyle(
+                          color: Colors.deepPurple[900],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              // Results list
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: results.length,
+                  itemBuilder: (context, index) {
+                    final landmark = results[index];
+                    return _buildLandmarkTile(landmark, index);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Build a tile for each landmark
+  Widget _buildLandmarkTile(Landmark landmark, int index) {
+    final coordinates = landmark.coordinates;
+    final address = landmark.address;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: _buildLandmarkIcon(landmark, index),
+        title: Text(
+          landmark.name.isNotEmpty ? landmark.name : 'Unknown Place',
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Row(
+                children: [
+                  Icon(Icons.place, size: 14, color: Colors.grey[600]),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      address.format(),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Row(
+                children: [
+                  Icon(Icons.gps_fixed, size: 14, color: Colors.grey[500]),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${coordinates.latitude.toStringAsFixed(5)}, ${coordinates.longitude.toStringAsFixed(5)}',
+                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        trailing: IconButton(
+          icon: Icon(Icons.center_focus_strong, color: Colors.deepPurple[700]),
+          onPressed: () {
+            Navigator.pop(context);
+            _mapController.centerOnCoordinates(coordinates);
+          },
+        ),
+      ),
+    );
+  }
+
+  // Build icon for landmark from category image
+  Widget _buildLandmarkIcon(Landmark landmark, int index) {
+    if (landmark.categories.isNotEmpty) {
+      final img = landmark.categories.first.img;
+      if (img.isValid) {
+        final bytes = img.getRenderableImageBytes(size: const ui.Size(48, 48));
+        if (bytes != null) {
+          return CircleAvatar(
+            backgroundColor: Colors.grey[200],
+            child: Image.memory(
+              bytes,
+              width: 32,
+              height: 32,
+              errorBuilder: (context, error, stackTrace) =>
+                  _buildDefaultIcon(index),
+            ),
+          );
+        }
+      }
+    }
+    return _buildDefaultIcon(index);
+  }
+
+  // Build default numbered icon
+  Widget _buildDefaultIcon(int index) {
+    return CircleAvatar(
+      backgroundColor: Colors.deepPurple[900],
+      child: Text(
+        '${index + 1}',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 
   // Method to show message in case calculate route is not finished

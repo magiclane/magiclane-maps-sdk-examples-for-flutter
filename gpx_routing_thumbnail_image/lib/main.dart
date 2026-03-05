@@ -183,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Route> _calculateRouteFromPath(Path path) {
     final routeCompleter = Completer<Route>();
 
-    final waypoints = path.toLandmarkList();
+    final waypoints = path.landmarkList;
 
     RoutingService.calculateRoute(
       waypoints,

@@ -4,6 +4,7 @@
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart' hide Animation;
 
@@ -40,6 +41,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late GemMapController _mapController;
 
+  String? _country;
+  String? _city;
+  String? _street;
+  String? _houseNumber;
+  bool _isPanelVisible = false;
+
   @override
   void dispose() {
     GemKit.release();
@@ -68,10 +75,15 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: GemMap(
-        key: ValueKey("GemMap"),
-        onMapCreated: _onMapCreated,
-        appAuthorization: projectApiToken,
+      body: Stack(
+        children: [
+          GemMap(
+            key: ValueKey("GemMap"),
+            onMapCreated: _onMapCreated,
+            appAuthorization: projectApiToken,
+          ),
+          if (_isPanelVisible) _buildBottomPanel(),
+        ],
       ),
     );
   }
@@ -83,13 +95,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _onSearchButtonPressed(BuildContext context) async {
-    _showSnackBar(context, message: "Search is in progress.");
+    setState(() {
+      _country = null;
+      _city = null;
+      _street = null;
+      _houseNumber = null;
+      _isPanelVisible = true;
+    });
 
     // Predefined landmark for Spain.
     final countryLandmark = GuidedAddressSearchService.getCountryLevelItem(
       'ESP',
     )!;
-    print('Country: ${countryLandmark.name}');
+    print('[example] Country: ${countryLandmark.name}');
+    setState(() => _country = countryLandmark.name);
 
     // Use the address search to get a landmark for a city in Spain (e.g., Barcelona).
     final cityLandmark = await _searchAddress(
@@ -98,7 +117,9 @@ class _MyHomePageState extends State<MyHomePage> {
       text: 'Barcelona',
     );
     if (cityLandmark == null) return;
-    print('City: ${cityLandmark.name}');
+
+    print('[example] City: ${cityLandmark.name}');
+    setState(() => _city = cityLandmark.name);
 
     // Use the address search to get a predefined street's landmark in the city (e.g., Carrer de Mallorca).
     final streetLandmark = await _searchAddress(
@@ -107,7 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
       text: 'Carrer de Mallorca',
     );
     if (streetLandmark == null) return;
-    print('Street: ${streetLandmark.name}');
+
+    print('[example] Street: ${streetLandmark.name}');
+    setState(() => _street = streetLandmark.name);
 
     // Use the address search to get a predefined house number's landmark on the street (e.g., House Number 401).
     final houseNumberLandmark = await _searchAddress(
@@ -116,7 +139,9 @@ class _MyHomePageState extends State<MyHomePage> {
       text: '401',
     );
     if (houseNumberLandmark == null) return;
-    print('House number: ${houseNumberLandmark.name}');
+
+    print('[example] House number: ${houseNumberLandmark.name}');
+    setState(() => _houseNumber = houseNumberLandmark.name);
 
     // Center the map on the final result.
     _presentLandmark(houseNumberLandmark);
@@ -129,11 +154,19 @@ class _MyHomePageState extends State<MyHomePage> {
     // Create an animation (optional).
     final animation = GemAnimation(type: AnimationType.linear);
 
+    // Calculate the screen position for the landmark (optional).
+    // We do this to place the landmark above the bottom panel, instead of in the center of the screen.
+    final screenPosition = Point<int>(
+      (_mapController.viewport.height / 4).toInt(),
+      (_mapController.viewport.width / 2).toInt(),
+    );
+
     // Use the map controller to center on coordinates.
     _mapController.centerOnCoordinates(
       landmark.coordinates,
       animation: animation,
       zoomLevel: 50,
+      screenPosition: screenPosition,
     );
   }
 
@@ -165,14 +198,180 @@ class _MyHomePageState extends State<MyHomePage> {
     return completer.future;
   }
 
-  // Show a snackbar indicating that the search is in progress.
-  void _showSnackBar(
-    BuildContext context, {
-    required String message,
-    Duration duration = const Duration(hours: 1),
-  }) {
-    final snackBar = SnackBar(content: Text(message), duration: duration);
+  // Build the bottom panel showing search results
+  Widget _buildBottomPanel() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: GestureDetector(
+        onVerticalDragEnd: (details) {
+          // Close panel when dragged down with sufficient velocity
+          if (details.velocity.pixelsPerSecond.dy > 200) {
+            setState(() => _isPanelVisible = false);
+          }
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar (drag indicator)
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 16),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header with close button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: Colors.deepPurple[900],
+                      size: 28,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Address Search',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple[900],
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => setState(() => _isPanelVisible = false),
+                      icon: Icon(Icons.close, color: Colors.grey[600]),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.grey[200],
+                        padding: const EdgeInsets.all(8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Address details
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    _buildAddressRow(
+                      icon: Icons.public,
+                      label: 'Country',
+                      value: _country,
+                      isLoading: _country == null,
+                    ),
+                    _buildAddressRow(
+                      icon: Icons.location_city,
+                      label: 'City',
+                      value: _city,
+                      isLoading: _city == null && _country != null,
+                    ),
+                    _buildAddressRow(
+                      icon: Icons.signpost,
+                      label: 'Street',
+                      value: _street,
+                      isLoading: _street == null && _city != null,
+                    ),
+                    _buildAddressRow(
+                      icon: Icons.home,
+                      label: 'House Number',
+                      value: _houseNumber,
+                      isLoading: _houseNumber == null && _street != null,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  // Build individual address row
+  Widget _buildAddressRow({
+    required IconData icon,
+    required String label,
+    String? value,
+    bool isLoading = false,
+  }) {
+    if (value == null && !isLoading) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.deepPurple[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.deepPurple[100]!),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.deepPurple[900],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                if (isLoading)
+                  SizedBox(
+                    height: 16,
+                    width: 100,
+                    child: LinearProgressIndicator(
+                      color: Colors.deepPurple[900],
+                      backgroundColor: Colors.deepPurple[100],
+                    ),
+                  )
+                else
+                  Text(
+                    value ?? '',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

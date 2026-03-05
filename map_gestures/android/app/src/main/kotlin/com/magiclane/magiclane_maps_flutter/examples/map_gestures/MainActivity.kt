@@ -5,7 +5,7 @@
  * Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
  */
 
-package com.magiclane.magiclane_maps_flutter.examples.map_gesturess
+package com.magiclane.magiclane_maps_flutter.examples.map_gestures
 
 import io.flutter.embedding.android.FlutterActivity
 

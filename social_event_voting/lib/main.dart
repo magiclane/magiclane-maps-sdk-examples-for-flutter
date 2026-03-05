@@ -11,8 +11,7 @@ import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 
 import 'package:social_event_voting/social_event_panel.dart';
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
-
+const projectApiToken = String.fromEnvironment("GEM_TOKEN");
 void main() {
   runApp(const MyApp());
 }
@@ -43,6 +42,9 @@ class _MyHomePageState extends State<MyHomePage> {
   AlarmService? _alarmService;
   AlarmListener? _alarmListener;
 
+  bool _areRoutesBuilt = false;
+  bool _isSimulationActive = false;
+
   // The closest alarm and with its associated distance and image
   OverlayItemPosition? _closestOverlayItem;
   TaskHandler? _navigationHandler;
@@ -63,10 +65,23 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(color: Colors.white),
         ),
         actions: [
-          if (_navigationHandler == null)
+          if (_navigationHandler == null && !_areRoutesBuilt)
+            IconButton(
+              onPressed: () => _onRouteButtonPressed(),
+              icon: const Icon(Icons.route, color: Colors.white),
+            ),
+          if (_navigationHandler == null &&
+              !_isSimulationActive &&
+              _areRoutesBuilt)
             IconButton(
               onPressed: _startSimulation,
-              icon: Icon(Icons.route, color: Colors.white),
+              icon: const Icon(Icons.play_arrow, color: Colors.white),
+            ),
+
+          if (_isSimulationActive && _navigationHandler != null)
+            IconButton(
+              onPressed: _stopSimulation,
+              icon: const Icon(Icons.stop, color: Colors.white),
             ),
         ],
       ),
@@ -130,21 +145,35 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _startSimulation() async {
+  Future<void> _onRouteButtonPressed() async {
+    _showSnackBar(
+      context,
+      message: "Route is being calculated, please wait...",
+      duration: const Duration(seconds: 2),
+    );
     await _onBuildRouteButtonPressed(context);
-    final routes = _mapController.preferences.routes;
 
-    if (routes.mainRoute == null) {
+    if (_mapController.preferences.routes.mainRoute == null) {
       // ignore: use_build_context_synchronously
       _showSnackBar(context, message: "No main route available");
       return;
     }
+    _mapController.centerOnRoute(_mapController.preferences.routes.mainRoute!);
+    setState(() {
+      _areRoutesBuilt = true;
+    });
+  }
 
+  Future<void> _startSimulation() async {
     _navigationHandler = NavigationService.startSimulation(
-      routes.mainRoute!,
+      _mapController.preferences.routes.mainRoute!,
       onNavigationInstruction: (instruction, events) {},
       onDestinationReached: (landmark) => _stopSimulation(),
     );
+
+    setState(() {
+      _isSimulationActive = true;
+    });
 
     _mapController.startFollowingPosition();
   }
@@ -157,6 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _navigationHandler = null;
+      _isSimulationActive = false;
     });
     _navigationHandler = null;
 
@@ -167,6 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _cancelRoute() {
     // Remove the routes from map.
     _mapController.preferences.routes.clear();
+    _areRoutesBuilt = false;
   }
 
   void _registerSocialEventListener() {
