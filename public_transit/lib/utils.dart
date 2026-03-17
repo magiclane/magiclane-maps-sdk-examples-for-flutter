@@ -22,17 +22,20 @@ String convertDuration(int seconds) {
 
   String hoursText = (hours > 0) ? '$hours h ' : '';
   String minutesText = (minutes > 0) ? '$minutes min ' : '';
-  String secondsText =
-      (hours == 0 && minutes == 0) ? '$remainingSeconds sec' : '';
+  String secondsText = (hours == 0 && minutes == 0)
+      ? '$remainingSeconds sec'
+      : '';
 
   return (hoursText + minutesText + secondsText).trim();
 }
 
 String getMapLabel(Route route) {
   // Get total distance and total duration from time distance.
-  final totalDistance = route.getTimeDistance().unrestrictedDistanceM +
+  final totalDistance =
+      route.getTimeDistance().unrestrictedDistanceM +
       route.getTimeDistance().restrictedDistanceM;
-  final totalDuration = route.getTimeDistance().unrestrictedTimeS +
+  final totalDuration =
+      route.getTimeDistance().unrestrictedTimeS +
       route.getTimeDistance().restrictedTimeS;
 
   // Convert the route to a public transit route (PTRoute).
@@ -54,7 +57,8 @@ String getMapLabel(Route route) {
   final arrivalTime = lastSegment.arrivalTime;
 
   // Calculate total walking distance (first and last segments are typically walking).
-  final totalWalkingDistance = firstSegment.timeDistance.totalDistanceM +
+  final totalWalkingDistance =
+      firstSegment.timeDistance.totalDistanceM +
       lastSegment.timeDistance.totalDistanceM;
 
   String formattedDepartureTime = "";

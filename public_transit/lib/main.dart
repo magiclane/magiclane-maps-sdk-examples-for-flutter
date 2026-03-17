@@ -166,8 +166,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // Convert normal route to PTRoute
           final ptRoute = routes.first.toPTRoute();
           // Convert each segment to PTRouteSegment
-          final List<PTRouteSegment?> segments =
-              ptRoute!.segments.map((seg) => seg.toPTRouteSegment()).toList();
+          final List<PTRouteSegment?> segments = ptRoute!.segments
+              .map((seg) => seg.toPTRouteSegment())
+              .toList();
           final List<PTRouteSegment> ptSegments = segments
               .where((seg) => seg != null)
               .cast<PTRouteSegment>()

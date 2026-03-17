@@ -23,9 +23,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-        title: 'What\'s Nearby Category',
-        debugShowCheckedModeBanner: false,
-        home: MyHomePage());
+      title: 'What\'s Nearby Category',
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(),
+    );
   }
 }
 
@@ -53,8 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('What\'s Nearby Category',
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'What\'s Nearby Category',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
             onPressed: () => _onWhatIsNearbyButtonPressed(context),
@@ -63,9 +66,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: GemMap(
-          key: ValueKey("GemMap"),
-          onMapCreated: _onMapCreated,
-          appAuthorization: projectApiToken),
+        key: ValueKey("GemMap"),
+        onMapCreated: _onMapCreated,
+        appAuthorization: projectApiToken,
+      ),
     );
   }
 
@@ -111,7 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (currentPosition == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No position currently available')));
+        const SnackBar(content: Text('No position currently available')),
+      );
       return;
     }
 
@@ -124,8 +129,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // Pass the current position
     Navigator.of(context).push(
       MaterialPageRoute<dynamic>(
-          builder: (context) =>
-              WhatIsNearbyCategoryPage(position: currentPositionNoAltitude)),
+        builder: (context) =>
+            WhatIsNearbyCategoryPage(position: currentPositionNoAltitude),
+      ),
     );
   }
 }

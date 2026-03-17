@@ -107,12 +107,12 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 final roadblockResult =
                     TrafficService.addPersistentRoadblockByCoordinates(
-                  coords: permanentCoords,
-                  startTime: DateTime.now(),
-                  expireTime: DateTime.now().add(const Duration(days: 1)),
-                  transportMode: RouteTransportMode.car,
-                  id: DateTime.now().toIso8601String(), // Unique identifier
-                );
+                      coords: permanentCoords,
+                      startTime: DateTime.now(),
+                      expireTime: DateTime.now().add(const Duration(days: 1)),
+                      transportMode: RouteTransportMode.car,
+                      id: DateTime.now().toIso8601String(), // Unique identifier
+                    );
 
                 setState(() {
                   drawMode = false;

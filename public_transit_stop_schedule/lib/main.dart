@@ -119,10 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     _mapController.centerOnCoordinates(
-      Coordinates(
-        latitude: 41.40377426147461,
-        longitude: 2.173604965209961,
-      ),
+      Coordinates(latitude: 41.40377426147461, longitude: 2.173604965209961),
       zoomLevel: 95,
     );
   }

@@ -35,9 +35,11 @@ class AndroidForegroundService {
       importance: Importance.low,
     );
 
-    hasGrantedNotificationsPermission = await notificationsPlugin
+    hasGrantedNotificationsPermission =
+        await notificationsPlugin
             .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
+              AndroidFlutterLocalNotificationsPlugin
+            >()
             ?.requestNotificationsPermission() ??
         false;
 
@@ -47,7 +49,8 @@ class AndroidForegroundService {
 
     await notificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
     await service.configure(
@@ -70,9 +73,11 @@ class AndroidForegroundService {
   static Future<bool> hasGrantedPermission() async {
     if (!Platform.isAndroid) return false;
 
-    return hasGrantedNotificationsPermission = await notificationsPlugin
+    return hasGrantedNotificationsPermission =
+        await notificationsPlugin
             .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
+              AndroidFlutterLocalNotificationsPlugin
+            >()
             ?.areNotificationsEnabled() ??
         false;
   }
