@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-FileCopyrightText: 2025-2026 Magic Lane International B.V. <info@magiclane.com>
 // SPDX-License-Identifier: Apache-2.0
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
@@ -28,9 +28,8 @@ String convertDuration(int milliseconds) {
 
   String hoursText = (hours > 0) ? '$hours h ' : '';
   String minutesText = (minutes > 0) ? '$minutes min ' : '';
-  String secondsText = (hours == 0 && minutes == 0)
-      ? '$remainingSeconds sec'
-      : '';
+  String secondsText =
+      (hours == 0 && minutes == 0) ? '$remainingSeconds sec' : '';
 
   return (hoursText + minutesText + secondsText).trim();
 }

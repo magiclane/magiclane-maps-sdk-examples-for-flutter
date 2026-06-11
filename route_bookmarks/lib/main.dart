@@ -4,7 +4,7 @@ import 'package:magiclane_maps_flutter/map.dart';
 import 'package:magiclane_maps_flutter/routing.dart';
 import 'route_history_page.dart';
 
-const projectApiToken = String.fromEnvironment("GEM_TOKEN");
+const projectApiToken = String.fromEnvironment("YOUR_API_TOKEN_HERE");
 
 void main() {
   runApp(const MyApp());

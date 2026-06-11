@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-FileCopyrightText: 2025-2026 Magic Lane International B.V. <info@magiclane.com>
 // SPDX-License-Identifier: Apache-2.0
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
@@ -35,11 +35,9 @@ class AndroidForegroundService {
       importance: Importance.low,
     );
 
-    hasGrantedNotificationsPermission =
-        await notificationsPlugin
+    hasGrantedNotificationsPermission = await notificationsPlugin
             .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >()
+                AndroidFlutterLocalNotificationsPlugin>()
             ?.requestNotificationsPermission() ??
         false;
 
@@ -49,8 +47,7 @@ class AndroidForegroundService {
 
     await notificationsPlugin
         .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
     await service.configure(
@@ -73,11 +70,9 @@ class AndroidForegroundService {
   static Future<bool> hasGrantedPermission() async {
     if (!Platform.isAndroid) return false;
 
-    return hasGrantedNotificationsPermission =
-        await notificationsPlugin
+    return hasGrantedNotificationsPermission = await notificationsPlugin
             .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >()
+                AndroidFlutterLocalNotificationsPlugin>()
             ?.areNotificationsEnabled() ??
         false;
   }

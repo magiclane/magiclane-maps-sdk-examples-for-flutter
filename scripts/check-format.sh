@@ -2,7 +2,7 @@
 # vim:ts=4:sts=4:sw=4:et
 # shellcheck disable=SC2317,SC2329
 
-# SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
+# SPDX-FileCopyrightText: 2024-2026 Magic Lane International B.V. <info@magiclane.com>
 # SPDX-License-Identifier: Apache-2.0
 #
 # Contact Magic Lane at <info@magiclane.com> for SDK licensing options.

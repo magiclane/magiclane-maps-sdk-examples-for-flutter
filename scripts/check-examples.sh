@@ -2,7 +2,7 @@
 # vim:ts=4:sts=4:sw=4:et
 # shellcheck disable=SC2317,SC2329
 
-# SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
+# SPDX-FileCopyrightText: 2024-2026 Magic Lane International B.V. <info@magiclane.com>
 # SPDX-License-Identifier: Apache-2.0
 #
 # Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
@@ -305,7 +305,7 @@ function check_secrets()
             [[ -z "${FILE}" ]] && continue
 
             # Check if projectApiToken is NOT loaded from environment
-            if ! grep -q "projectApiToken.*fromEnvironment.*GEM_TOKEN" "${FILE}" 2>/dev/null; then
+            if ! grep -q "projectApiToken.*fromEnvironment.*YOUR_API_TOKEN_HERE" "${FILE}" 2>/dev/null; then
                 log_error "'${EXAMPLE_NAME}' main.dart: projectApiToken not loaded from environment"
                 RC=1
             fi

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-FileCopyrightText: 2025-2026 Magic Lane International B.V. <info@magiclane.com>
 // SPDX-License-Identifier: Apache-2.0
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 
 import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('YOUR_API_TOKEN_HERE');
 
 void main() async {
   runApp(const MyApp());
@@ -107,12 +107,12 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 final roadblockResult =
                     TrafficService.addPersistentRoadblockByCoordinates(
-                      coords: permanentCoords,
-                      startTime: DateTime.now(),
-                      expireTime: DateTime.now().add(const Duration(days: 1)),
-                      transportMode: RouteTransportMode.car,
-                      id: DateTime.now().toIso8601String(), // Unique identifier
-                    );
+                  coords: permanentCoords,
+                  startTime: DateTime.now(),
+                  expireTime: DateTime.now().add(const Duration(days: 1)),
+                  transportMode: RouteTransportMode.car,
+                  id: DateTime.now().toIso8601String(), // Unique identifier
+                );
 
                 setState(() {
                   drawMode = false;

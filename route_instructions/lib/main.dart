@@ -10,7 +10,7 @@ import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 import 'route_instructions_page.dart';
 import 'utils.dart';
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('YOUR_API_TOKEN_HERE');
 
 void main() {
   runApp(const MyApp());

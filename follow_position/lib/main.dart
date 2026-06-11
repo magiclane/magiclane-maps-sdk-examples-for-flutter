@@ -9,7 +9,7 @@ import 'package:flutter/material.dart' hide Animation;
 import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('YOUR_API_TOKEN_HERE');
 
 void main() {
   runApp(const MyApp());

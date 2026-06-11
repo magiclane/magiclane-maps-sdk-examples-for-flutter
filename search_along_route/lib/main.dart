@@ -11,7 +11,7 @@ import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 
 // ignore_for_file: avoid_print
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('YOUR_API_TOKEN_HERE');
 
 void main() {
   runApp(const MyApp());

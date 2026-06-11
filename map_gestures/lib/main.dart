@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-FileCopyrightText: 2024-2026 Magic Lane International B.V. <info@magiclane.com>
 // SPDX-License-Identifier: Apache-2.0
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
@@ -10,7 +10,7 @@ import 'package:map_gestures/gesture_panel.dart';
 
 // ignore_for_file: avoid_print
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('YOUR_API_TOKEN_HERE');
 
 void main() {
   runApp(const MyApp());

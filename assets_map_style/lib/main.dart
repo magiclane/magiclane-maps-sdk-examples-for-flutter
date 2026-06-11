@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-FileCopyrightText: 2024-2026 Magic Lane International B.V. <info@magiclane.com>
 // SPDX-License-Identifier: Apache-2.0
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 
 import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('YOUR_API_TOKEN_HERE');
 
 void main() {
   runApp(const MyApp());

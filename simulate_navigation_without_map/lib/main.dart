@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-2026 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-FileCopyrightText: 2025-2026 Magic Lane International B.V. <info@magiclane.com>
 // SPDX-License-Identifier: Apache-2.0
 //
 // Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
@@ -11,7 +11,7 @@ import 'bottom_navigation_panel.dart';
 import 'top_navigation_panel.dart';
 import 'utils.dart';
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('YOUR_API_TOKEN_HERE');
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GemKit.initialize(appAuthorization: projectApiToken);

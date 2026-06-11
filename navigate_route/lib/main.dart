@@ -15,7 +15,7 @@ import 'bottom_navigation_panel.dart';
 import 'top_navigation_panel.dart';
 import 'utils.dart';
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('YOUR_API_TOKEN_HERE');
 
 void main() {
   runApp(const MyApp());

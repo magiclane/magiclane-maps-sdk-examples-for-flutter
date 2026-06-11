@@ -1,0 +1,35 @@
+# Every committed blob is LF, independent of each developer's core.autocrlf
+# setting or editor line-ending defaults. The `eol=lf` attribute takes
+# precedence over core.autocrlf — see gitattributes(5).
+
+* text=auto eol=lf
+
+# Binary files — prevent git from trying to normalize them.
+*.exe    binary
+*.dll    binary
+*.so     binary
+*.dylib  binary
+*.a      binary
+*.lib    binary
+*.o      binary
+*.obj    binary
+
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.bmp    binary
+
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.eot    binary
+
+*.zip    binary
+*.gz     binary
+*.tar    binary
+*.7z     binary
+*.rar    binary
+
+*.pdf    binary

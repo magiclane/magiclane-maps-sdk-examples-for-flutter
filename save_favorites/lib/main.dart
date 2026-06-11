@@ -12,7 +12,7 @@ import 'package:magiclane_maps_flutter/magiclane_maps_flutter.dart';
 import 'favorites_page.dart';
 import 'landmark_panel.dart';
 
-const projectApiToken = String.fromEnvironment('GEM_TOKEN');
+const projectApiToken = String.fromEnvironment('YOUR_API_TOKEN_HERE');
 
 void main() {
   runApp(const MyApp());

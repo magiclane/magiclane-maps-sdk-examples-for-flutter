@@ -255,6 +255,14 @@ function clean_xcode_derived_data_runner()
     rm -rf "${DERIVED_BASE}"/Runner-* 2>/dev/null || true
 }
 
+function clear_spm_cache()
+{
+    log_info "Clearing Swift Package Manager cache..."
+    rm -rf "${HOME}/Library/Caches/org.swift.swiftpm" 2>/dev/null || true
+    rm -rf "${HOME}/Library/org.swift.swiftpm" 2>/dev/null || true
+    log_info "SPM cache cleared"
+}
+
 function clean_example()
 {
     local EXAMPLE_PATH="${1}"
@@ -301,7 +309,7 @@ function clean_example()
             2>/dev/null || true
         rm -f ios/Podfile.lock 2>/dev/null || true
     )
-    
+
     clean_xcode_derived_data_runner
 }
 
@@ -401,7 +409,7 @@ Options:
 
     --fail-fast                  Exit on first error
 
-    --clean                      Remove build artifacts on exit
+    --clean                      Clear the SPM cache up front, remove build artifacts on exit
                                  (default: on in CI, off locally)
 
     --console=(auto|plain|colored|verbose)
@@ -771,6 +779,10 @@ fi
 if is_mac; then
     log_info "Enabling Swift Package Manager on macOS..."
     flutter config --enable-swift-package-manager 2>/dev/null || true
+
+    if "${CLEAN_ON_EXIT}"; then
+        clear_spm_cache
+    fi
 fi
 
 if [[ -n "${SDK_ARCHIVE_PATH}" ]] && [[ ! -f "${SDK_ARCHIVE_PATH}" ]]; then
