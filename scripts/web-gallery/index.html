@@ -1,0 +1,219 @@
+<!doctype html>
+<!--
+  SPDX-FileCopyrightText: 2026 Magic Lane International B.V. <info@magiclane.com>
+  SPDX-License-Identifier: Apache-2.0
+
+  Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
+
+  Web examples gallery landing page.
+  Data is injected by build_all.sh via gallery-data.js (window.__GALLERY__).
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Magic Lane · Flutter Maps SDK — Web Examples</title>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --border: #e2e5ea;
+      --text: #1a1d21;
+      --muted: #5c636e;
+      --accent: #2a6df4;
+      --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .10);
+      --shadow-hover: 0 8px 24px rgba(16, 24, 40, .12), 0 2px 6px rgba(16, 24, 40, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1116;
+        --surface: #171b22;
+        --border: #262c36;
+        --text: #e6e9ee;
+        --muted: #9aa4b2;
+        --accent: #5b8dff;
+        --shadow: none;
+        --shadow-hover: 0 8px 24px rgba(0, 0, 0, .45);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { font-size: 1.6rem; margin: 0 0 4px; letter-spacing: -.01em; }
+    .sub { color: var(--muted); font-size: .95rem; margin: 0; }
+    .toolbar { margin-top: 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    #search {
+      flex: 1 1 240px; min-width: 0;
+      padding: 10px 14px; font-size: .95rem;
+      background: var(--surface); color: var(--text);
+      border: 1px solid var(--border); border-radius: 10px; outline: none;
+    }
+    #search:focus { border-color: var(--accent); }
+    .count { color: var(--muted); font-size: .85rem; white-space: nowrap; }
+    .banner {
+      display: none;
+      margin-bottom: 24px; padding: 12px 16px;
+      background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+      border-radius: 10px; font-size: .9rem; line-height: 1.4;
+    }
+    .banner code { background: rgba(128,128,128,.18); padding: 1px 6px; border-radius: 5px; }
+    .grid {
+      display: grid; gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    .card {
+      display: flex; flex-direction: column;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; text-decoration: none; color: inherit;
+      box-shadow: var(--shadow);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+    .thumb { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+    .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ph {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background:
+        linear-gradient(135deg,
+          hsl(var(--h, 210) 62% 52%),
+          hsl(calc(var(--h, 210) + 35) 58% 42%));
+    }
+    .ph svg { width: 46px; height: 46px; opacity: .92; }
+    .ph::after {
+      content: ""; position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.10) 1px, transparent 1px);
+      background-size: 22px 22px; opacity: .6;
+    }
+    .meta { padding: 14px 16px 16px; }
+    .meta h3 { margin: 0 0 5px; font-size: 1.02rem; letter-spacing: -.01em; }
+    .meta p {
+      margin: 0; color: var(--muted); font-size: .87rem; line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .empty { color: var(--muted); padding: 48px 0; text-align: center; }
+    footer { margin-top: 40px; color: var(--muted); font-size: .8rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Flutter Maps SDK — Web Examples</h1>
+      <p class="sub" id="sub"></p>
+      <div id="banner" class="banner">
+        You opened this file directly. Example links need a local server —
+        double-click <code>serve.command</code> (macOS) or run <code>./serve.sh</code> in this folder.
+      </div>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Filter examples…" autocomplete="off" spellcheck="false">
+        <span id="count" class="count"></span>
+      </div>
+    </header>
+
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty" hidden>No examples match your filter.</div>
+
+    <footer id="footer"></footer>
+  </div>
+
+  <script src="gallery-data.js"></script>
+  <script>
+    (function () {
+      var data = (window.__GALLERY__ || []).slice();
+      data.sort(function (a, b) { return a.title.localeCompare(b.title); });
+
+      var grid = document.getElementById('grid');
+      var empty = document.getElementById('empty');
+      var countEl = document.getElementById('count');
+      var footer = document.getElementById('footer');
+
+      var version = window.__GALLERY_VERSION__ || '';
+      var sdkLabel = 'Magic Lane Maps SDK for Flutter' + (version ? ' v' + version : '');
+      document.getElementById('sub').textContent = sdkLabel;
+
+      if (location.protocol === 'file:') {
+        document.getElementById('banner').style.display = 'block';
+      }
+
+      // Deterministic hue from the example name.
+      function hue(s) {
+        var h = 0;
+        for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) % 360; }
+        return h;
+      }
+
+      var PIN = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
+        + '<path d="M12 22s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z" fill="#fff" fill-opacity=".92"/>'
+        + '<circle cx="12" cy="11" r="2.6" fill="hsl(210 60% 45%)"/></svg>';
+
+      function makeCard(item) {
+        var a = document.createElement('a');
+        a.className = 'card';
+        a.href = './' + item.name + '/';
+
+        var thumb = document.createElement('div');
+        thumb.className = 'thumb';
+
+        var ph = document.createElement('div');
+        ph.className = 'ph';
+        ph.style.setProperty('--h', hue(item.name));
+        ph.innerHTML = PIN;
+        thumb.appendChild(ph);
+
+        if (item.thumb) {
+          var img = document.createElement('img');
+          img.loading = 'lazy';
+          img.alt = item.title;
+          img.src = item.thumb;
+          img.onerror = function () { img.remove(); }; // reveal placeholder
+          thumb.appendChild(img);
+        }
+
+        var meta = document.createElement('div');
+        meta.className = 'meta';
+        var h3 = document.createElement('h3');
+        h3.textContent = item.title;
+        var p = document.createElement('p');
+        p.textContent = item.description || '';
+        meta.appendChild(h3);
+        meta.appendChild(p);
+
+        a.appendChild(thumb);
+        a.appendChild(meta);
+        return a;
+      }
+
+      function render(filter) {
+        filter = (filter || '').trim().toLowerCase();
+        grid.textContent = '';
+        var shown = 0;
+        data.forEach(function (item) {
+          var hay = (item.title + ' ' + (item.description || '') + ' ' + item.name).toLowerCase();
+          if (filter && hay.indexOf(filter) === -1) { return; }
+          grid.appendChild(makeCard(item));
+          shown++;
+        });
+        empty.hidden = shown !== 0;
+        countEl.textContent = shown + (shown === 1 ? ' example' : ' examples');
+      }
+
+      document.getElementById('search').addEventListener('input', function (e) {
+        render(e.target.value);
+      });
+
+      render('');
+      footer.textContent = sdkLabel + ' · ' + data.length + (data.length === 1 ? ' example' : ' examples');
+    })();
+  </script>
+</body>
+</html>

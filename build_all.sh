@@ -241,6 +241,7 @@ function validate_filter_names()
 SDK_TEMP_DIR=""
 SCRIPT_DIR=""
 SHOW_EXIT_MESSAGE=true
+CURRENT_BUILD_PID=""
 
 declare -a EXAMPLE_PROJECTS=()
 declare -a ONLY_EXAMPLES=()
@@ -328,6 +329,12 @@ function dist_clean()
 
 function ctrl_c()
 {
+    # Example builds run as background jobs (see the main loop) and would
+    # otherwise survive an interrupt; terminate the one in flight first.
+    if [[ -n "${CURRENT_BUILD_PID}" ]]; then
+        pkill -TERM -P "${CURRENT_BUILD_PID}" 2>/dev/null || true
+        kill -TERM "${CURRENT_BUILD_PID}" 2>/dev/null || true
+    fi
     exit 1
 }
 trap ctrl_c INT TERM
@@ -365,6 +372,7 @@ function on_exit()
         if [[ ${EXIT_CODE} -eq 0 ]]; then
             "${BUILD_ANDROID}" && log_info "APKs: ${SCRIPT_DIR}/_APK"
             "${BUILD_WEB}" && log_info "Web:  ${SCRIPT_DIR}/_WEB"
+            "${BUILD_WEB}" && ! "${NO_GALLERY}" && log_info "Gallery: open _WEB/serve.command (double-click) or run _WEB/serve.sh"
         fi
 
         printf '\n'
@@ -390,11 +398,23 @@ Options:
                                  If not provided, magiclane_maps_flutter will be
                                  downloaded from pub.dev
 
+    --api-token=<token>          Magic Lane API token to build the examples with
+                                 (passed as --dart-define=YOUR_API_TOKEN_HERE).
+                                 Without it, the map runs in watermarked
+                                 evaluation mode
+
     --android                    Build examples for Android
 
     --ios                        Build examples for iOS
 
     --web                        Build examples for Web
+
+    --web-thumbnails             Build for Web and capture real example
+                                 screenshots via headless Chrome for the gallery
+                                 (best-effort; falls back to placeholder tiles)
+
+    --no-gallery                 Skip generating the _WEB gallery landing page
+                                 and launcher
 
     --list-examples              List detected example names and exit
 
@@ -407,7 +427,9 @@ Options:
     --upgrade                    Upgrade the current package's dependencies to
                                  latest versions
 
-    --fail-fast                  Exit on first error
+    --fail-fast                  Stop at the first example that fails to build
+                                 (default: continue with the remaining examples
+                                 and report a failure summary at the end)
 
     --clean                      Clear the SPM cache up front, remove build artifacts on exit
                                  (default: on in CI, off locally)
@@ -582,6 +604,11 @@ function build_example()
     local EXAMPLE_NAME
     EXAMPLE_NAME="$(basename "${EXAMPLE_PATH}")"
 
+    # Pass the SDK API token to the app (read via String.fromEnvironment) when
+    # provided; without it the map runs in watermarked evaluation mode.
+    local -a TOKEN_DEFINE=()
+    [[ -n "${API_TOKEN}" ]] && TOKEN_DEFINE+=("--dart-define=YOUR_API_TOKEN_HERE=${API_TOKEN}")
+
     if [[ -n "${SDK_ARCHIVE_PATH}" ]]; then
         cp -R "${SDK_TEMP_DIR}"/magiclane_maps_flutter "${EXAMPLE_PATH}"/plugins/
     fi
@@ -609,19 +636,24 @@ function build_example()
         fi
 
         log_info "Building iOS release..."
-        flutter build ios --release --no-codesign
+        flutter build ios --release --no-codesign "${TOKEN_DEFINE[@]+"${TOKEN_DEFINE[@]}"}"
         log_success "iOS build completed"
     fi
 
     if "${BUILD_ANDROID}"; then
         log_info "Building Android APK..."
-        flutter build apk --release --dart-define=CI=true
+        flutter build apk --release --dart-define=CI=true "${TOKEN_DEFINE[@]+"${TOKEN_DEFINE[@]}"}"
         log_success "Android APK build completed"
     fi
 
     if "${BUILD_WEB}"; then
         log_info "Building Web release..."
-        flutter build web --release
+        # Per-example base href so each app works when served under
+        # _WEB/<example>/. --pwa-strategy=none keeps a service worker from
+        # serving stale content after rebuilds; --no-wasm-dry-run silences
+        # the repeated WASM-incompatibility notes.
+        flutter build web --release --base-href "/${EXAMPLE_NAME}/" \
+            --pwa-strategy=none --no-wasm-dry-run "${TOKEN_DEFINE[@]+"${TOKEN_DEFINE[@]}"}"
         log_success "Web build completed"
     fi
 
@@ -636,8 +668,10 @@ function build_example()
     fi
 
     if "${BUILD_WEB}"; then
-        mkdir -p "${SCRIPT_DIR}/_WEB/${EXAMPLE_NAME}"
-        mv "build/web"/* "${SCRIPT_DIR}/_WEB/${EXAMPLE_NAME}"/
+        # Move the whole directory (a glob would drop dotfiles and fail on
+        # an empty build dir).
+        rm -rf "${SCRIPT_DIR}/_WEB/${EXAMPLE_NAME}"
+        mv "build/web" "${SCRIPT_DIR}/_WEB/${EXAMPLE_NAME}"
     fi
 
     if "${CLEAN_ON_EXIT}"; then
@@ -645,6 +679,276 @@ function build_example()
     fi
 
     popd > /dev/null || true
+}
+
+function json_escape()
+{
+    # Escape a string for a JSON double-quoted value. README catalog entries are
+    # single-line, so escaping backslash and double-quote is sufficient.
+    local S="${1}"
+    S="${S//\\/\\\\}"
+    S="${S//\"/\\\"}"
+    printf '%s' "${S}"
+}
+
+function title_case()
+{
+    # add_markers -> Add Markers
+    printf '%s' "${1//_/ }" | awk '{ for (I = 1; I <= NF; I++) { $I = toupper(substr($I, 1, 1)) substr($I, 2) } print }'
+}
+
+function capture_web_thumbnails()
+{
+    # Best-effort screenshots via headless Chrome. Never fails the build.
+    local WEB_DIR="${1}"
+    shift
+    local -a NAMES=("$@")
+
+    local CHROME=""
+    local -a CANDIDATES=(
+        # macOS
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        "/Applications/Chromium.app/Contents/MacOS/Chromium"
+        "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"
+        # Linux (Debian/Ubuntu and other distros, including snap packages)
+        "/usr/bin/google-chrome-stable"
+        "/usr/bin/google-chrome"
+        "/usr/bin/chromium-browser"
+        "/usr/bin/chromium"
+        "/snap/bin/chromium"
+        "/usr/bin/microsoft-edge"
+    )
+    local C
+    for C in "${CANDIDATES[@]}"; do
+        [[ -x "${C}" ]] && CHROME="${C}" && break
+    done
+    if [[ -z "${CHROME}" ]]; then
+        for C in google-chrome-stable google-chrome chromium chromium-browser microsoft-edge; do
+            if check_cmd "${C}"; then CHROME="${C}"; break; fi
+        done
+    fi
+    if [[ -z "${CHROME}" ]]; then
+        log_warning "Chrome/Chromium not found - skipping thumbnail capture (placeholders will be used)"
+        return 0
+    fi
+    if ! check_cmd npx; then
+        log_warning "npx (Node.js) not found - skipping thumbnail capture (placeholders will be used)"
+        return 0
+    fi
+    if ! check_cmd curl; then
+        log_warning "curl not found - skipping thumbnail capture (placeholders will be used)"
+        return 0
+    fi
+
+    log_info "Capturing example thumbnails with headless Chrome (best-effort)..."
+
+    local PORT=4999
+    local SERVE_LOG
+    SERVE_LOG="$(mktemp)"
+    ( cd "${WEB_DIR}" && exec npx --yes serve@14 . --no-clipboard -l "${PORT}" > "${SERVE_LOG}" 2>&1 ) &
+    local SERVE_PID=$!
+
+    local URL=""
+    local I
+    for ((I = 0; I < 60; I++)); do
+        URL="$(grep -oE 'http://localhost:[0-9]+' "${SERVE_LOG}" 2>/dev/null | head -1 || true)"
+        if [[ -n "${URL}" ]] && curl -fsS -o /dev/null "${URL}/" 2>/dev/null; then
+            break
+        fi
+        URL=""
+        sleep 0.25
+    done
+
+    if [[ -z "${URL}" ]]; then
+        log_warning "Local preview server did not start - skipping thumbnail capture (placeholders will be used)"
+    else
+        mkdir -p "${WEB_DIR}/thumbnails"
+
+        # A fully-rendered map screenshot is large; a near-blank capture (map/WASM
+        # failed to load) is a tiny, near-solid-color PNG. Discard anything below
+        # this size so the tile falls back to the styled placeholder instead of
+        # showing an empty screenshot.
+        local MIN_THUMB_BYTES=30000
+        # Real wall-clock render wait (ms) for the DevTools capture path - long
+        # enough for the map's async tiles / POIs to load before the frame.
+        local RENDER_DELAY_MS=8000
+        # Fallback (chrome --screenshot) only: virtual-time budget and the max
+        # seconds to wait for that screenshot before giving up on an example.
+        local RENDER_MS=30000
+        local CAPTURE_TIMEOUT=70
+        # Capture tall, then centre-crop to the tile's 16:10 so the map's middle is
+        # framed and the app bar is dropped.
+        local SHOT_W=1200 SHOT_H=1000 CROP_W=1200 CROP_H=750 THUMB_W=600
+
+        # Preferred capture: drive Chrome via DevTools with a real render delay
+        # (reliable). Falls back to `chrome --screenshot` if Node/WebSocket is
+        # unavailable.
+        local CAPTURE_MJS="${SCRIPT_DIR}/scripts/web-gallery/capture.mjs"
+        local NODE_BIN=""
+        check_cmd node && NODE_BIN="node"
+
+        # Optional post-processing tool to crop + downscale (best-effort).
+        local IMG_TOOL=""
+        if check_cmd sips; then IMG_TOOL="sips"
+        elif check_cmd magick; then IMG_TOOL="magick"
+        elif check_cmd convert; then IMG_TOOL="convert"
+        fi
+
+        local NAME OUT BYTES PROFILE CPID WAITED
+        for NAME in "${NAMES[@]}"; do
+            OUT="${WEB_DIR}/thumbnails/${NAME}.png"
+            rm -f "${OUT}"
+
+            if ! { [[ -n "${NODE_BIN}" && -f "${CAPTURE_MJS}" ]] \
+                    && "${NODE_BIN}" "${CAPTURE_MJS}" "${CHROME}" "${URL}/${NAME}/" "${OUT}" \
+                        "${SHOT_W}" "${SHOT_H}" "${RENDER_DELAY_MS}" 2>/dev/null \
+                    && [[ -s "${OUT}" ]]; }; then
+                # Fallback: chrome --screenshot with virtual time (racier). Disable
+                # web security (needs a throwaway profile) to get past CORS in
+                # headless; allow SwiftShader so CanvasKit's WebGL renders without a
+                # GPU. --no-sandbox: required when running as root (e.g. CI); capture
+                # targets are localhost-only.
+                rm -f "${OUT}"
+                PROFILE="$(mktemp -d)"
+                "${CHROME}" --headless=new --disable-gpu --no-sandbox \
+                    --user-data-dir="${PROFILE}" --disable-web-security \
+                    --enable-unsafe-swiftshader --hide-scrollbars \
+                    --force-device-scale-factor=1 --window-size="${SHOT_W},${SHOT_H}" \
+                    --virtual-time-budget="${RENDER_MS}" --screenshot="${OUT}" \
+                    "${URL}/${NAME}/" > /dev/null 2>&1 &
+                CPID=$!
+
+                # Chrome writes the screenshot around the virtual-time budget but
+                # does not reliably exit afterwards (CanvasKit keeps rendering), so
+                # wait for the file rather than the process, then stop Chrome.
+                WAITED=0
+                while kill -0 "${CPID}" 2>/dev/null && [[ ${WAITED} -lt ${CAPTURE_TIMEOUT} ]]; do
+                    if [[ -s "${OUT}" ]]; then sleep 2; break; fi
+                    sleep 1
+                    WAITED=$((WAITED + 1))
+                done
+                kill "${CPID}" 2>/dev/null || true
+                wait "${CPID}" 2>/dev/null || true
+                rm -rf "${PROFILE}"
+            fi
+
+            if [[ -s "${OUT}" ]]; then
+                BYTES="$(wc -c < "${OUT}" | tr -d ' ')"
+                if [[ "${BYTES}" -lt "${MIN_THUMB_BYTES}" ]]; then
+                    rm -f "${OUT}"
+                    log_warning "  ${NAME}: capture looked blank (${BYTES} bytes) - using placeholder"
+                else
+                    # Centre-crop out the app bar and downscale to a light thumbnail.
+                    case "${IMG_TOOL}" in
+                        sips)
+                            sips -c "${CROP_H}" "${CROP_W}" "${OUT}" > /dev/null 2>&1 || true
+                            sips --resampleWidth "${THUMB_W}" "${OUT}" > /dev/null 2>&1 || true
+                            ;;
+                        magick|convert)
+                            "${IMG_TOOL}" "${OUT}" -gravity center \
+                                -crop "${CROP_W}x${CROP_H}+0+0" +repage \
+                                -resize "${THUMB_W}" "${OUT}" > /dev/null 2>&1 || true
+                            ;;
+                    esac
+                    log_info "  captured ${NAME}"
+                fi
+            else
+                rm -f "${OUT}"
+                log_warning "  could not capture ${NAME} (placeholder will be used)"
+            fi
+        done
+    fi
+
+    kill "${SERVE_PID}" > /dev/null 2>&1 || true
+    wait "${SERVE_PID}" 2>/dev/null || true
+    local SERVE_PORT="${URL##*:}"
+    [[ -z "${SERVE_PORT}" ]] && SERVE_PORT="${PORT}"
+    lsof -ti "tcp:${SERVE_PORT}" 2>/dev/null | xargs kill 2>/dev/null || true
+    rm -f "${SERVE_LOG}"
+}
+
+function generate_web_gallery()
+{
+    local WEB_DIR="${SCRIPT_DIR}/_WEB"
+    local TEMPLATE_DIR="${SCRIPT_DIR}/scripts/web-gallery"
+    local README="${SCRIPT_DIR}/README.md"
+
+    [[ -d "${WEB_DIR}" ]] || return 0
+
+    if [[ ! -f "${TEMPLATE_DIR}/index.html" || ! -f "${TEMPLATE_DIR}/serve.command" || ! -f "${TEMPLATE_DIR}/serve.sh" ]]; then
+        log_warning "Gallery templates missing under ${TEMPLATE_DIR} - skipping gallery generation"
+        return 0
+    fi
+
+    log_step "Generating web gallery..."
+
+    cp "${TEMPLATE_DIR}/index.html" "${WEB_DIR}/index.html"
+    cp "${TEMPLATE_DIR}/serve.command" "${WEB_DIR}/serve.command"
+    cp "${TEMPLATE_DIR}/serve.sh" "${WEB_DIR}/serve.sh"
+    chmod +x "${WEB_DIR}/serve.command" "${WEB_DIR}/serve.sh"
+
+    # Examples actually built = _WEB subdirs that contain an index.html.
+    local -a NAMES=()
+    local DIR NAME
+    for DIR in "${WEB_DIR}"/*/; do
+        NAME="$(basename "${DIR}")"
+        [[ "${NAME}" == "thumbnails" ]] && continue
+        [[ -f "${DIR}index.html" ]] && NAMES+=("${NAME}")
+    done
+
+    if [[ ${#NAMES[@]} -eq 0 ]]; then
+        log_warning "No built web examples found in _WEB - skipping gallery data"
+        return 0
+    fi
+
+    if "${WEB_THUMBNAILS}"; then
+        capture_web_thumbnails "${WEB_DIR}" "${NAMES[@]}"
+    fi
+
+    local SDK_VERSION=""
+    local VLOCK="${SCRIPT_DIR}/${NAMES[0]}/pubspec.lock"
+    if [[ -f "${VLOCK}" ]]; then
+        SDK_VERSION="$(awk '
+            /^  magiclane_maps_flutter:/ { inblk = 1; next }
+            inblk && /^  [A-Za-z]/       { inblk = 0 }
+            inblk && /^    version:/     { v = $2; gsub(/"/, "", v); print v; exit }
+        ' "${VLOCK}")"
+    fi
+
+    local DATA="${WEB_DIR}/gallery-data.js"
+    {
+        printf '// Generated by build_all.sh - do not edit.\n'
+        printf 'window.__GALLERY_VERSION__ = "%s";\n' "$(json_escape "${SDK_VERSION}")"
+        printf 'window.__GALLERY__ = [\n'
+    } > "${DATA}"
+
+    local FIRST=1 TITLE DESC THUMB LINE
+    for NAME in "${NAMES[@]}"; do
+        TITLE=""
+        DESC=""
+        THUMB=""
+        if [[ -f "${README}" ]]; then
+            # Catalog format: * [Title](name) - Description.
+            LINE="$(grep -E "^\* \[.*\]\(${NAME}\) - " "${README}" 2>/dev/null | head -1 || true)"
+            if [[ -n "${LINE}" ]]; then
+                TITLE="$(printf '%s' "${LINE}" | sed -E "s/^\* \[(.*)\]\(${NAME}\) - .*/\1/")"
+                DESC="$(printf '%s' "${LINE}" | sed -E "s/^\* \[.*\]\(${NAME}\) - (.*)$/\1/")"
+            fi
+        fi
+        [[ -z "${TITLE}" ]] && TITLE="$(title_case "${NAME}")"
+        [[ -f "${WEB_DIR}/thumbnails/${NAME}.png" ]] && THUMB="thumbnails/${NAME}.png"
+
+        [[ ${FIRST} -eq 0 ]] && printf ',\n' >> "${DATA}"
+        FIRST=0
+        printf '  {"name":"%s","title":"%s","description":"%s","thumb":"%s"}' \
+            "$(json_escape "${NAME}")" \
+            "$(json_escape "${TITLE}")" \
+            "$(json_escape "${DESC}")" \
+            "$(json_escape "${THUMB}")" >> "${DATA}"
+    done
+    printf '\n];\n' >> "${DATA}"
+
+    log_success "Web gallery generated (${#NAMES[@]} example(s)): ${WEB_DIR}/index.html"
 }
 
 # =============================================================================
@@ -656,9 +960,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 setup_mac_deps
 
 SDK_ARCHIVE_PATH=""
+API_TOKEN=""
 BUILD_ANDROID=false
 BUILD_IOS=false
 BUILD_WEB=false
+WEB_THUMBNAILS=false
+NO_GALLERY=false
 ANALYZE=false
 UPGRADE=false
 FAIL_FAST=false
@@ -673,9 +980,12 @@ SHORTOPTS="h"
 LONGOPTS_LIST=(
     "help"
     "sdk-archive:"
+    "api-token:"
     "android"
     "ios"
     "web"
+    "web-thumbnails"
+    "no-gallery"
     "list-examples"
     "only:"
     "exclude:"
@@ -709,6 +1019,10 @@ while true; do
             shift
             SDK_ARCHIVE_PATH="${1}"
             ;;
+        --api-token)
+            shift
+            API_TOKEN="${1}"
+            ;;
         --android)
             BUILD_ANDROID=true
             ;;
@@ -717,6 +1031,13 @@ while true; do
             ;;
         --web)
             BUILD_WEB=true
+            ;;
+        --web-thumbnails)
+            BUILD_WEB=true
+            WEB_THUMBNAILS=true
+            ;;
+        --no-gallery)
+            NO_GALLERY=true
             ;;
         --list-examples)
             LIST_EXAMPLES=true
@@ -826,26 +1147,47 @@ filter_examples
 # Setup output directories
 pushd "${SCRIPT_DIR}" > /dev/null || exit 1
 
-[[ -d "_APK" ]] && rm -rf _APK
-"${BUILD_ANDROID}" && mkdir -p _APK
+if "${BUILD_ANDROID}"; then
+    rm -rf _APK
+    mkdir -p _APK
+fi
 
-[[ -d "_WEB" ]] && rm -rf _WEB
-"${BUILD_WEB}" && mkdir -p _WEB
+if "${BUILD_WEB}"; then
+    rm -rf _WEB
+    mkdir -p _WEB
+fi
 
 popd > /dev/null || true
 
 TOTAL_EXAMPLES=${#EXAMPLE_PROJECTS[@]}
 CURRENT_INDEX=0
+declare -a FAILED_EXAMPLES=()
 
 for EXAMPLE_PATH in "${EXAMPLE_PROJECTS[@]}"; do
     CURRENT_INDEX=$((CURRENT_INDEX + 1))
-    build_example "${EXAMPLE_PATH}" "${CURRENT_INDEX}" "${TOTAL_EXAMPLES}"
-    BUILD_STATUS=$?
 
-    if "${FAIL_FAST}" && [[ ${BUILD_STATUS} -ne 0 ]]; then
+    # Run each build as a background job
+    build_example "${EXAMPLE_PATH}" "${CURRENT_INDEX}" "${TOTAL_EXAMPLES}" &
+    CURRENT_BUILD_PID=$!
+    if ! wait "${CURRENT_BUILD_PID}"; then
+        FAILED_EXAMPLES+=("$(basename "${EXAMPLE_PATH}")")
         log_error "Build failed for '$(basename "${EXAMPLE_PATH}")'"
-        exit 1
+
+        if "${FAIL_FAST}"; then
+            exit 1
+        fi
     fi
+    CURRENT_BUILD_PID=""
 done
+
+# Generate the gallery for whatever did build, even if some examples failed.
+if "${BUILD_WEB}" && ! "${NO_GALLERY}"; then
+    generate_web_gallery
+fi
+
+if [[ ${#FAILED_EXAMPLES[@]} -gt 0 ]]; then
+    log_error "${#FAILED_EXAMPLES[@]} of ${TOTAL_EXAMPLES} example(s) failed to build: ${FAILED_EXAMPLES[*]}"
+    exit 1
+fi
 
 exit 0

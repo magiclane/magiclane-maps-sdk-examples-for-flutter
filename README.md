@@ -56,6 +56,7 @@ Explore the examples to learn the capabilities of the Magic Lane Maps Flutter SD
 * [Map Styles](map_styles) - Show list of styles. Show how to download and apply styles.
 * [Map Style Update](map_style_update) - Show list of styles. Update old map styles. Show how to download and apply styles.
 * [Map Update](map_update) - Show list of maps. Show how to download maps.
+* [Marker Clustering](marker_clustering) - Render thousands of markers from a GeoJSON. Cluster markers into count pills. Show coloured pins and info sheets.
 * [Multi-map Routing](multi_map_routing) - Display a map. Show how to create multiple views.
 * [MultiView Map](multiview_map) - Show how to create multiple views.
 * [Navigate Route](navigate_route) - Calculate & display route. Navigate route.

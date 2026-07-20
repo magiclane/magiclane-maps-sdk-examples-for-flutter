@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  magiclane_maps_flutter: ^3.1.9
+  magiclane_maps_flutter: ^3.1.11
 
 dev_dependencies:
   flutter_test:

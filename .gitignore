@@ -22,3 +22,6 @@ _WEB/
 /*/.externalNativeBuild/
 /*/.cxx/
 /*/.kotlin/
+
+# Claude / Cowork local agent folder
+.claude/
