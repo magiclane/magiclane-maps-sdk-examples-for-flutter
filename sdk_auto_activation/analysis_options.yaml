@@ -13,6 +13,11 @@ analyzer:
   exclude:
     - "plugins/**"
     - "build/**"
+    - android/**
+    - ios/**
+    - web/**
+    - macos/**
+    - linux/**
 
   language:
     strict-casts: true

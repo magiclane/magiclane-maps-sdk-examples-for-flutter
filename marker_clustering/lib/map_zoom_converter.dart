@@ -14,5 +14,6 @@ class MapZoomConverter {
   }
 
   /// Converts a Magic Lane zoom level back to a 0–22 web-map zoom.
-  static double fromMagicLaneZoom(int magicLaneZoom) => (magicLaneZoom - 4) / 7.0;
+  static double fromMagicLaneZoom(int magicLaneZoom) =>
+      (magicLaneZoom - 4) / 7.0;
 }

@@ -18,7 +18,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Round Trip', home: MyHomePage());
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Round Trip',
+      home: MyHomePage(),
+    );
   }
 }
 
@@ -64,7 +68,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
         ],
       ),
-      body: GemMap(key: const ValueKey("GemMap"), appAuthorization: projectApiToken, onMapCreated: _onMapCreated),
+      body: GemMap(
+        key: const ValueKey("GemMap"),
+        appAuthorization: projectApiToken,
+        onMapCreated: _onMapCreated,
+      ),
     );
   }
 
@@ -75,10 +83,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onBuildRouteButtonPressed(BuildContext context) {
     // Define departure landmark in Amsterdam
-    final departureLandmark = Landmark.withLatLng(latitude: 52.361947, longitude: 4.864486);
+    final departureLandmark = Landmark.withLatLng(
+      latitude: 52.361947,
+      longitude: 4.864486,
+    );
 
     // Define round trip preferences
-    final tripPreferences = RoundTripParameters(range: 5000, rangeType: RangeType.distanceBased);
+    final tripPreferences = RoundTripParameters(
+      range: 5000,
+      rangeType: RangeType.distanceBased,
+    );
 
     // Define route preferences to include round trip parameters
     final routePreferences = RoutePreferences(
@@ -89,26 +103,38 @@ class _MyHomePageState extends State<MyHomePage> {
     _showSnackBar(context, message: 'Calculating round trip route...');
 
     // Use only the departure landmark to calculate a round trip route
-    _routingHandler = RoutingService.calculateRoute([departureLandmark], routePreferences, (err, routes) {
-      _routingHandler = null;
-      ScaffoldMessenger.of(context).clearSnackBars();
+    _routingHandler = RoutingService.calculateRoute(
+      [departureLandmark],
+      routePreferences,
+      (err, routes) {
+        _routingHandler = null;
+        ScaffoldMessenger.of(context).clearSnackBars();
 
-      if (err == GemError.success && routes.isNotEmpty) {
-        final routesMap = _mapController.preferences.routes;
+        if (err == GemError.success && routes.isNotEmpty) {
+          final routesMap = _mapController.preferences.routes;
 
-        for (final route in routes) {
-          routesMap.add(route, route == routes.first, label: getMapLabel(route));
+          for (final route in routes) {
+            routesMap.add(
+              route,
+              route == routes.first,
+              label: getMapLabel(route),
+            );
+          }
+
+          _mapController.centerOnRoutes(routes: routes);
+
+          setState(() {
+            _areRoutesBuilt = true;
+          });
+        } else {
+          _showSnackBar(
+            context,
+            message: 'Failed to calculate route',
+            duration: const Duration(seconds: 3),
+          );
         }
-
-        _mapController.centerOnRoutes(routes: routes);
-
-        setState(() {
-          _areRoutesBuilt = true;
-        });
-      } else {
-        _showSnackBar(context, message: 'Failed to calculate route', duration: const Duration(seconds: 3));
-      }
-    });
+      },
+    );
 
     setState(() {});
   }
@@ -131,7 +157,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }

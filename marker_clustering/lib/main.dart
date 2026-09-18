@@ -155,8 +155,9 @@ class _MapScreenState extends State<MapScreen> {
     for (var i = 0; i < total; i++) {
       final c = campsites[i];
       clusterCollection.add(
-        Marker.fromCoords(
-            [Coordinates(latitude: c.latitude, longitude: c.longitude)]),
+        Marker.fromCoords([
+          Coordinates(latitude: c.latitude, longitude: c.longitude),
+        ]),
       );
       if (i % _buildChunk == 0) {
         _report(0.05 + 0.40 * (i / total), 'Building clusters… $i / $total');
@@ -192,8 +193,10 @@ class _MapScreenState extends State<MapScreen> {
     clusterSettings.image = assets.transparent; // loose singles invisible
     _report(0.45, 'Placing clusters on map…');
     await Future<void>.delayed(Duration.zero);
-    controller.preferences.markers
-        .add(clusterCollection, settings: clusterSettings);
+    controller.preferences.markers.add(
+      clusterCollection,
+      settings: clusterSettings,
+    );
 
     // 2) Detail layer — coloured pins via the optimised addList bulk path.
     // Built in chunks (same reason as above) before the single bulk add.
@@ -256,8 +259,9 @@ class _MapScreenState extends State<MapScreen> {
 
     // A cluster tap is a CoordinateGroup match → zoom in toward the tap to break
     // the cluster apart.
-    final isCluster =
-        matches.any((m) => m.type == MarkerMatchType.coordinateGroup);
+    final isCluster = matches.any(
+      (m) => m.type == MarkerMatchType.coordinateGroup,
+    );
     if (isCluster) {
       final target = (controller.zoomLevel + 12).clamp(0, 90).toInt();
       controller.centerOnCoordinates(
@@ -418,8 +422,9 @@ class _InfoSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        campsite.name.isNotEmpty ? campsite.name : 'Campsite #${campsite.id}';
+    final title = campsite.name.isNotEmpty
+        ? campsite.name
+        : 'Campsite #${campsite.id}';
     final coord =
         '${campsite.latitude.toStringAsFixed(5)}, ${campsite.longitude.toStringAsFixed(5)}';
 
@@ -448,22 +453,27 @@ class _InfoSheet extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(campsite.isBookable ? 'Bookable' : 'Info only',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+                  Text(
+                    campsite.isBookable ? 'Bookable' : 'Info only',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                  ),
                   const SizedBox(height: 2),
-                  Text(coord,
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                  Text(
+                    coord,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  ),
                 ],
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: onClose,
-            ),
+            IconButton(icon: const Icon(Icons.close), onPressed: onClose),
           ],
         ),
       ),

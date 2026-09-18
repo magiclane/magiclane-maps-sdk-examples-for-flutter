@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2025-2026 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: Apache-2.0
+//
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
+
 import 'package:flutter/material.dart';
 import 'package:magiclane_maps_flutter/core.dart';
 import 'package:magiclane_maps_flutter/routing.dart';
@@ -20,7 +25,10 @@ class _RouteHistoryPageState extends State<RouteHistoryPage> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
         foregroundColor: Colors.white,
-        title: const Text('Route History', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Route History',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           if (routeCount > 0)
             IconButton(
@@ -37,9 +45,15 @@ class _RouteHistoryPageState extends State<RouteHistoryPage> {
                 children: [
                   Icon(Icons.route, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
-                  Text('No routes in history', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text(
+                    'No routes in history',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
                   SizedBox(height: 8),
-                  Text('Calculate some routes to see them here', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                  Text(
+                    'Calculate some routes to see them here',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
                 ],
               ),
             )
@@ -51,14 +65,23 @@ class _RouteHistoryPageState extends State<RouteHistoryPage> {
                 final timestamp = widget.routeBookmarks.getTimestamp(index);
 
                 return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   child: ListTile(
                     onTap: () => _onRouteTapped(index, waypoints),
                     leading: CircleAvatar(
                       backgroundColor: Colors.deepPurple[900],
-                      child: Text('${index + 1}', style: const TextStyle(color: Colors.white)),
+                      child: Text(
+                        '${index + 1}',
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
-                    title: Text(name ?? 'Route ${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    title: Text(
+                      name ?? 'Route ${index + 1}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -77,7 +100,10 @@ class _RouteHistoryPageState extends State<RouteHistoryPage> {
                           const SizedBox(height: 4),
                           Text(
                             'Saved: ${_formatDate(timestamp)}',
-                            style: const TextStyle(fontSize: 11, color: Colors.grey),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey,
+                            ),
                           ),
                         ],
                       ],
@@ -96,7 +122,9 @@ class _RouteHistoryPageState extends State<RouteHistoryPage> {
   void _onRouteTapped(int index, List<Landmark>? waypoints) {
     if (waypoints != null && waypoints.length >= 2) {
       // Pop with the selected route data
-      Navigator.of(context).pop({'waypoints': waypoints, 'preferences': RoutePreferences()});
+      Navigator.of(
+        context,
+      ).pop({'waypoints': waypoints, 'preferences': RoutePreferences()});
     }
   }
 
@@ -113,15 +141,22 @@ class _RouteHistoryPageState extends State<RouteHistoryPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Route'),
-        content: Text('Are you sure you want to delete "${name ?? 'Route ${index + 1}'}"?'),
+        content: Text(
+          'Are you sure you want to delete "${name ?? 'Route ${index + 1}'}"?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () {
               widget.routeBookmarks.remove(index);
               Navigator.of(context).pop();
               setState(() {});
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Route deleted')));
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Route deleted')));
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
@@ -135,15 +170,22 @@ class _RouteHistoryPageState extends State<RouteHistoryPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear All History'),
-        content: const Text('Are you sure you want to delete all routes from history?'),
+        content: const Text(
+          'Are you sure you want to delete all routes from history?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () {
               widget.routeBookmarks.clear();
               Navigator.of(context).pop();
               setState(() {});
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('All routes deleted')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('All routes deleted')),
+              );
             },
             child: const Text('Clear All', style: TextStyle(color: Colors.red)),
           ),

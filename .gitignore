@@ -25,3 +25,4 @@ _WEB/
 
 # Claude / Cowork local agent folder
 .claude/
+**/.claude/settings.local.json

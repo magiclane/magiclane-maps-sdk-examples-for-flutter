@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2025-2026 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: Apache-2.0
+//
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
+
 import 'package:flutter/material.dart';
 import 'package:magiclane_maps_flutter/core.dart';
 import 'package:magiclane_maps_flutter/map.dart';
@@ -15,7 +20,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'Route Bookmarks', home: MyHomePage());
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Route Bookmarks',
+      home: MyHomePage(),
+    );
   }
 }
 
@@ -60,7 +69,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[900],
-        title: const Text('Route Bookmarks', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Route Bookmarks',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           if (_routingHandler == null)
             IconButton(
@@ -85,7 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
         ],
       ),
-      body: GemMap(appAuthorization: projectApiToken, onMapCreated: _onMapCreated),
+      body: GemMap(
+        appAuthorization: projectApiToken,
+        onMapCreated: _onMapCreated,
+      ),
     );
   }
 
@@ -100,41 +115,53 @@ class _MyHomePageState extends State<MyHomePage> {
     final departure = currentPair['departure']!;
     final destination = currentPair['destination']!;
 
-    final departureLandmark = Landmark.withLatLng(latitude: departure['latitude']!, longitude: departure['longitude']!);
+    final departureLandmark = Landmark.withLatLng(
+      latitude: departure['latitude']!,
+      longitude: departure['longitude']!,
+    );
     final destinationLandmark = Landmark.withLatLng(
       latitude: destination['latitude']!,
       longitude: destination['longitude']!,
     );
     final routePreferences = RoutePreferences();
 
-    _showSnackBar(context, message: 'Calculating route ${_currentRouteIndex + 1} of ${_routePairs.length}...');
+    _showSnackBar(
+      context,
+      message:
+          'Calculating route ${_currentRouteIndex + 1} of ${_routePairs.length}...',
+    );
 
-    _routingHandler = RoutingService.calculateRoute([departureLandmark, destinationLandmark], routePreferences, (
-      err,
-      routes,
-    ) {
-      _routingHandler = null;
-      ScaffoldMessenger.of(context).clearSnackBars();
+    _routingHandler = RoutingService.calculateRoute(
+      [departureLandmark, destinationLandmark],
+      routePreferences,
+      (err, routes) {
+        _routingHandler = null;
+        ScaffoldMessenger.of(context).clearSnackBars();
 
-      if (err == GemError.success) {
-        final routesMap = _mapController.preferences.routes;
+        if (err == GemError.success) {
+          final routesMap = _mapController.preferences.routes;
 
-        for (final route in routes) {
-          routesMap.add(route, route == routes.first);
+          for (final route in routes) {
+            routesMap.add(route, route == routes.first);
+          }
+
+          _mapController.centerOnRoutes(routes: routes);
+
+          // Save route to bookmarks
+          _saveRouteToBookmarks(
+            departureLandmark,
+            destinationLandmark,
+            routePreferences,
+          );
+
+          setState(() {
+            _areRoutesBuilt = true;
+            // Cycle to next route pair for next time
+            _currentRouteIndex = (_currentRouteIndex + 1) % _routePairs.length;
+          });
         }
-
-        _mapController.centerOnRoutes(routes: routes);
-
-        // Save route to bookmarks
-        _saveRouteToBookmarks(departureLandmark, destinationLandmark, routePreferences);
-
-        setState(() {
-          _areRoutesBuilt = true;
-          // Cycle to next route pair for next time
-          _currentRouteIndex = (_currentRouteIndex + 1) % _routePairs.length;
-        });
-      }
-    });
+      },
+    );
 
     setState(() {});
   }
@@ -168,9 +195,11 @@ class _MyHomePageState extends State<MyHomePage> {
       _routingHandler = null;
     });
 
-    final result = await Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => RouteHistoryPage(routeBookmarks: _routeBookmarks)));
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => RouteHistoryPage(routeBookmarks: _routeBookmarks),
+      ),
+    );
 
     if (result != null && result is Map<String, dynamic>) {
       final waypoints = result['waypoints'] as List<Landmark>?;
@@ -182,10 +211,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _calculateRouteFromHistory(List<Landmark> waypoints, RoutePreferences preferences) {
+  void _calculateRouteFromHistory(
+    List<Landmark> waypoints,
+    RoutePreferences preferences,
+  ) {
     _showSnackBar(context, message: 'Calculating route from history...');
 
-    _routingHandler = RoutingService.calculateRoute(waypoints, preferences, (err, routes) {
+    _routingHandler = RoutingService.calculateRoute(waypoints, preferences, (
+      err,
+      routes,
+    ) {
       _routingHandler = null;
       ScaffoldMessenger.of(context).clearSnackBars();
 
@@ -202,22 +237,39 @@ class _MyHomePageState extends State<MyHomePage> {
           _areRoutesBuilt = true;
         });
       } else {
-        _showSnackBar(context, message: 'Failed to calculate route', duration: const Duration(seconds: 3));
+        _showSnackBar(
+          context,
+          message: 'Failed to calculate route',
+          duration: const Duration(seconds: 3),
+        );
       }
     });
 
     setState(() {});
   }
 
-  void _saveRouteToBookmarks(Landmark departure, Landmark destination, RoutePreferences preferences) {
+  void _saveRouteToBookmarks(
+    Landmark departure,
+    Landmark destination,
+    RoutePreferences preferences,
+  ) {
     final timestamp = DateTime.now();
     final routeName =
         'Route ${timestamp.day}/${timestamp.month} ${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}:${timestamp.second.toString().padLeft(2, '0')}';
 
-    _routeBookmarks.add(routeName, [departure, destination], preferences: preferences, overwrite: false);
+    _routeBookmarks.add(
+      routeName,
+      [departure, destination],
+      preferences: preferences,
+      overwrite: false,
+    );
   }
 
-  void _showSnackBar(BuildContext context, {required String message, Duration duration = const Duration(hours: 1)}) {
+  void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    Duration duration = const Duration(hours: 1),
+  }) {
     final snackBar = SnackBar(content: Text(message), duration: duration);
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }

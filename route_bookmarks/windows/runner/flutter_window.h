@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2025-2026 Magic Lane International B.V. <info@magiclane.com>
+// SPDX-License-Identifier: Apache-2.0
+//
+// Contact Magic Lane at <info@magiclane.com> for SDK licensing options.
+
 #ifndef RUNNER_FLUTTER_WINDOW_H_
 #define RUNNER_FLUTTER_WINDOW_H_
 

@@ -147,7 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     return SizedBox(
                       width: 200,
                       child: AspectRatio(
-                        aspectRatio: controller.size!.$1.toDouble() / controller.size!.$2.toDouble(),
+                        aspectRatio: controller.size!.$1.toDouble() /
+                            controller.size!.$2.toDouble(),
                         child: GemCameraPlayer(
                           controller: controller,
                           fit: BoxFit.cover,

@@ -19,8 +19,14 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:magiclane_maps_flutter/core.dart';
 
 class MarkerAssets {
-  MarkerAssets._(this.bookablePin, this.notBookablePin, this.lowPill,
-      this.mediumPill, this.highPill, this.transparent);
+  MarkerAssets._(
+    this.bookablePin,
+    this.notBookablePin,
+    this.lowPill,
+    this.mediumPill,
+    this.highPill,
+    this.transparent,
+  );
 
   /// Red pin, for bookable campsites.
   final GemImage bookablePin;
@@ -45,7 +51,13 @@ class MarkerAssets {
     final high = _pill(await _makePill(digits: 4));
     final transparent = _pill(await _makeTransparent());
     return MarkerAssets._(
-        bookable, notBookable, low, medium, high, transparent);
+      bookable,
+      notBookable,
+      low,
+      medium,
+      high,
+      transparent,
+    );
   }
 
   GemImage pinFor({required bool bookable}) =>
@@ -81,7 +93,11 @@ class MarkerAssets {
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
     final rect = ui.Rect.fromLTRB(
-        margin + stroke, stroke, width - margin - stroke, height - stroke);
+      margin + stroke,
+      stroke,
+      width - margin - stroke,
+      height - stroke,
+    );
     final radius = ui.Radius.circular(rect.height / 2.0);
     final rrect = ui.RRect.fromRectAndRadius(rect, radius);
 
@@ -100,8 +116,10 @@ class MarkerAssets {
       ..color = const ui.Color(0x66FFFFFF); // white @ 40%
     canvas.drawRRect(rrect, border);
 
-    final image =
-        await recorder.endRecording().toImage(width.toInt(), height.toInt());
+    final image = await recorder.endRecording().toImage(
+      width.toInt(),
+      height.toInt(),
+    );
     final data = await image.toByteData(format: ui.ImageByteFormat.png);
     return data!.buffer.asUint8List();
   }

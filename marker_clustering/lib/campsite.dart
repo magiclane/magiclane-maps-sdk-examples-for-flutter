@@ -51,11 +51,11 @@ class Campsite {
   /// recover id / name / bookable straight from its name string — the only
   /// per-marker metadata channel the SDK exposes.
   String get markerName => jsonEncode({
-        'id': id,
-        'name': name,
-        'bookable': isBookable,
-        'address': subtitle,
-      });
+    'id': id,
+    'name': name,
+    'bookable': isBookable,
+    'address': subtitle,
+  });
 
   /// Recovers the metadata from a tapped marker's (JSON) name. Falls back to the
   /// raw string when the payload isn't valid JSON.
@@ -71,8 +71,9 @@ class Campsite {
 /// Loads and parses the bundled GeoJSON. The decode + flatten happens on a
 /// background isolate ([compute]) so the multi-MB file never janks the UI thread.
 class CampsiteLoader {
-  static Future<List<Campsite>> loadFromAssets(
-      [String asset = 'assets/campsites.geojson']) async {
+  static Future<List<Campsite>> loadFromAssets([
+    String asset = 'assets/campsites.geojson',
+  ]) async {
     final raw = await rootBundle.loadString(asset);
     return compute(_parse, raw);
   }
@@ -93,23 +94,27 @@ class CampsiteLoader {
       final lat = _asDouble(coords[1]);
       if (id == null || lat == null || lon == null) continue;
 
-      result.add(Campsite(
-        id: id,
-        name: (props['name'] as String?) ?? '',
-        country: props['country'] as String?,
-        reviewScore: _asDouble(props['reviewScore']),
-        stars: _asInt(props['stars']),
-        isBookable: props['bookable'] == true,
-        latitude: lat,
-        longitude: lon,
-      ));
+      result.add(
+        Campsite(
+          id: id,
+          name: (props['name'] as String?) ?? '',
+          country: props['country'] as String?,
+          reviewScore: _asDouble(props['reviewScore']),
+          stars: _asInt(props['stars']),
+          isBookable: props['bookable'] == true,
+          latitude: lat,
+          longitude: lon,
+        ),
+      );
     }
     return result;
   }
 
-  static int? _asInt(Object? v) =>
-      v is int ? v : (v is num ? v.toInt() : (v is String ? int.tryParse(v) : null));
+  static int? _asInt(Object? v) => v is int
+      ? v
+      : (v is num ? v.toInt() : (v is String ? int.tryParse(v) : null));
 
-  static double? _asDouble(Object? v) =>
-      v is double ? v : (v is num ? v.toDouble() : (v is String ? double.tryParse(v) : null));
+  static double? _asDouble(Object? v) => v is double
+      ? v
+      : (v is num ? v.toDouble() : (v is String ? double.tryParse(v) : null));
 }

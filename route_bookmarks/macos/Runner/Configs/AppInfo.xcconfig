@@ -8,7 +8,7 @@
 PRODUCT_NAME = route_bookmarks
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.routeBookmarks
+PRODUCT_BUNDLE_IDENTIFIER = com.magiclane.magiclane_maps_flutter.examples.route_bookmarks
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
