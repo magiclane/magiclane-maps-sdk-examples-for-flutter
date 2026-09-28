@@ -24,7 +24,4 @@ Alternatively, open the Xcode workspace located at `<project-path>/ios/Runner.xc
 
 ### 3. Web
 
-- Verify available target devices: `flutter devices`
-  If Chrome is installed, this will display a Chrome device option (launches browser) and a Web Server option (provides localhost URL)
-- Generate a production build: `flutter build web`
-- Run in development mode: `flutter run -d chrome` (serves application on localhost in Chrome)
+This example does not work on the web: it relies on `dart:io` (`Platform`, `File`) to store and export the recorded log, and NMEA chunks are only available on Android.

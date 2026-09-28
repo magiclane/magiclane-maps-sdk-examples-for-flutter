@@ -1,7 +1,7 @@
 name: route_alarms
 description: A Flutter example using Maps SDK for Flutter.
 
-publish_to: 'none' 
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -12,8 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  magiclane_maps_flutter: ^3.1.11
-  
+  magiclane_maps_flutter: ^3.1.13
+
   intl: ^0.20.2
 
 dev_dependencies:

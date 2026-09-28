@@ -247,6 +247,17 @@ declare -a EXAMPLE_PROJECTS=()
 declare -a ONLY_EXAMPLES=()
 declare -a EXCLUDE_EXAMPLES=()
 
+# https://dart.dev/tools/pub/pubspec#platforms
+function supports_web()
+{
+    awk '
+        /^platforms:/ { DECLARED = 1; IN_PLATFORMS = 1; if ($0 ~ /web/) WEB = 1; next }
+        IN_PLATFORMS && /^[^[:space:]#]/ { IN_PLATFORMS = 0 }
+        IN_PLATFORMS && /^[[:space:]]+web[[:space:]]*:/ { WEB = 1 }
+        END { exit (DECLARED && !WEB) }
+    ' "${1}/pubspec.yaml"
+}
+
 # Flutter iOS builds all use "Runner" as the Xcode project name
 function clean_xcode_derived_data_runner()
 {
@@ -407,7 +418,8 @@ Options:
 
     --ios                        Build examples for iOS
 
-    --web                        Build examples for Web
+    --web                        Build examples for Web (skips examples whose
+                                 pubspec.yaml platforms list has no web)
 
     --web-thumbnails             Build for Web and capture real example
                                  screenshots via headless Chrome for the gallery
@@ -530,6 +542,54 @@ function check_ios_prerequisites()
     log_success "iOS SDK verification passed (version ${DEVICE_SDK})"
 }
 
+# The Gradle wrapper shipped with the examples (gradle-8.14) can only run on
+# JDK 17 through 24. Flutter picks the JDK bundled with Android Studio ahead of
+# JAVA_HOME, so an Android Studio update can silently switch every
+# "flutter build apk" to an unsupported JDK; Gradle then fails with nothing but
+# the JDK version string as the error message.
+declare -r MIN_JAVA_VERSION=17
+declare -r MAX_JAVA_VERSION=24
+
+function check_android_prerequisites()
+{
+    "${BUILD_ANDROID}" || return 0
+
+    log_info "Checking the JDK used by Flutter for Gradle..."
+
+    local JAVA_BINARY JAVA_VERSION JAVA_MAJOR
+
+    JAVA_BINARY="$(flutter doctor -v 2>/dev/null | sed -n "s/.*Java binary at: //p" || true)"
+
+    if [[ -z "${JAVA_BINARY}" || ! -x "${JAVA_BINARY}" ]]; then
+        log_error "Could not determine which JDK Flutter uses (see: flutter doctor -v)"
+        exit 1
+    fi
+
+    JAVA_VERSION="$("${JAVA_BINARY}" -version 2>&1 | sed -n "s/.*version \"\([^\"]*\)\".*/\1/p")"
+    JAVA_MAJOR="${JAVA_VERSION%%.*}"
+    # Legacy "1.8.0_x" numbering carries the major version in the second field
+    if [[ "${JAVA_MAJOR}" == "1" ]]; then
+        JAVA_MAJOR="${JAVA_VERSION#1.}"
+        JAVA_MAJOR="${JAVA_MAJOR%%.*}"
+    fi
+
+    if [[ ! "${JAVA_MAJOR}" =~ ^[0-9]+$ ]]; then
+        log_error "Could not parse the Java version reported by ${JAVA_BINARY}: \"${JAVA_VERSION}\""
+        exit 1
+    fi
+
+    log_info "Found JDK ${JAVA_VERSION} at ${JAVA_BINARY}"
+
+    if (( JAVA_MAJOR < MIN_JAVA_VERSION || JAVA_MAJOR > MAX_JAVA_VERSION )); then
+        log_error "JDK ${JAVA_MAJOR} is not supported by the Gradle wrapper used by the examples (JDK ${MIN_JAVA_VERSION}-${MAX_JAVA_VERSION} required)"
+        log_error "Flutter prefers the JDK bundled with Android Studio over JAVA_HOME; point it at a supported JDK explicitly:"
+        log_error "  flutter config --jdk-dir=/path/to/jdk-${MIN_JAVA_VERSION}"
+        exit 1
+    fi
+
+    log_success "JDK verification passed (version ${JAVA_VERSION})"
+}
+
 function discover_examples()
 {
     log_step "Discovering examples..."
@@ -609,6 +669,11 @@ function build_example()
     local -a TOKEN_DEFINE=()
     [[ -n "${API_TOKEN}" ]] && TOKEN_DEFINE+=("--dart-define=YOUR_API_TOKEN_HERE=${API_TOKEN}")
 
+    local BUILD_EXAMPLE_WEB="${BUILD_WEB}"
+    if "${BUILD_WEB}" && ! supports_web "${EXAMPLE_PATH}"; then
+        BUILD_EXAMPLE_WEB=false
+    fi
+
     if [[ -n "${SDK_ARCHIVE_PATH}" ]]; then
         cp -R "${SDK_TEMP_DIR}"/magiclane_maps_flutter "${EXAMPLE_PATH}"/plugins/
     fi
@@ -628,6 +693,18 @@ function build_example()
     fi
 
     if "${BUILD_IOS}"; then
+        # Keep Xcode intermediates, including the explicit-module caches,
+        # inside this example's build/ dir regardless of the machine's Xcode
+        # "Build Location" preference (per-project DerivedData, shared
+        # DerivedData/Build, or a custom path). Flutter forwards any
+        # FLUTTER_XCODE_<SETTING> env var to xcodebuild as a build setting.
+        export FLUTTER_XCODE_OBJROOT="${PWD}/build/ios/intermediates"
+
+        # A cached Flutter-*.pcm goes stale whenever the Flutter engine
+        # changes ("has been modified since the module file was built"), so
+        # purge it in case build/ survived a Flutter upgrade.
+        rm -f "${FLUTTER_XCODE_OBJROOT}"/{Swift,}ExplicitPrecompiledModules/Flutter-*.pcm 2>/dev/null || true
+
         if [[ -f "ios/Podfile" ]]; then
             log_info "Installing CocoaPods dependencies..."
             (cd ios && pod install)
@@ -646,7 +723,11 @@ function build_example()
         log_success "Android APK build completed"
     fi
 
-    if "${BUILD_WEB}"; then
+    if "${BUILD_WEB}" && ! "${BUILD_EXAMPLE_WEB}"; then
+        log_warning "Skipping Web build - ${EXAMPLE_NAME} does not work on the web"
+    fi
+
+    if "${BUILD_EXAMPLE_WEB}"; then
         log_info "Building Web release..."
         # Per-example base href so each app works when served under
         # _WEB/<example>/. --pwa-strategy=none keeps a service worker from
@@ -667,7 +748,7 @@ function build_example()
         mv "build/app/outputs/flutter-apk/app-release.apk" "${SCRIPT_DIR}/_APK/${EXAMPLE_NAME}_app-release.apk"
     fi
 
-    if "${BUILD_WEB}"; then
+    if "${BUILD_EXAMPLE_WEB}"; then
         # Move the whole directory (a glob would drop dotfiles and fail on
         # an empty build dir).
         rm -rf "${SCRIPT_DIR}/_WEB/${EXAMPLE_NAME}"
@@ -1125,6 +1206,7 @@ if ! flutter doctor; then
 fi
 
 check_ios_prerequisites
+check_android_prerequisites
 
 extract_sdk_archive
 
